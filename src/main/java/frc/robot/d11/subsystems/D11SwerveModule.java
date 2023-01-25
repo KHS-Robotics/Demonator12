@@ -15,6 +15,7 @@ import com.revrobotics.SparkMaxPIDController;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -124,6 +125,10 @@ public class D11SwerveModule extends SubsystemBase {
    */
   public SwerveModuleState getState() {
     return new SwerveModuleState((isInverted ? -1 : 1) * driveEncoder.getVelocity(), Rotation2d.fromDegrees(getAngle()));
+  }
+
+  public SwerveModulePosition getPosition() {
+    return new SwerveModulePosition(driveEncoder.getPosition(), Rotation2d.fromDegrees(getAngle()));
   }
 
   /**

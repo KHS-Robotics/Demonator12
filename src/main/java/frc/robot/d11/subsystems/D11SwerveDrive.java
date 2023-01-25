@@ -9,11 +9,13 @@ package frc.robot.d11.subsystems;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -34,6 +36,7 @@ public class D11SwerveDrive extends SubsystemBase {
   private final Translation2d frontRightLocation = new Translation2d(0.29845, -0.29845);
   private final Translation2d rearLeftLocation = new Translation2d(-0.29845, 0.29845);
   private final Translation2d rearRightLocation = new Translation2d(-0.29845, -0.29845);
+
 
   public boolean isCalibrated = false;
 
@@ -93,6 +96,16 @@ public class D11SwerveDrive extends SubsystemBase {
   public final SwerveDriveKinematics kinematics = new SwerveDriveKinematics(frontLeftLocation,
     frontRightLocation, rearLeftLocation, rearRightLocation);
 
+  private final SwerveDrivePoseEstimator poseEstimator = new SwerveDrivePoseEstimator(kinematics, D11RobotContainer.navx.getRotation2d(), new SwerveModulePosition[] {
+    new SwerveModulePosition(0, new Rotation2d(frontLeft.getAngle())), 
+    new SwerveModulePosition(0, new Rotation2d(frontRight.getAngle())), 
+    new SwerveModulePosition(0, new Rotation2d(rearLeft.getAngle())), 
+    new SwerveModulePosition(0, new Rotation2d(rearRight.getAngle()))
+  }, new Pose2d(0, 0, Rotation2d.fromDegrees(0)));
+
+    
+  
+  
   //private final SwerveDriveOdometry odometry = new SwerveDriveOdometry(kinematics, this.getAngle());
 
   /**
@@ -198,20 +211,19 @@ public class D11SwerveDrive extends SubsystemBase {
     return targetPid.atSetpoint();
   }
 
-  /*
+  
   public Pose2d getPose() {
-    return odometry.getPoseMeters();
+    return poseEstimator.getEstimatedPosition();
   }
-  */
+  
 
   /**
    * Updates the field relative position of the robot.
+   * 
    */
-  /*
   public void updateOdometry() {
-    odometry.update(this.getAngle(), this.getSwerveModuleStates());
+    poseEstimator.update(getAngle(), getSwerveModulePositions());
   }
-  */
 
   public SwerveModuleState[] getSwerveModuleStates() {
     return new SwerveModuleState[]{
@@ -222,9 +234,20 @@ public class D11SwerveDrive extends SubsystemBase {
     };
   }
 
-  public ChassisSpeeds getChassisSpeeds() {
+  public SwerveModulePosition[] getSwerveModulePositions() {
+    return new SwerveModulePosition[] {
+      frontLeft.getPosition(),
+      frontRight.getPosition(),
+      rearLeft.getPosition(),
+      rearRight.getPosition()
+    };
+  }
+
+  /*
+  pubic ChassisSpeeds getChassisSpeeds() {
     return this.kinematics.toChassisSpeeds(this.getSwerveModuleStates());
   }
+  */
 
   public void stop() {
     frontRight.stop();

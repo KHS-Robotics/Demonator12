@@ -69,13 +69,26 @@ public class D11RobotContainer {
 
     Trigger slowDrive = new Trigger(() -> (xboxController.getLeftTriggerAxis() > 0.3 || xboxController.getRightTriggerAxis() > 0.3));
     slowDrive.onTrue(new InstantCommand(() -> {
-      D11SwerveDrive.kMaxAngularSpeed = Math.PI;
-      D11SwerveDrive.kMaxSpeed = 2;
+      D11SwerveDrive.kMaxAngularSpeed = Math.PI / 2;
+      D11SwerveDrive.kMaxSpeed = 1;
     }));
-    slowDrive.onTrue(new InstantCommand(() -> {
+    slowDrive.onFalse(new InstantCommand(() -> {
       D11SwerveDrive.kMaxAngularSpeed = 2 * Math.PI;
       D11SwerveDrive.kMaxSpeed = 3.5;
     }));
+
+    /*
+    Trigger toggleDriveMode = new Trigger(xboxController::getLeftBumper);
+    toggleDriveMode.onTrue(new InstantCommand(() -> {
+      if (swerveDrive.getCurrentCommand().getName().equals("D11DriveSwerveRobotOriented")) {
+        swerveDrive.setDefaultCommand(new D11DriveSwerveWithXbox());
+      } else {
+        swerveDrive.setDefaultCommand(new D11DriveSwerveRobotOriented());
+      }
+    }));
+    */
+    
+    
 
     
     Trigger goToZero = new Trigger(xboxController::getBButton);
