@@ -5,7 +5,7 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.d11.subsystems;
+package frc.robot.subsystems;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
@@ -17,16 +17,15 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.d11.D11Constants;
-import frc.robot.d11.D11RobotContainer;
-import frc.robot.d11.D11RobotMap;
+import frc.robot.RobotMap;
+import frc.robot.Constants;
+import frc.robot.RobotContainer;
 
 /**
  * Represents a swerve drive style drivetrain.
  */
-public class D11SwerveDrive extends SubsystemBase {
+public class SwerveDrive extends SubsystemBase {
   public static double kMaxSpeed = 3.5; // 3.5 meters per second
   public static double kMaxAngularSpeed = 2 * Math.PI; // pi radians per second
   public static double offset;
@@ -40,63 +39,63 @@ public class D11SwerveDrive extends SubsystemBase {
 
   public boolean isCalibrated = false;
 
-  public static final D11SwerveModule frontLeft = new D11SwerveModule(
+  public static final SwerveModule frontLeft = new SwerveModule(
     "FL",
-    D11RobotMap.FRONT_LEFT_DRIVE,
-    D11RobotMap.FRONT_LEFT_PIVOT,
-    D11Constants.FRONT_LEFT_P,
-    D11Constants.FRONT_LEFT_I,
-    D11Constants.FRONT_LEFT_D,
-    D11Constants.FRONT_LEFT_DRIVE_P,
-    D11Constants.FRONT_LEFT_DRIVE_I,
-    D11Constants.FRONT_LEFT_DRIVE_D,
-    D11Constants.FRONT_LEFT_DRIVE_FF,
-    D11RobotMap.FRONT_LEFT_DIGITAL_INPUT
+    RobotMap.FRONT_LEFT_DRIVE,
+    RobotMap.FRONT_LEFT_PIVOT,
+    Constants.FRONT_LEFT_P,
+    Constants.FRONT_LEFT_I,
+    Constants.FRONT_LEFT_D,
+    Constants.FRONT_LEFT_DRIVE_P,
+    Constants.FRONT_LEFT_DRIVE_I,
+    Constants.FRONT_LEFT_DRIVE_D,
+    Constants.FRONT_LEFT_DRIVE_FF,
+    RobotMap.FRONT_LEFT_DIGITAL_INPUT
   );
-  public static final D11SwerveModule frontRight = new D11SwerveModule(
+  public static final SwerveModule frontRight = new SwerveModule(
     "FR",
-    D11RobotMap.FRONT_RIGHT_DRIVE,
-    D11RobotMap.FRONT_RIGHT_PIVOT,
-    D11Constants.FRONT_RIGHT_P,
-    D11Constants.FRONT_RIGHT_I,
-    D11Constants.FRONT_RIGHT_D,
-    D11Constants.FRONT_RIGHT_DRIVE_P,
-    D11Constants.FRONT_RIGHT_DRIVE_I,
-    D11Constants.FRONT_RIGHT_DRIVE_D,
-    D11Constants.FRONT_RIGHT_DRIVE_FF,
-    D11RobotMap.FRONT_RIGHT_DIGITAL_INPUT
+    RobotMap.FRONT_RIGHT_DRIVE,
+    RobotMap.FRONT_RIGHT_PIVOT,
+    Constants.FRONT_RIGHT_P,
+    Constants.FRONT_RIGHT_I,
+    Constants.FRONT_RIGHT_D,
+    Constants.FRONT_RIGHT_DRIVE_P,
+    Constants.FRONT_RIGHT_DRIVE_I,
+    Constants.FRONT_RIGHT_DRIVE_D,
+    Constants.FRONT_RIGHT_DRIVE_FF,
+    RobotMap.FRONT_RIGHT_DIGITAL_INPUT
   );
-  public static final D11SwerveModule rearLeft = new D11SwerveModule(
+  public static final SwerveModule rearLeft = new SwerveModule(
     "RL",
-    D11RobotMap.REAR_LEFT_DRIVE,
-    D11RobotMap.REAR_LEFT_PIVOT,
-    D11Constants.REAR_LEFT_P,
-    D11Constants.REAR_LEFT_I,
-    D11Constants.REAR_LEFT_D,
-    D11Constants.REAR_LEFT_DRIVE_P,
-    D11Constants.REAR_LEFT_DRIVE_I,
-    D11Constants.REAR_LEFT_DRIVE_D,
-    D11Constants.REAR_LEFT_DRIVE_FF,
-    D11RobotMap.REAR_LEFT_DIGITAL_INPUT
+    RobotMap.REAR_LEFT_DRIVE,
+    RobotMap.REAR_LEFT_PIVOT,
+    Constants.REAR_LEFT_P,
+    Constants.REAR_LEFT_I,
+    Constants.REAR_LEFT_D,
+    Constants.REAR_LEFT_DRIVE_P,
+    Constants.REAR_LEFT_DRIVE_I,
+    Constants.REAR_LEFT_DRIVE_D,
+    Constants.REAR_LEFT_DRIVE_FF,
+    RobotMap.REAR_LEFT_DIGITAL_INPUT
   );
-  public static final D11SwerveModule rearRight = new D11SwerveModule(
+  public static final SwerveModule rearRight = new SwerveModule(
     "RR",
-    D11RobotMap.REAR_RIGHT_DRIVE,
-    D11RobotMap.REAR_RIGHT_PIVOT,
-    D11Constants.REAR_RIGHT_P,
-    D11Constants.REAR_RIGHT_I,
-    D11Constants.REAR_RIGHT_D,
-    D11Constants.REAR_RIGHT_DRIVE_P,
-    D11Constants.REAR_RIGHT_DRIVE_I,
-    D11Constants.REAR_RIGHT_DRIVE_D,
-    D11Constants.REAR_RIGHT_DRIVE_FF,
-    D11RobotMap.REAR_RIGHT_DIGITAL_INPUT
+    RobotMap.REAR_RIGHT_DRIVE,
+    RobotMap.REAR_RIGHT_PIVOT,
+    Constants.REAR_RIGHT_P,
+    Constants.REAR_RIGHT_I,
+    Constants.REAR_RIGHT_D,
+    Constants.REAR_RIGHT_DRIVE_P,
+    Constants.REAR_RIGHT_DRIVE_I,
+    Constants.REAR_RIGHT_DRIVE_D,
+    Constants.REAR_RIGHT_DRIVE_FF,
+    RobotMap.REAR_RIGHT_DIGITAL_INPUT
   );
 
   public final SwerveDriveKinematics kinematics = new SwerveDriveKinematics(frontLeftLocation,
     frontRightLocation, rearLeftLocation, rearRightLocation);
 
-  private final SwerveDrivePoseEstimator poseEstimator = new SwerveDrivePoseEstimator(kinematics, D11RobotContainer.navx.getRotation2d(), new SwerveModulePosition[] {
+  private final SwerveDrivePoseEstimator poseEstimator = new SwerveDrivePoseEstimator(kinematics, RobotContainer.navx.getRotation2d(), new SwerveModulePosition[] {
     new SwerveModulePosition(0, new Rotation2d(frontLeft.getAngle())), 
     new SwerveModulePosition(0, new Rotation2d(frontRight.getAngle())), 
     new SwerveModulePosition(0, new Rotation2d(rearLeft.getAngle())), 
@@ -111,26 +110,10 @@ public class D11SwerveDrive extends SubsystemBase {
   /**
    * Constructs Swerve Drive
    */
-  public D11SwerveDrive() {
-    targetPid = new PIDController(D11Constants.TARGET_P, D11Constants.TARGET_I, D11Constants.TARGET_D);
+  public SwerveDrive() {
+    targetPid = new PIDController(Constants.TARGET_P, Constants.TARGET_I, Constants.TARGET_D);
     targetPid.enableContinuousInput(-180.0, 180.0);
     targetPid.setTolerance(1);
-
-    
-
-    var tab = Shuffleboard.getTab("Swervedrive");
-    tab.addNumber("Target Angle", targetPid::getSetpoint);
-    tab.addNumber("Target Error", targetPid::getPositionError);
-    tab.addNumber("Current Angle", () -> getYaw());
-    tab.addNumber("Angle Graph", () -> getYaw());
-    //tab.addNumber("Pose X", () -> this.getPose().getTranslation().getX());
-    //tab.addNumber("Pose Y", () -> this.getPose().getTranslation().getY());
-    //tab.addNumber("Pose Norm", () -> this.getPose().getTranslation().getNorm());
-    //tab.addNumber("Pose Rotation", () -> this.getPose().getRotation().getDegrees());
-    tab.addBoolean("Calibrated", () -> this.isCalibrated);
-
-    var matchTab = Shuffleboard.getTab("Match");
-    matchTab.addBoolean("Calibrated", () -> this.isCalibrated);
   }
 
   /**
@@ -140,19 +123,19 @@ public class D11SwerveDrive extends SubsystemBase {
    */
   public Rotation2d getAngle() {
     // Negating the angle because WPILib gyros are CW positive.
-    return Rotation2d.fromDegrees((-D11RobotContainer.navx.getAngle() + offset) % 360);
+    return Rotation2d.fromDegrees((-RobotContainer.navx.getAngle() + offset) % 360);
   }
 
   public double getYaw() {
-    return normalizeAngle(-D11RobotContainer.navx.getYaw() + offset);
+    return normalizeAngle(-RobotContainer.navx.getYaw() + offset);
   }
 
   public void setOffset(double offset) {
-    D11SwerveDrive.offset = offset;
+    SwerveDrive.offset = offset;
   }
 
   public double sensControl(double var) {
-    return D11Constants.SENS * Math.pow(var, 3) + (1 - D11Constants.SENS) * var;
+    return Constants.SENS * Math.pow(var, 3) + (1 - Constants.SENS) * var;
   }
 
   /**
@@ -263,7 +246,7 @@ public class D11SwerveDrive extends SubsystemBase {
   public void resetNavx(Pose2d currentPose) {
     targetPid.reset();
     offset = currentPose.getRotation().getDegrees();
-    D11RobotContainer.navx.reset();
+    RobotContainer.navx.reset();
     startingPose = currentPose;
     //odometry.resetPosition(currentPose, currentPose.getRotation());
   }

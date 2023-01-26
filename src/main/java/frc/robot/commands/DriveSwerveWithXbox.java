@@ -5,18 +5,18 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.d11.commands;
+package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.d11.D11RobotContainer;
-import frc.robot.d11.subsystems.D11SwerveDrive;
+import frc.robot.RobotContainer;
+import frc.robot.subsystems.SwerveDrive;
 
 @SuppressWarnings("GrazieInspection")
-public class D11DriveSwerveWithXbox extends CommandBase {
+public class DriveSwerveWithXbox extends CommandBase {
   private boolean fieldRelative = false;
 
-  public D11DriveSwerveWithXbox() {
-    this.addRequirements(D11RobotContainer.swerveDrive);
+  public DriveSwerveWithXbox() {
+    this.addRequirements(RobotContainer.swerveDrive);
   }
 
   // Called just before this Command runs the first time
@@ -30,12 +30,12 @@ public class D11DriveSwerveWithXbox extends CommandBase {
 
     // Get the x speed. We are inverting this because Xbox controllers return
     // negative values when we push forward.
-    var xSpeed = D11RobotContainer.swerveDrive.sensControl(-D11RobotContainer.xboxController.getLeftY()) * D11SwerveDrive.kMaxSpeed;
+    var xSpeed = RobotContainer.swerveDrive.sensControl(-RobotContainer.driverController.getLeftY()) * SwerveDrive.kMaxSpeed;
 
     // Get the y speed or sideways/strafe speed. We are inverting this because
     // we want a positive value when we pull to the left. Xbox controllers
     // return positive values when you pull to the right by default.
-    var ySpeed = D11RobotContainer.swerveDrive.sensControl(-D11RobotContainer.xboxController.getLeftX()) * D11SwerveDrive.kMaxSpeed;
+    var ySpeed = RobotContainer.swerveDrive.sensControl(-RobotContainer.driverController.getLeftX()) * SwerveDrive.kMaxSpeed;
 
     // Get the rate of angular rotation. We are inverting this because we want a
     // positive value when we pull to the left (remember, CCW is positive in
@@ -44,12 +44,12 @@ public class D11DriveSwerveWithXbox extends CommandBase {
 
     //Deadband on new controller
     double rot = 0;
-    if (Math.abs(D11RobotContainer.xboxController.getRightX()) > 0.05) {
-      rot = D11RobotContainer.swerveDrive.sensControl(-D11RobotContainer.xboxController.getRightX()) * D11SwerveDrive.kMaxAngularSpeed;
+    if (Math.abs(RobotContainer.driverController.getRightX()) > 0.05) {
+      rot = RobotContainer.swerveDrive.sensControl(-RobotContainer.driverController.getRightX()) * SwerveDrive.kMaxAngularSpeed;
     }
 
-    fieldRelative = (D11RobotContainer.xboxController.getRightTriggerAxis() < 0.3);
-    D11RobotContainer.swerveDrive.drive(xSpeed, ySpeed, rot, fieldRelative);
+    fieldRelative = (RobotContainer.driverController.getRightTriggerAxis() < 0.3);
+    RobotContainer.swerveDrive.drive(xSpeed, ySpeed, rot, fieldRelative);
   }
 
   // Make this return true when this Command no longer needs to run execute()

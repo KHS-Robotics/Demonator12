@@ -5,7 +5,7 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.d11;
+package frc.robot;
 
 /**
  * The RobotMap is a mapping from the ports sensors and actuators are wired into
@@ -13,7 +13,7 @@ package frc.robot.d11;
  * the wiring easier and significantly reduces the number of magic numbers
  * floating around.
  */
-public class D11RobotMap {
+public class RobotMap {
   public static final int XBOX_PORT = 0;
   public static final int SWITCHBOX_PORT = 1;
   public static final int JOYSTICK_PORT = 2;

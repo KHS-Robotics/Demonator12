@@ -4,7 +4,7 @@
 /* must be accompanied by the FIRST BSD license file in the root directory of */
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
-package frc.robot.d11.subsystems;
+package frc.robot.subsystems;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.ControlType;
@@ -18,15 +18,14 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.d11.D11Constants;
+import frc.robot.Constants;
 
 /**
  * Swerve Module
  */
 @SuppressWarnings("GrazieInspection")
-public class D11SwerveModule extends SubsystemBase {
+public class SwerveModule extends SubsystemBase {
   public final String name;
 
   private boolean isFlipped;
@@ -54,7 +53,7 @@ public class D11SwerveModule extends SubsystemBase {
    * @param digitalInputPort  port number for the digital input, used to calibrate pivots
    * @param reversed          true if drive motor is reversed
    */
-  public D11SwerveModule(String name, int driveMotorChannel, int pivotMotorChannel, double pivotP, double pivotI, double pivotD, double driveP, double driveI, double driveD, double driveFF, int digitalInputPort, boolean reversed) {
+  public SwerveModule(String name, int driveMotorChannel, int pivotMotorChannel, double pivotP, double pivotI, double pivotD, double driveP, double driveI, double driveD, double driveFF, int digitalInputPort, boolean reversed) {
     isInverted = reversed;
 
     this.name = name;
@@ -71,8 +70,8 @@ public class D11SwerveModule extends SubsystemBase {
     pivotEncoder.setPositionConversionFactor(360.0 / 18.0); // 360 degree per rotation, 18:1 -> 360 * 1/18
 
     driveEncoder = driveMotor.getEncoder();
-    driveEncoder.setVelocityConversionFactor(D11Constants.DRIVE_VEL_ENCODER); // 4" diameter wheel (0.0508 meter radius), 8.33:1 -> 2*pi*0.0508 / 8.33
-    driveEncoder.setPositionConversionFactor(D11Constants.DRIVE_POS_ENCODER); // 4" diameter wheel (0.0508 meter radius), 8.33:1 -> 2*pi*0.0508 / 8.33
+    driveEncoder.setVelocityConversionFactor(Constants.DRIVE_VEL_ENCODER); // 4" diameter wheel (0.0508 meter radius), 8.33:1 -> 2*pi*0.0508 / 8.33
+    driveEncoder.setPositionConversionFactor(Constants.DRIVE_POS_ENCODER); // 4" diameter wheel (0.0508 meter radius), 8.33:1 -> 2*pi*0.0508 / 8.33
 
     drivePID = driveMotor.getPIDController();
     drivePID.setP(driveP);
@@ -88,15 +87,6 @@ public class D11SwerveModule extends SubsystemBase {
     setDetection = new DigitalInput(digitalInputPort);
 
     // driveMotor.setSmartCurrentLimit(currentLimit);
-
-    var tab = Shuffleboard.getTab(name + " Module");
-    //tab.addNumber("Angle (Deg)", this::getAngle);
-    tab.addNumber("Setpoint (Deg)", pivotPID::getSetpoint);
-    tab.addNumber("Error (Deg)", pivotPID::getPositionError);
-    //tab.addNumber("Speed mps", driveEncoder::getVelocity);
-    tab.addBoolean("atSetpoint", pivotPID::atSetpoint);
-    tab.addBoolean("isFlipped", () -> isFlipped);
-    tab.addBoolean("isCenter", () -> !this.setDetection.get());
   }
 
   /**
@@ -110,7 +100,7 @@ public class D11SwerveModule extends SubsystemBase {
    * @param pivotD            D value of Pivot PID
    * @param digitalInputPort  port number for the digital input, used to calibrate pivots
    */
-  public D11SwerveModule(String name, int driveMotorChannel, int pivotMotorChannel, double pivotP, double pivotI, double pivotD, double driveP, double driveI, double driveD, double driveFF, int digitalInputPort) {
+  public SwerveModule(String name, int driveMotorChannel, int pivotMotorChannel, double pivotP, double pivotI, double pivotD, double driveP, double driveI, double driveD, double driveFF, int digitalInputPort) {
     this(name, driveMotorChannel, pivotMotorChannel, pivotP, pivotI, pivotD, driveP, driveI, driveD, driveFF, digitalInputPort, false);
   }
 
