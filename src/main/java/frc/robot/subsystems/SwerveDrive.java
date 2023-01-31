@@ -117,7 +117,7 @@ public class SwerveDrive extends SubsystemBase {
   }
 
   /**
-   * Returns the angle of the robot as a Rotation2d.
+   * Returns the angle of the robot as a Rotation2d as read by the navx.
    *
    * @return The angle of the robot.
    */
@@ -226,12 +226,6 @@ public class SwerveDrive extends SubsystemBase {
     };
   }
 
-  /*
-  pubic ChassisSpeeds getChassisSpeeds() {
-    return this.kinematics.toChassisSpeeds(this.getSwerveModuleStates());
-  }
-  */
-
   public void stop() {
     frontRight.stop();
     frontLeft.stop();
@@ -248,7 +242,6 @@ public class SwerveDrive extends SubsystemBase {
     offset = currentPose.getRotation().getDegrees();
     RobotContainer.navx.reset();
     startingPose = currentPose;
-    //odometry.resetPosition(currentPose, currentPose.getRotation());
   }
 
   public void resetPid() {
