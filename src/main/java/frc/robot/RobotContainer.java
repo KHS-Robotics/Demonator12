@@ -9,9 +9,11 @@ import com.kauailabs.navx.frc.AHRS;
 
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.SerialPort.Port;
+import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.DriveSwerveWithXbox;
+import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.SwerveDrive;
 
 
@@ -31,6 +33,7 @@ public class RobotContainer
     public static final SwerveDrive swerveDrive = new SwerveDrive();
 
     public static final CommandXboxController driverController = new CommandXboxController(RobotMap.XBOX_PORT);
+    public static final Arm arm = new Arm(RobotMap.ARM_PIVOT, RobotMap.ARM_EXTEND);
     
     
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
