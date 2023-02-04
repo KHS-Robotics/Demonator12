@@ -5,7 +5,11 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.subsystems;
+package frc.robot.subsystems.drive;
+
+import java.util.Optional;
+
+import org.photonvision.EstimatedRobotPose;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
@@ -17,8 +21,10 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotMap;
+import frc.robot.subsystems.vision.PhotonWrapper;
 import frc.robot.Constants;
 import frc.robot.RobotContainer;
 
@@ -36,6 +42,7 @@ public class SwerveDrive extends SubsystemBase {
   private final Translation2d rearLeftLocation = new Translation2d(-0.29845, 0.29845);
   private final Translation2d rearRightLocation = new Translation2d(-0.29845, -0.29845);
 
+  public PhotonWrapper photonCamera;
 
   public boolean isCalibrated = false;
 
@@ -111,13 +118,15 @@ public class SwerveDrive extends SubsystemBase {
    * Constructs Swerve Drive
    */
   public SwerveDrive() {
+    photonCamera = new PhotonWrapper("cameraOne");
+
     targetPid = new PIDController(Constants.TARGET_P, Constants.TARGET_I, Constants.TARGET_D);
     targetPid.enableContinuousInput(-180.0, 180.0);
     targetPid.setTolerance(1);
   }
 
   /**
-   * Returns the angle of the robot as a Rotation2d.
+   * Returns the angle of the robot as a Rotation2d as read by the navx.
    *
    * @return The angle of the robot.
    */
@@ -205,11 +214,17 @@ public class SwerveDrive extends SubsystemBase {
    * 
    */
   public void updateOdometry() {
-    poseEstimator.update(getAngle(), getSwerveModulePositions());
+    poseEstimator.updateWithTime(Timer.getFPGATimestamp(), getAngle(), getSwerveModulePositions());
+
+    Optional<EstimatedRobotPose> estimatedPose = photonCamera.getEstimatedGlobalPose(poseEstimator.getEstimatedPosition());
+    if (estimatedPose.isPresent()) {
+      EstimatedRobotPose camPose = estimatedPose.get();
+      poseEstimator.addVisionMeasurement(camPose.estimatedPose.toPose2d(), Timer.getFPGATimestamp());
+    }
   }
 
   public SwerveModuleState[] getSwerveModuleStates() {
-    return new SwerveModuleState[]{
+    return new SwerveModuleState[] {
       frontLeft.getState(),
       frontRight.getState(),
       rearLeft.getState(),
@@ -225,12 +240,6 @@ public class SwerveDrive extends SubsystemBase {
       rearRight.getPosition()
     };
   }
-
-  /*
-  pubic ChassisSpeeds getChassisSpeeds() {
-    return this.kinematics.toChassisSpeeds(this.getSwerveModuleStates());
-  }
-  */
 
   public void stop() {
     frontRight.stop();
@@ -248,7 +257,6 @@ public class SwerveDrive extends SubsystemBase {
     offset = currentPose.getRotation().getDegrees();
     RobotContainer.navx.reset();
     startingPose = currentPose;
-    //odometry.resetPosition(currentPose, currentPose.getRotation());
   }
 
   public void resetPid() {
