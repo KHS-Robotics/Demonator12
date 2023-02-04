@@ -32,7 +32,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
-import frc.robot.subsystems.SwerveDrive;
+import frc.robot.subsystems.drive.SwerveDrive;
 
 /**
  * Used to build autonomous routines.
