@@ -1,10 +1,23 @@
 package frc.robot.subsystems;
 
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-public class Arm {
-        static final Translation3d OFFSET = new Translation3d(0.0, 0.0, 0.0);
+public class Arm extends SubsystemBase {
+
+    private final CANSparkMax pivotMotor;
+    private final CANSparkMax extendMotor;
+
+    static final Translation3d OFFSET = new Translation3d(0.0, 0.0, 0.0);
+
+    public Arm (int pivotMotorChannel, int extendMotorChannel) {
+        pivotMotor = new CANSparkMax(pivotMotorChannel, MotorType.kBrushless);
+        extendMotor = new CANSparkMax(extendMotorChannel, MotorType.kBrushless);
+    }
 
 
     //converts point from robot relative to arm relative
@@ -17,15 +30,36 @@ public class Arm {
         return armRelative.plus(OFFSET);
     }
     
-        //extends the arm
-    public void extendArm() {
+    //extends the arm
+    public void setLength(double length) {
+
+    }
+
+    //gets the arm extension
+    public double getLength() {
+        return 0.0;
+    }
+
+    public void setLengthV(double vLength) {
 
     }
 
     //pivots the arm
-    public void pivotArm() {
+    public void setAngle(Rotation2d Angle) {
 
     }
+
+    //gets the arm angle
+    public Rotation2d getAngle() {
+        return new Rotation2d();
+    }
+
+    public void setAngleV(double vAngle) {
+
+    }
+
+
+
 
     //returns the required rotation to go to a setpoint in degrees (arm relative)
     public Rotation2d rotToPointAR(Translation3d target) {
@@ -59,5 +93,18 @@ public class Arm {
     //returns the required length to go to a setpoint (robot relative)
     public double lengthToPoint(Translation3d target) {
         return lengthToPointAR(toArmRelative(target));
+    }
+
+    public void moveArmVelocity(double vx, double vz) {
+        double length = getLength();
+        Rotation2d angle = getAngle();
+        double x = angle.getCos() * length;
+        double z = angle.getSin() * length;
+        //rate of change of length with respect to time
+        double vLength = (((x * vx) + (z * vz)) / length);
+        //rate of change of angle with respect to time
+        double vAngle = (1 / (1 + Math.pow(x/z, 2))) * ((z * vx) - (x * vz)) / Math.pow(z, 2);
+        setLengthV(vLength);
+        setAngleV(vAngle);
     }
 }
