@@ -7,12 +7,13 @@ package frc.robot;
 
 import com.kauailabs.navx.frc.AHRS;
 
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.SerialPort.Port;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.DriveSwerveWithXbox;
-import frc.robot.subsystems.SwerveDrive;
+import frc.robot.subsystems.drive.SwerveDrive;
 
 
 
@@ -25,6 +26,7 @@ import frc.robot.subsystems.SwerveDrive;
 public class RobotContainer
 {
     // The robot's subsystems and commands are defined here...
+    public static NetworkTableInstance networkTable;
 
     public static final AHRS navx = new AHRS(Port.kUSB);
     public static final PowerDistribution pdp = new PowerDistribution();
@@ -36,6 +38,7 @@ public class RobotContainer
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer()
     {
+        networkTable = NetworkTableInstance.getDefault();
         swerveDrive.setDefaultCommand(new DriveSwerveWithXbox());
         configureBindings();
     }
