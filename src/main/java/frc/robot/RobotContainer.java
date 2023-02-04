@@ -6,10 +6,14 @@
 package frc.robot;
 
 import com.kauailabs.navx.frc.AHRS;
+import com.pathplanner.lib.commands.FollowPathWithEvents;
 
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.SerialPort.Port;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -32,10 +36,15 @@ public class RobotContainer
 
     public static final AHRS navx = new AHRS(Port.kUSB);
     public static final PowerDistribution pdp = new PowerDistribution();
+    
     public static final SwerveDrive swerveDrive = new SwerveDrive();
-
-    public static final CommandXboxController driverController = new CommandXboxController(RobotMap.XBOX_PORT);
     public static final Arm arm = new Arm(RobotMap.ARM_PIVOT, RobotMap.ARM_EXTEND);
+    
+    public static final CommandXboxController driverController = new CommandXboxController(RobotMap.XBOX_PORT);
+    
+    SendableChooser<Command> chooser = new SendableChooser<>();
+    
+
     
     
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
@@ -44,6 +53,17 @@ public class RobotContainer
         networkTable = NetworkTableInstance.getDefault();
         swerveDrive.setDefaultCommand(new DriveSwerveWithXbox());
         configureBindings();
+        chooser.setDefaultOption("nothing", new PrintCommand("No auto :("));
+        chooser.addOption("one piece", new PrintCommand("placeholder for single placement command"));
+        chooser.addOption("one piece + engage", AutoRoutineBuilder.getAutonomousCommand(AutoRoutineBuilder.PlaceEngage));
+        chooser.addOption("one piece + engage + leave", AutoRoutineBuilder.getAutonomousCommand(AutoRoutineBuilder.PlaceEngageLeave));
+        chooser.addOption("two piece (cable protector)", AutoRoutineBuilder.getAutonomousCommand(AutoRoutineBuilder.Place2CableProtector));
+        chooser.addOption("two piece (loading station)", AutoRoutineBuilder.getAutonomousCommand(AutoRoutineBuilder.Place2LoadingStation));
+        chooser.addOption("two piece (cable protector) (engage)", AutoRoutineBuilder.getAutonomousCommand(AutoRoutineBuilder.Place2CableProtectorEngage));
+        chooser.addOption("two piece (loading station) (engage)", AutoRoutineBuilder.getAutonomousCommand(AutoRoutineBuilder.PlaceEngage));
+        chooser.addOption("three piece (cable protector)", AutoRoutineBuilder.getAutonomousCommand(AutoRoutineBuilder.Place3CableProtector));
+        chooser.addOption("three piece (loading station)", AutoRoutineBuilder.getAutonomousCommand(AutoRoutineBuilder.Place3LoadingStation));
+
     }
     
     
@@ -60,4 +80,12 @@ public class RobotContainer
     {
         
     }
+
+    public Command getAutonomousCommand() {
+        return chooser.getSelected();
+    }
+
+    
+
+    
 }
