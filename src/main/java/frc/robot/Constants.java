@@ -64,5 +64,9 @@ public class Constants {
   public static final double REAR_LEFT_DRIVE_D = 3.0;
   public static final double REAR_LEFT_DRIVE_FF = 0.2857;
 
+  public static final double TARGET_P = 0.03;
+  public static final double TARGET_I = 0.0035;
+  public static final double TARGET_D = 0.0025;
+
   public static final Translation3d ARMOFFSET = new Translation3d(0.0, 0.0, 0.0);
 }
