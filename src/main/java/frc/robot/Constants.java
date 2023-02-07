@@ -10,20 +10,19 @@ package frc.robot;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.math.util.Units;
 
 /**
- * The RobotMap is a mapping from the ports sensors and actuators are wired into
- * to a variable name. This provides flexibility changing wiring, makes checking
- * the wiring easier and significantly reduces the number of magic numbers
- * floating around.
+ * constants
  */
 public class Constants {
-  public static final Transform3d CAMERA_1_POS = new Transform3d(new Translation3d(0.5, 0, 0.5), new Rotation3d(0, 0, 0));
+  public static final Transform3d CAMERA_1_POS = new Transform3d(new Translation3d(0.5, 0, 0.5),
+      new Rotation3d(0, 0, 0));
   public static final double SENS = 0.5;
 
-  public static final double ROBOT_HEIGHT = 0.5; //WAS 0.4
+  public static final double ROBOT_HEIGHT = 0.5; // WAS 0.4
   public static final double TARGET_HEIGHT = 2.64;
-  public static final double LIMELIGHT_HEIGHT = 0.87; //WAS 0.84
+  public static final double LIMELIGHT_HEIGHT = 0.87; // WAS 0.84
   public static final double LIMELIGHT_ANGLE = 40;
 
   public static final double FRONT_LEFT_P = 0.015;
@@ -85,4 +84,6 @@ public class Constants {
   public static final double ELEVATOR_P = 0.1;
   public static final double ELEVATOR_I = 0.0001;
   public static final double ELEVATOR_D = 0;
+
+  public static final Translation3d ARMOFFSET = new Translation3d(0.0, 0.0, 0.0);
 }
