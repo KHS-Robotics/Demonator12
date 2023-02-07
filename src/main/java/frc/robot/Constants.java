@@ -64,26 +64,5 @@ public class Constants {
   public static final double REAR_LEFT_DRIVE_D = 3.0;
   public static final double REAR_LEFT_DRIVE_FF = 0.2857;
 
-  public static final double TARGET_P = 0.03;
-  public static final double TARGET_I = 0.0035;
-  public static final double TARGET_D = 0.0025;
-
-  public static final double SHOOTER_P = 0.0008;
-  public static final double SHOOTER_I = 0.0000005;
-  public static final double SHOOTER_D = 0.4;
-  public static final double SHOOTER_FF = 1.0 / 4400.0;
-
-  public static final double INTAKE_P = 0.03;
-  public static final double INTAKE_I = 0.00001;
-  public static final double INTAKE_D = 0.03;
-
-  public static final double PIVOT_P = 0.075;
-  public static final double PIVOT_I = 0;
-  public static final double PIVOT_D = 0;
-
-  public static final double ELEVATOR_P = 0.1;
-  public static final double ELEVATOR_I = 0.0001;
-  public static final double ELEVATOR_D = 0;
-
   public static final Translation3d ARMOFFSET = new Translation3d(0.0, 0.0, 0.0);
 }

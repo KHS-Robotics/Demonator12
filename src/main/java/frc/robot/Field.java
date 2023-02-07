@@ -69,7 +69,7 @@ public class Field {
     // flips coordinates to be correctly aligned with alliance
     public static Translation3d flip(Translation3d translation) {
         if (DriverStation.getAlliance() == Alliance.Red) {
-            return new Translation3d(Units.inchesToMeters(651.25) - translation.getX(), -translation.getY(),
+            return new Translation3d(Units.inchesToMeters(651.25) - translation.getX(), Units.inchesToMeters(315.5) - translation.getY(),
                     translation.getZ());
         } else {
             return translation;
