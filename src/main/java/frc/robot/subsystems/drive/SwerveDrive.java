@@ -223,6 +223,17 @@ public class SwerveDrive extends SubsystemBase {
     }
   }
 
+  public ChassisSpeeds getChassisSpeeds() {
+    return this.kinematics.toChassisSpeeds(getSwerveModuleStates());
+  }
+
+  public double getHeading() {
+    ChassisSpeeds chassisSpeeds = getChassisSpeeds();
+    double headingRR = Math.toDegrees(Math.atan(chassisSpeeds.vxMetersPerSecond / chassisSpeeds.vyMetersPerSecond));
+    double headingFR = headingRR + getAngle().getDegrees();
+    return headingFR;
+  }
+
   public SwerveModuleState[] getSwerveModuleStates() {
     return new SwerveModuleState[] {
       frontLeft.getState(),

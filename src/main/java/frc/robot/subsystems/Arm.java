@@ -6,13 +6,12 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 
 public class Arm extends SubsystemBase {
 
     private final CANSparkMax pivotMotor;
     private final CANSparkMax extendMotor;
-
-    static final Translation3d OFFSET = new Translation3d(0.0, 0.0, 0.0);
 
     public Arm (int pivotMotorChannel, int extendMotorChannel) {
         pivotMotor = new CANSparkMax(pivotMotorChannel, MotorType.kBrushless);
@@ -22,12 +21,12 @@ public class Arm extends SubsystemBase {
 
     //converts point from robot relative to arm relative
     public Translation3d toArmRelative(Translation3d robotRelative) {
-        return robotRelative.minus(OFFSET);
+        return robotRelative.minus(Constants.ARMOFFSET);
     }
 
     //converts point from arm relative to robot relative
     public Translation3d toRobotRelative(Translation3d armRelative) {
-        return armRelative.plus(OFFSET);
+        return armRelative.plus(Constants.ARMOFFSET);
     }
     
     //extends the arm
