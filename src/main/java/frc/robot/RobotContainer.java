@@ -11,7 +11,9 @@ import com.pathplanner.lib.commands.FollowPathWithEvents;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.SerialPort.Port;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.Subsystem;
@@ -42,7 +44,9 @@ public class RobotContainer
     
     public static final CommandXboxController driverController = new CommandXboxController(RobotMap.XBOX_PORT);
     
-    SendableChooser<Command> chooser = new SendableChooser<>();
+    public static final SendableChooser<Command> chooser = new SendableChooser<>();
+
+    public static final Field2d field = new Field2d();
     
 
     
@@ -63,6 +67,7 @@ public class RobotContainer
         chooser.addOption("two piece (loading station) (engage)", AutoRoutineBuilder.getAutonomousCommand(AutoRoutineBuilder.Place2LoadingStation));
         chooser.addOption("three piece (cable protector)", AutoRoutineBuilder.getAutonomousCommand(AutoRoutineBuilder.Place3CableProtector));
         chooser.addOption("three piece (loading station)", AutoRoutineBuilder.getAutonomousCommand(AutoRoutineBuilder.Place3LoadingStation));
+        SmartDashboard.putData("field", field);
 
     }
     

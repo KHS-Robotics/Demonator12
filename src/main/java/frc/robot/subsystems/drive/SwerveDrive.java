@@ -300,4 +300,11 @@ public class SwerveDrive extends SubsystemBase {
     }
     return angle;
   }
+
+  @Override
+  public void periodic() {
+    RobotContainer.field.setRobotPose(poseEstimator.getEstimatedPosition());
+  }
+
+
 }
