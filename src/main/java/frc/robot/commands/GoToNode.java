@@ -35,7 +35,7 @@ public class GoToNode extends CommandBase {
   // Called just before this Command runs the first time
   @Override
   public void initialize() {
-    final double DIST_FROM_NODE_X_METERS = Units.inchesToMeters(21);
+    final double DIST_FROM_NODE_X_METERS = Units.inchesToMeters(35.28);
       nodeTrans = Field.getNodeCoordinatesFieldRelative(apriltag, node);
       goal = new Translation2d(Field.APRILTAGS[apriltag - 1].getX() + DIST_FROM_NODE_X_METERS, nodeTrans.getY());
       PathPlannerTrajectory trajToGoal = PathPlanner.generatePath(
