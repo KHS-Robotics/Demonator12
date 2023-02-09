@@ -37,10 +37,10 @@ public class SwerveDrive extends SubsystemBase {
   public static double offset;
   public Pose2d startingPose;
   private PIDController targetPid;
-  private final Translation2d frontLeftLocation = new Translation2d(0.29845, 0.29845);
-  private final Translation2d frontRightLocation = new Translation2d(0.29845, -0.29845);
-  private final Translation2d rearLeftLocation = new Translation2d(-0.29845, 0.29845);
-  private final Translation2d rearRightLocation = new Translation2d(-0.29845, -0.29845);
+  private final Translation2d frontLeftLocation = new Translation2d(0.327025, 0.2693162);
+  private final Translation2d frontRightLocation = new Translation2d(0.327025, -0.2693162);
+  private final Translation2d rearLeftLocation = new Translation2d(-0.327025, 0.2693162);
+  private final Translation2d rearRightLocation = new Translation2d(-0.327025, -0.2693162);
 
   public PhotonWrapper photonCamera;
 
