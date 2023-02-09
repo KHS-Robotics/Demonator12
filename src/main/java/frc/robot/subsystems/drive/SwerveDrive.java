@@ -229,7 +229,7 @@ public class SwerveDrive extends SubsystemBase {
 
   public double getHeading() {
     ChassisSpeeds chassisSpeeds = getChassisSpeeds();
-    double headingRR = Math.toDegrees(Math.atan(chassisSpeeds.vxMetersPerSecond / chassisSpeeds.vyMetersPerSecond));
+    double headingRR = Math.toDegrees(Math.atan2(chassisSpeeds.vxMetersPerSecond, chassisSpeeds.vyMetersPerSecond));
     double headingFR = headingRR + getAngle().getDegrees();
     return headingFR;
   }
