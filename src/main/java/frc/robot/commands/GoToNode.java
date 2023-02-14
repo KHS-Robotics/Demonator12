@@ -39,9 +39,10 @@ public class GoToNode extends CommandBase {
       nodeTrans = Field.getNodeCoordinatesFieldRelative(apriltag, node);
       goal = new Translation2d(Field.APRILTAGS[apriltag - 1].getX() + DIST_FROM_NODE_X_METERS, nodeTrans.getY());
       PathPlannerTrajectory trajToGoal = PathPlanner.generatePath(
-    new PathConstraints(4, 3), 
-    new PathPoint(RobotContainer.swerveDrive.getPose().getTranslation(), Rotation2d.fromDegrees(RobotContainer.swerveDrive.getHeading()), Rotation2d.fromDegrees(RobotContainer.swerveDrive.getPose().getRotation().getDegrees())),  // position, heading(direction of travel), holonomic rotation
-    new PathPoint(goal, Rotation2d.fromDegrees(0), Rotation2d.fromDegrees(0))); // position, heading(direction of travel), holonomic rotation
+        new PathConstraints(4, 3), 
+        new PathPoint(RobotContainer.swerveDrive.getPose().getTranslation(), Rotation2d.fromDegrees(RobotContainer.swerveDrive.getHeading()), Rotation2d.fromDegrees(RobotContainer.swerveDrive.getPose().getRotation().getDegrees())),  // position, heading(direction of travel), holonomic rotation
+        new PathPoint(goal, Rotation2d.fromDegrees(0), Rotation2d.fromDegrees(0))); // position, heading(direction of travel), holonomic rotation
+      
   }
 
   // Called repeatedly when this Command is scheduled to run

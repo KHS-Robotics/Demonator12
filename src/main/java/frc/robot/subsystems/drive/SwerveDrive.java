@@ -11,6 +11,9 @@ import java.util.Optional;
 
 import org.photonvision.EstimatedRobotPose;
 
+import com.pathplanner.lib.PathPlannerTrajectory;
+import com.pathplanner.lib.commands.PPSwerveControllerCommand;
+
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
@@ -22,6 +25,9 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotMap;
 import frc.robot.subsystems.vision.PhotonWrapper;
@@ -183,6 +189,29 @@ public class SwerveDrive extends SubsystemBase {
     frontRight.setDesiredState(desiredStates[1], true);
     rearLeft.setDesiredState(desiredStates[2], true);
     rearRight.setDesiredState(desiredStates[3], true);
+  }
+
+  public void setModuleStates(ChassisSpeeds chassisSpeeds) {
+    setModuleStates(kinematics.toSwerveModuleStates(chassisSpeeds));
+  }
+
+  public Command followTrajectoryCommand(PathPlannerTrajectory trajectory, boolean isAutoPath) {
+    return new SequentialCommandGroup(
+      new InstantCommand(() -> {
+        if (isAutoPath) {
+          this.poseEstimator.resetPosition(getAngle(), getSwerveModulePositions(), trajectory.getInitialHolonomicPose());
+        }
+      }),
+      new PPSwerveControllerCommand(
+        trajectory, 
+        this::getPose, 
+        new PIDController(0, 0, 0),
+        new PIDController(0, 0, 0), 
+        new PIDController(0, 0, 0),
+        this::setModuleStates,
+        true,
+        this
+    ));
   }
 
   public void setPID(double p, double i, double d) {
