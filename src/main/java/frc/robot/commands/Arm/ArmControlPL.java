@@ -5,21 +5,18 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.commands;
+package frc.robot.commands.Arm;
 
-import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.drive.SwerveDrive;
 
 @SuppressWarnings("GrazieInspection")
-public class ArmControlSetpoint extends CommandBase {
-  Translation3d target;
+public class ArmControlPL extends CommandBase {
 
-  public ArmControlSetpoint(Translation3d target) {
+  public ArmControlPL() {
     addRequirements(RobotContainer.arm);
-    this.target = target;
   }
 
   // Called just before this Command runs the first time
@@ -31,8 +28,10 @@ public class ArmControlSetpoint extends CommandBase {
   // Called repeatedly when this Command is scheduled to run
   @Override
   public void execute() {
-    RobotContainer.arm.setLength(RobotContainer.arm.lengthToPoint(target));
-    RobotContainer.arm.setAngle(RobotContainer.arm.rotToPoint(target));
+    double vx = 0.0;
+    double vz = 0.0;
+    RobotContainer.arm.setLengthV(vx);
+    RobotContainer.arm.setAngleV(vz);
   }
 
   // Make this return true when this Command no longer needs to run execute()

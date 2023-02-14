@@ -5,7 +5,7 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.commands;
+package frc.robot.commands.Arm;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.RobotContainer;
@@ -13,9 +13,9 @@ import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.drive.SwerveDrive;
 
 @SuppressWarnings("GrazieInspection")
-public class ArmControlPL extends CommandBase {
+public class ArmControlXZ extends CommandBase {
 
-  public ArmControlPL() {
+  public ArmControlXZ() {
     addRequirements(RobotContainer.arm);
   }
 
@@ -30,8 +30,7 @@ public class ArmControlPL extends CommandBase {
   public void execute() {
     double vx = 0.0;
     double vz = 0.0;
-    RobotContainer.arm.setLengthV(vx);
-    RobotContainer.arm.setAngleV(vz);
+    RobotContainer.arm.moveArmVelocity(vx, vz);
   }
 
   // Make this return true when this Command no longer needs to run execute()
