@@ -6,8 +6,13 @@
 package frc.robot;
 
 import com.kauailabs.navx.frc.AHRS;
+import com.pathplanner.lib.PathConstraints;
+import com.pathplanner.lib.PathPlanner;
+import com.pathplanner.lib.PathPoint;
 import com.pathplanner.lib.commands.FollowPathWithEvents;
 
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.SerialPort.Port;
@@ -42,7 +47,7 @@ public class RobotContainer
     public static final AHRS navx = new AHRS(Port.kUSB);
     public static final PowerDistribution pdp = new PowerDistribution();
     
-    public static final SwerveDrive swerveDrive = new SwerveDrive();
+    public static final SwerveDrive swerveDrive = new SwerveDrive();   
     public static final Arm arm = new Arm(RobotMap.ARM_PIVOT, RobotMap.ARM_EXTEND);
     
     public static final CommandXboxController driverController = new CommandXboxController(RobotMap.XBOX_PORT);
@@ -91,6 +96,15 @@ public class RobotContainer
 
         Trigger resetNavx = driverController.start();
         resetNavx.onTrue(new InstantCommand( () -> swerveDrive.resetNavx()));
+
+        Trigger test = driverController.y();
+        test.onTrue(swerveDrive.followTrajectoryCommand(PathPlanner.generatePath(
+            new PathConstraints(0.5, 1), 
+            new PathPoint(RobotContainer.swerveDrive.getPose().getTranslation(), Rotation2d.fromDegrees(RobotContainer.swerveDrive.getHeading()), Rotation2d.fromDegrees(RobotContainer.swerveDrive.getPose().getRotation().getDegrees())),  // position, heading(direction of travel), holonomic rotation
+            new PathPoint(new Translation2d(0, 0), Rotation2d.fromDegrees(0), Rotation2d.fromDegrees(0))), false));
+
+        Trigger resetOdometry = driverController.a();
+        resetOdometry.onTrue(new InstantCommand(() -> swerveDrive.resetOdometry()));
     }
 
     public Command getAutonomousCommand() {
