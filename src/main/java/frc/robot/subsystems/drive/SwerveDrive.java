@@ -192,7 +192,7 @@ public class SwerveDrive extends SubsystemBase {
   }
 
   public void setModuleStates(ChassisSpeeds chassisSpeeds) {
-    setModuleStates(kinematics.toSwerveModuleStates(chassisSpeeds));
+    setModuleStates(kinematics.toSwerveModuleStates(ChassisSpeeds.fromFieldRelativeSpeeds(chassisSpeeds, getAngle())));
   }
 
   public Command followTrajectoryCommand(PathPlannerTrajectory trajectory, boolean isAutoPath) {
