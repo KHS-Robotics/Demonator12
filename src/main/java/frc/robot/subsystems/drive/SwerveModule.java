@@ -7,13 +7,12 @@
 package frc.robot.subsystems.drive;
 
 import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.RelativeEncoder;
-import com.revrobotics.SparkMaxPIDController;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
@@ -36,7 +35,9 @@ public class SwerveModule extends SubsystemBase {
 
   private final CANSparkMax pivotMotor;
   private final RelativeEncoder pivotEncoder;
-  private final SparkMaxPIDController drivePID;
+  private final PIDController drivePID;
+  private final SimpleMotorFeedforward driveFeedFoward;
+  private final SimpleMotorFeedforward pivotFeedForward;
 
   private final PIDController pivotPID;
   private final DigitalInput setDetection;
@@ -53,7 +54,7 @@ public class SwerveModule extends SubsystemBase {
    * @param digitalInputPort  port number for the digital input, used to calibrate pivots
    * @param reversed          true if drive motor is reversed
    */
-  public SwerveModule(String name, int driveMotorChannel, int pivotMotorChannel, double pivotP, double pivotI, double pivotD, double driveP, double driveI, double driveD, double driveFF, int digitalInputPort, boolean reversed) {
+  public SwerveModule(String name, int driveMotorChannel, int pivotMotorChannel, double pivotP, double pivotI, double pivotD, double pivotkS, double pivotkV, double pivotkA, double driveP, double driveI, double driveD, double drivekS, double drivekV, double drivekA, int digitalInputPort, boolean reversed) {
     isInverted = reversed;
 
     this.name = name;
@@ -73,14 +74,12 @@ public class SwerveModule extends SubsystemBase {
     driveEncoder.setVelocityConversionFactor(Constants.DRIVE_VEL_ENCODER); // 4" diameter wheel (0.0508 meter radius), 8.33:1 -> 2*pi*0.0508 / 8.33
     driveEncoder.setPositionConversionFactor(Constants.DRIVE_POS_ENCODER); // 4" diameter wheel (0.0508 meter radius), 8.33:1 -> 2*pi*0.0508 / 8.33
 
-    drivePID = driveMotor.getPIDController();
-    drivePID.setP(driveP);
-    drivePID.setI(driveI);
-    drivePID.setD(driveD);
-    drivePID.setFF(driveFF);
-    drivePID.setIZone(1);
+    drivePID = new PIDController(driveP, driveI, driveD);
+    driveFeedFoward = new SimpleMotorFeedforward(drivekS, drivekV, drivekA);
 
     pivotPID = new PIDController(pivotP, pivotI, pivotD);
+    pivotFeedForward = new SimpleMotorFeedforward(pivotkS, pivotkV, pivotkA);
+    
     pivotPID.enableContinuousInput(-180, 180);
     pivotPID.setTolerance(1);
 
@@ -100,8 +99,8 @@ public class SwerveModule extends SubsystemBase {
    * @param pivotD            D value of Pivot PID
    * @param digitalInputPort  port number for the digital input, used to calibrate pivots
    */
-  public SwerveModule(String name, int driveMotorChannel, int pivotMotorChannel, double pivotP, double pivotI, double pivotD, double driveP, double driveI, double driveD, double driveFF, int digitalInputPort) {
-    this(name, driveMotorChannel, pivotMotorChannel, pivotP, pivotI, pivotD, driveP, driveI, driveD, driveFF, digitalInputPort, false);
+  public SwerveModule(String name, int driveMotorChannel, int pivotMotorChannel, double pivotP, double pivotI, double pivotD, double pivotkS, double pivotkV, double pivotkA, double driveP, double driveI, double driveD, double drivekS, double drivekV, double drivekA, int digitalInputPort) {
+    this(name, driveMotorChannel, pivotMotorChannel, pivotP, pivotI, pivotD, pivotkS, pivotkV, pivotkA, driveP, driveI, driveD, drivekS, drivekV, drivekA, digitalInputPort, false);
   }
 
   @Override
@@ -140,7 +139,7 @@ public class SwerveModule extends SubsystemBase {
    */
   public void setDesiredState(SwerveModuleState state, boolean useShortestPath) {
     pivotMotor.set(MathUtil.clamp(pivotPID.calculate(getAngle(), useShortestPath ? calculateShortestPath(state.angle.getDegrees()) : state.angle.getDegrees()), -1, 1));
-    drivePID.setReference(state.speedMetersPerSecond * (isInverted ? -1 : 1) * (isFlipped && useShortestPath ? -1 : 1), ControlType.kVelocity);
+    driveMotor.setVoltage(driveFeedFoward.calculate(state.speedMetersPerSecond) + drivePID.calculate(driveEncoder.getVelocity(), state.speedMetersPerSecond));
   }
 
   /**
