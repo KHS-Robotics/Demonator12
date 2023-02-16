@@ -17,6 +17,7 @@ import edu.wpi.first.math.geometry.Translation3d;
 public class Constants {
   public static final Transform3d CAMERA_1_POS = new Transform3d(new Translation3d(0.5, 0, 0.5),
       new Rotation3d(0, 0, 0));
+  public static final double GRIPPERLENGTH = 0;
   public static final double SENS = 0.5;
 
   public static final double ROBOT_HEIGHT = 0.5; // WAS 0.4

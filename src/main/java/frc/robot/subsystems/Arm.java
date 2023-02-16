@@ -4,6 +4,7 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -13,6 +14,8 @@ public class Arm extends SubsystemBase {
     private final CANSparkMax pivotMotor;
     private final CANSparkMax extendMotor;
 
+    static final Translation3d OFFSET = new Translation3d(0.0, 0.0, 0.0);
+
     public Arm (int pivotMotorChannel, int extendMotorChannel) {
         pivotMotor = new CANSparkMax(pivotMotorChannel, MotorType.kBrushless);
         extendMotor = new CANSparkMax(extendMotorChannel, MotorType.kBrushless);
@@ -21,12 +24,12 @@ public class Arm extends SubsystemBase {
 
     //converts point from robot relative to arm relative
     public Translation3d toArmRelative(Translation3d robotRelative) {
-        return robotRelative.minus(Constants.ARMOFFSET);
+        return robotRelative.minus(OFFSET);
     }
 
     //converts point from arm relative to robot relative
     public Translation3d toRobotRelative(Translation3d armRelative) {
-        return armRelative.plus(Constants.ARMOFFSET);
+        return armRelative.plus(OFFSET);
     }
     
     //extends the arm
@@ -105,5 +108,11 @@ public class Arm extends SubsystemBase {
         double vAngle = (1 / (1 + Math.pow(x/z, 2))) * ((z * vx) - (x * vz)) / Math.pow(z, 2);
         setLengthV(vLength);
         setAngleV(vAngle);
+    }
+
+    public boolean isLegal(Translation3d target) {
+        Translation2d targetXZ = new Translation2d(target.getX(), target.getY());
+        Translation2d gripper = new Translation2d(Constants.GRIPPERLENGTH, targetXZ.getAngle().plus(new Rotation2d() /*GRIPPER ANGLE GOES HERE */));
+        return targetXZ.plus(gripper).getX() < 45; //45 inches to leave some tolerance
     }
 }
