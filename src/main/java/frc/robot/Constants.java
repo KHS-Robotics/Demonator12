@@ -10,7 +10,6 @@ package frc.robot;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
-import edu.wpi.first.math.util.Units;
 
 /**
  * constants
@@ -30,8 +29,8 @@ public class Constants {
   public static final double FRONT_LEFT_D = 0.0;
 
   public static final double FRONT_RIGHT_P = 0.015;
-  public static final double FRONT_RIGHT_D = 0.0;
   public static final double FRONT_RIGHT_I = 0.0;
+  public static final double FRONT_RIGHT_D = 0.0;
 
   public static final double REAR_LEFT_P = 0.015;
   public static final double REAR_LEFT_I = 0.0;
@@ -41,28 +40,52 @@ public class Constants {
   public static final double REAR_RIGHT_I = 0.0;
   public static final double REAR_RIGHT_D = 0.0;
 
+  public static final double FRONT_LEFT_KS = 2.2064E-06;
+  public static final double FRONT_LEFT_KV = 0.0;
+  public static final double FRONT_LEFT_KA = 0.0;
+
+  public static final double FRONT_RIGHT_KS = 2.2064E-06;
+  public static final double FRONT_RIGHT_KV = 0.0;
+  public static final double FRONT_RIGHT_KA = 0.0;
+
+  public static final double REAR_LEFT_KS = 2.2064E-06;
+  public static final double REAR_LEFT_KV = 0.0;
+  public static final double REAR_LEFT_KA = 0.0;
+
+  public static final double REAR_RIGHT_KS = 2.2064E-06;
+  public static final double REAR_RIGHT_KV = 0.0;
+  public static final double REAR_RIGHT_KA = 0.0;
+
   public static final double DRIVE_VEL_ENCODER = 0.000637;
   public static final double DRIVE_POS_ENCODER = 0.038318;
 
-  public static final double FRONT_RIGHT_DRIVE_P = 0.15;
-  public static final double FRONT_RIGHT_DRIVE_I = 0.00055;
-  public static final double FRONT_RIGHT_DRIVE_D = 3.0;
-  public static final double FRONT_RIGHT_DRIVE_FF = 0.2857;
+  public static final double FRONT_RIGHT_DRIVE_P = 0.01;
+  public static final double FRONT_RIGHT_DRIVE_I = 0;
+  public static final double FRONT_RIGHT_DRIVE_D = 0;
+  public static final double FRONT_RIGHT_DRIVE_KS = 0.11408;
+  public static final double FRONT_RIGHT_DRIVE_KV = 3.4035;
+  public static final double FRONT_RIGHT_DRIVE_KA = 0.093048;
 
-  public static final double FRONT_LEFT_DRIVE_P = 0.15;
-  public static final double FRONT_LEFT_DRIVE_I = 0.00055;
-  public static final double FRONT_LEFT_DRIVE_D = 3.0;
-  public static final double FRONT_LEFT_DRIVE_FF = 0.2857;
+  public static final double FRONT_LEFT_DRIVE_P = 0.01;
+  public static final double FRONT_LEFT_DRIVE_I = 0;
+  public static final double FRONT_LEFT_DRIVE_D = 0;
+  public static final double FRONT_LEFT_DRIVE_KS = 0.11408;
+  public static final double FRONT_LEFT_DRIVE_KV = 3.4035;
+  public static final double FRONT_LEFT_DRIVE_KA = 0.093048;
 
-  public static final double REAR_RIGHT_DRIVE_P = 0.15;
-  public static final double REAR_RIGHT_DRIVE_I = 0.00055;
-  public static final double REAR_RIGHT_DRIVE_D = 3.0;
-  public static final double REAR_RIGHT_DRIVE_FF = 0.2857;
+  public static final double REAR_RIGHT_DRIVE_P = 0.01;
+  public static final double REAR_RIGHT_DRIVE_I = 0;
+  public static final double REAR_RIGHT_DRIVE_D = 0;
+  public static final double REAR_RIGHT_DRIVE_KS = 0.11408;
+  public static final double REAR_RIGHT_DRIVE_KV = 3.4035;
+  public static final double REAR_RIGHT_DRIVE_KA = 0.093048;
 
-  public static final double REAR_LEFT_DRIVE_P = 0.15;
-  public static final double REAR_LEFT_DRIVE_I = 0.00055;
-  public static final double REAR_LEFT_DRIVE_D = 3.0;
-  public static final double REAR_LEFT_DRIVE_FF = 0.2857;
+  public static final double REAR_LEFT_DRIVE_P = 0.01;
+  public static final double REAR_LEFT_DRIVE_I = 0;
+  public static final double REAR_LEFT_DRIVE_D = 0;
+  public static final double REAR_LEFT_DRIVE_KS = 0.11408;
+  public static final double REAR_LEFT_DRIVE_KV = 3.4035;
+  public static final double REAR_LEFT_DRIVE_KA = 0.093048;
 
   public static final double TARGET_P = 0.03;
   public static final double TARGET_I = 0.0035;

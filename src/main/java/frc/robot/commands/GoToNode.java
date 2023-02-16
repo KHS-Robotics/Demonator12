@@ -17,8 +17,6 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Field;
 import frc.robot.RobotContainer;
-import frc.robot.subsystems.Arm;
-import frc.robot.subsystems.drive.SwerveDrive;
 
 @SuppressWarnings("GrazieInspection")
 public class GoToNode extends CommandBase {
