@@ -7,34 +7,51 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.Encoder;
+import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.commands.Arm.SetLength;
 
 
 public class Arm extends SubsystemBase {
 
     private final CANSparkMax pivotMotor;
     private final CANCoder pivotCANCoder;
+
     private final CANSparkMax extendMotor;
     private final RelativeEncoder extendEncoder;
+
     private final ArmFeedforward armFeedFoward;
     private final PIDController armPID;
+
+    private final SimpleMotorFeedforward extendFeedForward;
+    private final PIDController extendPID;
     private double kS, kV, kGL, kAL;
 
     static final Translation3d OFFSET = new Translation3d(0.0, 0.0, 0.0);
 
-    public Arm (int pivotCANCoderChannel, int pivotMotorChannel, int extendMotorChannel, double kS, double kG, double kV, double kA, double kP, double kI, double kD) {
-        pivotMotor = new CANSparkMax(pivotMotorChannel, MotorType.kBrushless);
+    public Arm (int pivotCANCoderChannel, int pivotMotorChannel, int extendMotorChannel, double pivotkS, double pivotkG, double pivotkV, double pivotkA, double pivotkP,
+                double pivotkI, double pivotkD, double extendkS, double extendkV, double extendkA, double extendkP, double extendkI, double extendkD) {
+        
+                    pivotMotor = new CANSparkMax(pivotMotorChannel, MotorType.kBrushless);
         extendMotor = new CANSparkMax(extendMotorChannel, MotorType.kBrushless);
 
         pivotCANCoder = new CANCoder(pivotCANCoderChannel);
         extendEncoder = extendMotor.getEncoder();
-        armFeedFoward = new ArmFeedforward(kS, kG, kV, kA);
-        armPID = new PIDController(kP, kI, kD);
+        //DO THIS extendEncoder.setPositionConversionFactor();
+        //DO THIS extendEncoder.setVelocityConversionFactor();
+        armFeedFoward = new ArmFeedforward(pivotkS, pivotkG, pivotkV, pivotkA);
+        armPID = new PIDController(pivotkP, pivotkI, pivotkD);
+        
+        extendFeedForward = new SimpleMotorFeedforward(extendkS, extendkV, extendkA);
+        extendPID = new PIDController(extendkP, extendkI, extendkD);
         this.kS = kS;
         this.kV = kV;
         this.kGL = 0;
@@ -54,16 +71,24 @@ public class Arm extends SubsystemBase {
     
     //extends the arm
     public void setLength(double length) {
-
+        new SetLength(length);
     }
 
     //gets the arm extension
     public double getLength() {
-        return 0.0;
+        return extendEncoder.getPosition();
     }
 
     public void setLengthV(double vLength) {
+        
+    }
 
+    public double getLengthV() {
+        return extendEncoder.getVelocity();
+    }
+
+    public double calcExtend(double velocity) {
+        return extendFeedForward.calculate(velocity) + extendPID.calculate(getLengthV(), velocity);
     }
 
     //gets the arm angle
@@ -75,8 +100,12 @@ public class Arm extends SubsystemBase {
 
     }
     //takes in the position, vel, and accel setpoints, outputs the voltage for telescoping arm (rad, rad/s, rad/s^2)
-    public double calcVoltage(double position, double velocity, double accel) {
+    public double calcVoltagePivot(double position, double velocity, double accel) {
         return kS * Math.signum(velocity) + kV * velocity + (getLength() * kGL * Math.cos(position)) + Math.pow(getLength(), 2) * kAL * accel;
+    }
+
+    public void setExtendVoltage(double voltage) {
+        extendMotor.setVoltage(voltage);
     }
 
     public void setAngle(double position, double velocity, double accel) {
