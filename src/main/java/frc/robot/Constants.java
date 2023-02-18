@@ -19,7 +19,7 @@ public class Constants {
       new Rotation3d(0, 0, 0));
   public static final Translation3d ARMOFFSET = new Translation3d(0.0, 0.0, 0.0);
   public static final double GRIPPERLENGTH = 0;
-  
+
   public static final double SENS = 0.5;
 
   public static final double FRONT_LEFT_P = 0.015;
@@ -84,6 +84,14 @@ public class Constants {
   public static final double REAR_LEFT_DRIVE_KS = 0.11408;
   public static final double REAR_LEFT_DRIVE_KV = 3.4035;
   public static final double REAR_LEFT_DRIVE_KA = 0.093048;
+
+  public static final double ARM_P = 0;
+  public static final double ARM_I = 0;
+  public static final double ARM_D = 0;
+  public static final double ARM_KS = 0;
+  public static final double ARM_KG = 0;
+  public static final double ARM_KV = 0;
+  public static final double ARM_KA = 0;
 
   public static final double TARGET_P = 0.03;
   public static final double TARGET_I = 0.0035;

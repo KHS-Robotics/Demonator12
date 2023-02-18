@@ -3,6 +3,8 @@ package frc.robot.subsystems;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
+import edu.wpi.first.math.controller.ArmFeedforward;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
@@ -13,12 +15,16 @@ public class Arm extends SubsystemBase {
 
     private final CANSparkMax pivotMotor;
     private final CANSparkMax extendMotor;
+    private final ArmFeedforward armFeedFoward;
+    private final PIDController armPID;
 
     static final Translation3d OFFSET = new Translation3d(0.0, 0.0, 0.0);
 
-    public Arm (int pivotMotorChannel, int extendMotorChannel) {
+    public Arm (int pivotMotorChannel, int extendMotorChannel, double kS, double kG, double kV, double kA, double kP, double kI, double kD) {
         pivotMotor = new CANSparkMax(pivotMotorChannel, MotorType.kBrushless);
         extendMotor = new CANSparkMax(extendMotorChannel, MotorType.kBrushless);
+        armFeedFoward = new ArmFeedforward(kS, kG, kV, kA);
+        armPID = new PIDController(kP, kI, kD);
     }
 
 

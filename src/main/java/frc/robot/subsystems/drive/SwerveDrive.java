@@ -11,7 +11,10 @@ import java.util.Optional;
 
 import org.photonvision.EstimatedRobotPose;
 
+import com.pathplanner.lib.PathConstraints;
+import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
+import com.pathplanner.lib.PathPoint;
 import com.pathplanner.lib.commands.PPSwerveControllerCommand;
 
 import edu.wpi.first.math.MathUtil;
@@ -362,6 +365,11 @@ public class SwerveDrive extends SubsystemBase {
   public void periodic() {
     updateOdometry();
     RobotContainer.field.setRobotPose(poseEstimator.getEstimatedPosition());
+    RobotContainer.field.getObject("trajectory").setTrajectory(PathPlanner.generatePath(
+      new PathConstraints(0.5, 1), 
+      new PathPoint(RobotContainer.swerveDrive.getPose().getTranslation(), Rotation2d.fromDegrees(RobotContainer.swerveDrive.getHeading()), Rotation2d.fromDegrees(RobotContainer.swerveDrive.getPose().getRotation().getDegrees())),  // position, heading(direction of travel), holonomic rotation
+      new PathPoint(new Translation2d(0, 0), Rotation2d.fromDegrees(0), Rotation2d.fromDegrees(0))));
+    
   }
 
 

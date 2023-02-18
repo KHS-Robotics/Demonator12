@@ -45,7 +45,7 @@ public class RobotContainer
     public static final PowerDistribution pdp = new PowerDistribution();
     
     public static final SwerveDrive swerveDrive = new SwerveDrive();   
-    public static final Arm arm = new Arm(RobotMap.ARM_PIVOT, RobotMap.ARM_EXTEND);
+    public static final Arm arm = new Arm(RobotMap.ARM_PIVOT, RobotMap.ARM_EXTEND, Constants.ARM_KS, Constants.ARM_KG, Constants.ARM_KV, Constants.ARM_KA, Constants.ARM_P, Constants.ARM_I, Constants.ARM_D);
     
     public static final CommandXboxController driverController = new CommandXboxController(RobotMap.XBOX_PORT);
     
