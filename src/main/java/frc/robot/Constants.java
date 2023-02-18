@@ -24,19 +24,19 @@ public class Constants {
 
   public static final double FRONT_LEFT_P = 0.015;
   public static final double FRONT_LEFT_I = 0.0;
-  public static final double FRONT_LEFT_D = 0.0;
+  public static final double FRONT_LEFT_D = 0.02;
 
   public static final double FRONT_RIGHT_P = 0.015;
   public static final double FRONT_RIGHT_I = 0.0;
-  public static final double FRONT_RIGHT_D = 0.0;
+  public static final double FRONT_RIGHT_D = 0.02;
 
   public static final double REAR_LEFT_P = 0.015;
   public static final double REAR_LEFT_I = 0.0;
-  public static final double REAR_LEFT_D = 0.0;
+  public static final double REAR_LEFT_D = 0.02;
 
   public static final double REAR_RIGHT_P = 0.015;
   public static final double REAR_RIGHT_I = 0.0;
-  public static final double REAR_RIGHT_D = 0.0;
+  public static final double REAR_RIGHT_D = 0.02;
 
   public static final double FRONT_LEFT_KS = 2.2064E-06;
   public static final double FRONT_LEFT_KV = 0.0;
@@ -92,6 +92,9 @@ public class Constants {
   public static final double ARM_KG = 0;
   public static final double ARM_KV = 0;
   public static final double ARM_KA = 0;
+
+  public static final double WRIST_GEARING = 250;
+  public static final double ARM_GEARING = 48;
 
   public static final double TARGET_P = 0.03;
   public static final double TARGET_I = 0.0035;

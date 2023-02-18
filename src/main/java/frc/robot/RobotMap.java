@@ -44,4 +44,6 @@ public class RobotMap {
   public static final int FRONT_RIGHT_DIGITAL_INPUT = 2;
   public static final int REAR_LEFT_DIGITAL_INPUT = 4;
   public static final int REAR_RIGHT_DIGITAL_INPUT = 5;
+
+  public static final int PIVOT_CANCODER = 37;
 }

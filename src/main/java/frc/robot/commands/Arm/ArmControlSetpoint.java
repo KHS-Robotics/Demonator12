@@ -32,7 +32,7 @@ public class ArmControlSetpoint extends CommandBase {
   @Override
   public void execute() {
     RobotContainer.arm.setLength(RobotContainer.arm.lengthToPoint(target));
-    RobotContainer.arm.setAngle(RobotContainer.arm.rotToPoint(target));
+    RobotContainer.arm.setAngle(RobotContainer.arm.rotToPoint(target).getRadians(), 0, 0);
   }
 
   // Make this return true when this Command no longer needs to run execute()
