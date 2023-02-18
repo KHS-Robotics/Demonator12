@@ -234,7 +234,8 @@ public class SwerveDrive extends SubsystemBase {
         this::setModuleStates,
         true,
         this
-    ));
+      )
+    );
   }
 
   public void setPID(double p, double i, double d) {
