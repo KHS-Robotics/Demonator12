@@ -19,7 +19,7 @@ public class Wrist extends SubsystemBase {
     }
 
     public void goToAbsoluteAngle(Rotation2d absoluteAngle) {
-
+        //do this
     }
 
     public void setVoltage(double voltage) {
@@ -31,10 +31,10 @@ public class Wrist extends SubsystemBase {
     }
 
     public Rotation2d absoluteToRelativeAngle(Rotation2d absoluteRotation) {
-        return new Rotation2d(RobotContainer.arm.getAngle().getRadians() - getAngle().getRadians());
+        return Rotation2d.fromRadians(RobotContainer.arm.getAngle().getRadians() - getAngle().getRadians());
     }
 
     public Rotation2d relativeToAbsoluteAngle(Rotation2d relativeAngle) {
-        return new Rotation2d(getAngle().getRadians() - RobotContainer.arm.getAngle().getRadians());
+        return Rotation2d.fromRadians(getAngle().getRadians() - RobotContainer.arm.getAngle().getRadians());
     }
 }
