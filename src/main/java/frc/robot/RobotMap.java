@@ -25,6 +25,8 @@ public class RobotMap {
   public static final int GRABBER_SOLENOID_REVERSE = 34;
   public static final int GRABBER_SOLENOID = 35;
 
+  public static final int WRIST_PIVOT = 36;
+
   public static final int FRONT_LEFT_PIVOT = 1;
   public static final int FRONT_RIGHT_PIVOT = 2;
   public static final int REAR_LEFT_PIVOT = 3;
