@@ -11,16 +11,17 @@ public class GoToPoint extends CommandBase {
     private PIDController targetX;
     private PIDController targetY;
     private PIDController targetTheta;
-    private Pose2d targetPose;
 
     public GoToPoint(Pose2d targetPose) {
-        this.targetPose = targetPose;
         targetX = new PIDController(0.01, 0, 0);
         targetY = new PIDController(0.01, 0, 0);
         targetTheta = new PIDController(0.01, 0, 0);
         targetX.setSetpoint(targetPose.getX());
         targetY.setSetpoint(targetPose.getY());
         targetTheta.setSetpoint(targetPose.getRotation().getRadians());
+        targetX.setTolerance(0.05);
+        targetY.setTolerance(0.05);
+        targetTheta.setTolerance(0.5);
         this.addRequirements(RobotContainer.swerveDrive);
     }
 
@@ -31,23 +32,19 @@ public class GoToPoint extends CommandBase {
 
     @Override
     public void execute() {
-        RobotContainer.swerveDrive.kinematics.toSwerveModuleStates(new ChassisSpeeds(
+        RobotContainer.swerveDrive.setModuleStates(RobotContainer.swerveDrive.kinematics.toSwerveModuleStates(new ChassisSpeeds(
             targetX.calculate(RobotContainer.swerveDrive.getPose().getX()), 
             targetY.calculate(RobotContainer.swerveDrive.getPose().getY()), 
-            targetTheta.calculate(RobotContainer.swerveDrive.getAngle().getRadians() % (Math.PI * 2))));
+            targetTheta.calculate(RobotContainer.swerveDrive.getAngle().getRadians() % (Math.PI * 2)))));
     }
 
     @Override
     public boolean isFinished() {
-        if (targetPose.getTranslation().getDistance(RobotContainer.swerveDrive.getPose().getTranslation()) < 0.05 && targetPose.getRotation().getRadians() - RobotContainer.swerveDrive.getAngle().getRadians() < 0.1) {
-            return true;
-        }
-        return false;
+        return (targetX.atSetpoint() && targetY.atSetpoint() && targetTheta.atSetpoint());
     }
 
     @Override
     public void end(boolean interrupted) {
-        
     }
     
 }
