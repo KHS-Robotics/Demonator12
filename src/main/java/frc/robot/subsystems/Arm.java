@@ -17,6 +17,7 @@ public class Arm extends SubsystemBase {
     private final CANSparkMax extendMotor;
     private final ArmFeedforward armFeedFoward;
     private final PIDController armPID;
+    private double kS, kV, kGL, kAL;
 
     static final Translation3d OFFSET = new Translation3d(0.0, 0.0, 0.0);
 
@@ -25,6 +26,10 @@ public class Arm extends SubsystemBase {
         extendMotor = new CANSparkMax(extendMotorChannel, MotorType.kBrushless);
         armFeedFoward = new ArmFeedforward(kS, kG, kV, kA);
         armPID = new PIDController(kP, kI, kD);
+        this.kS = kS;
+        this.kV = kV;
+        this.kGL = 0;
+        this.kAL = 0;
     }
 
 
@@ -52,11 +57,6 @@ public class Arm extends SubsystemBase {
 
     }
 
-    //pivots the arm
-    public void setAngle(Rotation2d Angle) {
-
-    }
-
     //gets the arm angle
     public Rotation2d getAngle() {
         return new Rotation2d();
@@ -65,8 +65,14 @@ public class Arm extends SubsystemBase {
     public void setAngleV(double vAngle) {
 
     }
+    //takes in the position, vel, and accel setpoints, outputs the voltage for telescoping arm (rad, rad/s, rad/s^2)
+    public double calcVoltage(double position, double velocity, double accel) {
+        return kS * Math.signum(velocity) + kV * velocity + (getLength() * kGL * Math.cos(position)) + Math.pow(getLength(), 2) * kAL * accel;
+    }
 
-
+    public void setAngle(double position, double velocity, double accel) {
+        pivotMotor.setVoltage(armFeedFoward.calculate(position, velocity, accel) + armPID.calculate(getAngle().getRadians(), position));
+    }
 
 
     //returns the required rotation to go to a setpoint in degrees (arm relative)
