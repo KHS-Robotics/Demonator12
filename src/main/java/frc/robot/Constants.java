@@ -93,6 +93,14 @@ public class Constants {
   public static final double ARM_KV = 0;
   public static final double ARM_KA = 0;
 
+  public static final double EXTEND_P = 0;
+  public static final double EXTEND_I = 0;
+  public static final double EXTEND_D = 0;
+  public static final double EXTEND_KS = 0;
+  public static final double EXTEND_KV = 0;
+  public static final double EXTEND_KA = 0;
+
+
   public static final double WRIST_GEARING = 250;
   public static final double ARM_GEARING = 48;
 
