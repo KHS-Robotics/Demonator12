@@ -93,6 +93,9 @@ public class Constants {
   public static final double ARM_KV = 0;
   public static final double ARM_KA = 0;
 
+  public static final double WRIST_GEARING = 250;
+  public static final double ARM_GEARING = 48;
+
   public static final double TARGET_P = 0.03;
   public static final double TARGET_I = 0.0035;
   public static final double TARGET_D = 0.0025;

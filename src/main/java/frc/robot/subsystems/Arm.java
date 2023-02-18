@@ -1,6 +1,8 @@
 package frc.robot.subsystems;
 
+import com.ctre.phoenix.sensors.CANCoder;
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.math.controller.ArmFeedforward;
@@ -8,22 +10,29 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+
 
 public class Arm extends SubsystemBase {
 
     private final CANSparkMax pivotMotor;
+    private final CANCoder pivotCANCoder;
     private final CANSparkMax extendMotor;
+    private final RelativeEncoder extendEncoder;
     private final ArmFeedforward armFeedFoward;
     private final PIDController armPID;
     private double kS, kV, kGL, kAL;
 
     static final Translation3d OFFSET = new Translation3d(0.0, 0.0, 0.0);
 
-    public Arm (int pivotMotorChannel, int extendMotorChannel, double kS, double kG, double kV, double kA, double kP, double kI, double kD) {
+    public Arm (int pivotCANCoderChannel, int pivotMotorChannel, int extendMotorChannel, double kS, double kG, double kV, double kA, double kP, double kI, double kD) {
         pivotMotor = new CANSparkMax(pivotMotorChannel, MotorType.kBrushless);
         extendMotor = new CANSparkMax(extendMotorChannel, MotorType.kBrushless);
+
+        pivotCANCoder = new CANCoder(pivotCANCoderChannel);
+        extendEncoder = extendMotor.getEncoder();
         armFeedFoward = new ArmFeedforward(kS, kG, kV, kA);
         armPID = new PIDController(kP, kI, kD);
         this.kS = kS;
@@ -59,7 +68,7 @@ public class Arm extends SubsystemBase {
 
     //gets the arm angle
     public Rotation2d getAngle() {
-        return new Rotation2d();
+        return new Rotation2d(Math.toRadians(pivotCANCoder.getAbsolutePosition()));
     }
 
     public void setAngleV(double vAngle) {
