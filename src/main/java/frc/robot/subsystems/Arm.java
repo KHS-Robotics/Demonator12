@@ -14,8 +14,10 @@ import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.commands.Arm.SetLength;
 
 
 public class Arm extends SubsystemBase {
@@ -69,6 +71,7 @@ public class Arm extends SubsystemBase {
     
     //extends the arm
     public void setLength(double length) {
+        new SetLength(length);
     }
 
     //gets the arm extension
@@ -77,7 +80,7 @@ public class Arm extends SubsystemBase {
     }
 
     public void setLengthV(double vLength) {
-
+        
     }
 
     public double getLengthV() {
