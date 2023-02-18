@@ -17,7 +17,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
-import frc.robot.commands.Arm.SetLength;
+import frc.robot.commands.Arm.MoveLength;
 
 
 public class Arm extends SubsystemBase {
@@ -71,7 +71,7 @@ public class Arm extends SubsystemBase {
     
     //extends the arm
     public void setLength(double length) {
-        new SetLength(length);
+        new MoveLength(length);
     }
 
     //gets the arm extension
@@ -97,8 +97,12 @@ public class Arm extends SubsystemBase {
     }
 
     public void setAngleV(double vAngle) {
-
     }
+
+    public double getAngleV() {
+        return pivotCANCoder.getVelocity();
+    }
+
     //takes in the position, vel, and accel setpoints, outputs the voltage for telescoping arm (rad, rad/s, rad/s^2)
     public double calcVoltagePivot(double position, double velocity, double accel) {
         return kS * Math.signum(velocity) + kV * velocity + (getLength() * kGL * Math.cos(position)) + Math.pow(getLength(), 2) * kAL * accel;
