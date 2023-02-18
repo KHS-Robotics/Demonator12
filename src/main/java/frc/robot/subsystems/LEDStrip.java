@@ -23,9 +23,23 @@ public class LEDStrip extends SubsystemBase {
 
     public void setAllBlue() {
         for (int i = 0; i < Constants.LED_LENGTH; i++) {
-            buffer.setRGB(i, 255, 0, 0);
+            buffer.setRGB(i, 0, 0, 255);
         }
     }
+
+    public void setPurple() {
+        for (int i = 0; i < Constants.LED_LENGTH; i++) {
+            buffer.setRGB(i, 255, 0, 255);
+        }
+    }
+
+    public void setYellow() {
+        for (int i = 0; i < Constants.LED_LENGTH; i++) {
+            buffer.setRGB(i, 255, 255, 0);
+        }
+    }
+
+    public void 
 
     
 
