@@ -88,9 +88,7 @@ public class Arm extends SubsystemBase {
     }
 
     public void setLengthV(double vLength) {
-        TrapezoidProfile profile = new TrapezoidProfile(armConstraints, new TrapezoidProfile.State(getLength() + vLength * kDt, vLength), new TrapezoidProfile.State(getLength(), getLengthV()));
-        TrapezoidProfile.State setpoint = profile.calculate(kDt);
-        extendMotor.setVoltage(extendFeedFoward.calculate(setpoint.velocity) + extendPID.calculate(getLengthV(), setpoint.velocity));
+        extendMotor.setVoltage(extendFeedFoward.calculate(vLength) + extendPID.calculate(getLengthV(), vLength));
     }
 
     public double getLengthV() {
@@ -103,9 +101,7 @@ public class Arm extends SubsystemBase {
     }
 
     public void setAngleV(double vAngle) {
-        TrapezoidProfile profile = new TrapezoidProfile(armConstraints, new TrapezoidProfile.State(getAngle().getRadians() + vAngle * kDt, vAngle), new TrapezoidProfile.State(getAngle().getRadians(), getAngleV()));
-        TrapezoidProfile.State setpoint = profile.calculate(kDt);
-        pivotMotor.setVoltage(extendFeedFoward.calculate(setpoint.velocity) + extendPID.calculate(getLengthV(), setpoint.velocity));
+        pivotMotor.setVoltage(armFeedFoward.calculate(getAngle().getRadians() + vAngle * kDt, vAngle) + extendPID.calculate(getLengthV(), vAngle));
     }
 
     public double getAngleV() {
