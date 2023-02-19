@@ -5,6 +5,8 @@
 
 package frc.robot;
 
+import org.apache.commons.lang3.text.translate.NumericEntityUnescaper.OPTION;
+
 import com.kauailabs.navx.frc.AHRS;
 import com.pathplanner.lib.PathConstraints;
 import com.pathplanner.lib.PathPlanner;
@@ -52,6 +54,7 @@ public class RobotContainer
     public static final Wrist wrist = new Wrist();
     
     public static final CommandXboxController driverController = new CommandXboxController(RobotMap.XBOX_PORT);
+    public static final OperatorBox operatorBox = new OperatorBox(RobotMap.SWITCHBOX_PORT);
     
     public static final SendableChooser<Command> chooser = new SendableChooser<>();
 
@@ -106,6 +109,9 @@ public class RobotContainer
 
         Trigger resetOdometry = driverController.a();
         resetOdometry.onTrue(new InstantCommand(() -> swerveDrive.resetOdometry()));
+
+        Trigger holdWristFlat = new Trigger(operatorBox::holdWrist);
+        holdWristFlat.whileTrue(new InstantCommand(() -> wrist.goToAbsoluteAngle(new Rotation2d(0))));
     }
 
     public Command getAutonomousCommand() {
