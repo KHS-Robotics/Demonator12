@@ -26,6 +26,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.CenterSwerveModules;
 import frc.robot.commands.DriveSwerveWithXbox;
 import frc.robot.subsystems.Arm;
+import frc.robot.subsystems.Wrist;
 import frc.robot.subsystems.drive.SwerveDrive;
 
 
@@ -48,6 +49,7 @@ public class RobotContainer
     public static final Arm arm = new Arm(RobotMap.PIVOT_CANCODER, RobotMap.ARM_PIVOT, RobotMap.ARM_EXTEND, 
                                           Constants.ARM_KS, Constants.ARM_KG, Constants.ARM_KV, Constants.ARM_KA, Constants.ARM_P, Constants.ARM_I, Constants.ARM_D, 
                                           Constants.EXTEND_KS, Constants.EXTEND_KV, Constants.EXTEND_KA, Constants.EXTEND_P, Constants.EXTEND_I, Constants.EXTEND_D);
+    public static final Wrist wrist = new Wrist();
     
     public static final CommandXboxController driverController = new CommandXboxController(RobotMap.XBOX_PORT);
     

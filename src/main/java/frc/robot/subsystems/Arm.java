@@ -12,12 +12,14 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
-import frc.robot.commands.Arm.MoveLength;
+import frc.robot.Robot;
+import frc.robot.RobotContainer;
 
 
 public class Arm extends SubsystemBase {
@@ -31,9 +33,11 @@ public class Arm extends SubsystemBase {
     private final ArmFeedforward armFeedFoward;
     private final PIDController armPID;
 
-    private final SimpleMotorFeedforward extendFeedForward;
+    private final SimpleMotorFeedforward extendFeedFoward;
     private final PIDController extendPID;
-    private double kS, kV, kGL, kAL;
+    private double kGL, kAL, kDt;
+
+    TrapezoidProfile.Constraints armConstraints;
 
     static final Translation3d OFFSET = new Translation3d(0.0, 0.0, 0.0);
 
@@ -50,12 +54,14 @@ public class Arm extends SubsystemBase {
         armFeedFoward = new ArmFeedforward(pivotkS, pivotkG, pivotkV, pivotkA);
         armPID = new PIDController(pivotkP, pivotkI, pivotkD);
         
-        extendFeedForward = new SimpleMotorFeedforward(extendkS, extendkV, extendkA);
+        extendFeedFoward = new SimpleMotorFeedforward(extendkS, extendkV, extendkA);
         extendPID = new PIDController(extendkP, extendkI, extendkD);
-        this.kS = kS;
-        this.kV = kV;
+
+        armConstraints = new TrapezoidProfile.Constraints(1, 1);
+
         this.kGL = 0;
         this.kAL = 0;
+        this.kDt = 0.02; //20 ms assumed for control loops
     }
 
 
@@ -71,7 +77,9 @@ public class Arm extends SubsystemBase {
     
     //extends the arm
     public void setLength(double length) {
-        new MoveLength(length);
+        TrapezoidProfile profile = new TrapezoidProfile(armConstraints, new TrapezoidProfile.State(length, 0), new TrapezoidProfile.State(getLength(), getLengthV()));
+        TrapezoidProfile.State setpoint = profile.calculate(kDt);
+        extendMotor.setVoltage(extendFeedFoward.calculate(setpoint.velocity) + extendPID.calculate(getLengthV(), setpoint.velocity));
     }
 
     //gets the arm extension
@@ -80,15 +88,13 @@ public class Arm extends SubsystemBase {
     }
 
     public void setLengthV(double vLength) {
-        
+        TrapezoidProfile profile = new TrapezoidProfile(armConstraints, new TrapezoidProfile.State(getLength() + vLength * kDt, vLength), new TrapezoidProfile.State(getLength(), getLengthV()));
+        TrapezoidProfile.State setpoint = profile.calculate(kDt);
+        extendMotor.setVoltage(extendFeedFoward.calculate(setpoint.velocity) + extendPID.calculate(getLengthV(), setpoint.velocity));
     }
 
     public double getLengthV() {
         return extendEncoder.getVelocity();
-    }
-
-    public double calcExtend(double velocity) {
-        return extendFeedForward.calculate(velocity) + extendPID.calculate(getLengthV(), velocity);
     }
 
     //gets the arm angle
@@ -97,23 +103,24 @@ public class Arm extends SubsystemBase {
     }
 
     public void setAngleV(double vAngle) {
+        TrapezoidProfile profile = new TrapezoidProfile(armConstraints, new TrapezoidProfile.State(getAngle().getRadians() + vAngle * kDt, vAngle), new TrapezoidProfile.State(getAngle().getRadians(), getAngleV()));
+        TrapezoidProfile.State setpoint = profile.calculate(kDt);
+        pivotMotor.setVoltage(extendFeedFoward.calculate(setpoint.velocity) + extendPID.calculate(getLengthV(), setpoint.velocity));
     }
 
     public double getAngleV() {
-        return pivotCANCoder.getVelocity();
+        return Math.toRadians(pivotCANCoder.getVelocity());
     }
 
     //takes in the position, vel, and accel setpoints, outputs the voltage for telescoping arm (rad, rad/s, rad/s^2)
     public double calcVoltagePivot(double position, double velocity, double accel) {
-        return kS * Math.signum(velocity) + kV * velocity + (getLength() * kGL * Math.cos(position)) + Math.pow(getLength(), 2) * kAL * accel;
+        return Constants.ARM_KS * Math.signum(velocity) + Constants.ARM_KV * velocity + (getLength() * kGL * Math.cos(position)) + Math.pow(getLength(), 2) * kAL * accel;
     }
 
-    public void setExtendVoltage(double voltage) {
-        extendMotor.setVoltage(voltage);
-    }
-
-    public void setAngle(double position, double velocity, double accel) {
-        pivotMotor.setVoltage(armFeedFoward.calculate(position, velocity, accel) + armPID.calculate(getAngle().getRadians(), position));
+    public void setAngle(double angle) {
+        TrapezoidProfile profile = new TrapezoidProfile(armConstraints, new TrapezoidProfile.State(angle, 0), new TrapezoidProfile.State(getAngle().getRadians(), getAngleV()));
+        TrapezoidProfile.State setpoint = profile.calculate(kDt);
+        pivotMotor.setVoltage(armFeedFoward.calculate(getAngle().getRadians() + setpoint.velocity * kDt, setpoint.velocity) + armPID.calculate(getLengthV(), setpoint.velocity));
     }
 
 
@@ -166,7 +173,8 @@ public class Arm extends SubsystemBase {
 
     public boolean isLegal(Translation3d target) {
         Translation2d targetXZ = new Translation2d(target.getX(), target.getY());
-        Translation2d gripper = new Translation2d(Constants.GRIPPERLENGTH, targetXZ.getAngle().plus(new Rotation2d() /*GRIPPER ANGLE GOES HERE */));
-        return targetXZ.plus(gripper).getX() < 45; //45 inches to leave some tolerance
+        Translation2d gripper = new Translation2d(Constants.GRIPPERLENGTH, targetXZ.getAngle().plus(RobotContainer.wrist.getAngle()));
+        return targetXZ.plus(gripper).plus(new Translation2d(Constants.ARMOFFSET.getX(), Constants.ARMOFFSET.getZ())).getX() < Units.inchesToMeters(45) //45 inches to leave some tolerance
+        && targetXZ.plus(gripper).plus(new Translation2d(Constants.ARMOFFSET.getX(), Constants.ARMOFFSET.getZ())).getY() < Units.inchesToMeters(72); //left some inches since we shouldnt go this high ever (limit is 72 in instead of legal 78)
     }
 }
