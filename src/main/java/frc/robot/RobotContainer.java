@@ -27,6 +27,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.CenterSwerveModules;
 import frc.robot.commands.DriveSwerveWithXbox;
+import frc.robot.commands.Arm.ArmControlSetpoint;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Wrist;
 import frc.robot.subsystems.drive.SwerveDrive;
@@ -112,6 +113,9 @@ public class RobotContainer
 
         Trigger holdWristFlat = new Trigger(operatorBox::holdWrist);
         holdWristFlat.whileTrue(new InstantCommand(() -> wrist.goToAbsoluteAngle(new Rotation2d(0))));
+
+        Trigger placeHigh = driverController.x();
+        placeHigh.onTrue(swerveDrive.goToNode(7, 0).andThen(new ArmControlSetpoint(Field.getNodeCoordinatesFieldRelative(7, 0))));
     }
 
     public Command getAutonomousCommand() {

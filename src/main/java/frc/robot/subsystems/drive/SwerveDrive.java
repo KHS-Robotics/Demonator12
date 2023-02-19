@@ -23,6 +23,7 @@ import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
@@ -35,6 +36,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotMap;
 import frc.robot.subsystems.vision.PhotonWrapper;
 import frc.robot.Constants;
+import frc.robot.Field;
 import frc.robot.RobotContainer;
 
 /**
@@ -216,6 +218,17 @@ public class SwerveDrive extends SubsystemBase {
 
   public void setModuleStates(ChassisSpeeds chassisSpeeds) {
     setModuleStates(kinematics.toSwerveModuleStates(ChassisSpeeds.fromFieldRelativeSpeeds(chassisSpeeds, getAngle())));
+  }
+
+  public Command goToNode(int apriltag, int node) {
+
+      Translation3d nodeTrans = Field.getNodeCoordinatesFieldRelative(apriltag, node);
+      Translation2d goal = new Translation2d(Field.APRILTAGS[apriltag - 1].getX() + Field.DIST_FROM_NODE_X_METERS, nodeTrans.getY());
+      PathPlannerTrajectory trajToGoal = PathPlanner.generatePath(
+        new PathConstraints(4, 3), 
+        new PathPoint(RobotContainer.swerveDrive.getPose().getTranslation(), Rotation2d.fromDegrees(RobotContainer.swerveDrive.getHeading()), Rotation2d.fromDegrees(RobotContainer.swerveDrive.getPose().getRotation().getDegrees())),  // position, heading(direction of travel), holonomic rotation
+        new PathPoint(goal, Rotation2d.fromDegrees(0), Rotation2d.fromDegrees(0))); // position, heading(direction of travel), holonomic rotation
+      return followTrajectoryCommand(trajToGoal, false);
   }
 
   public Command followTrajectoryCommand(PathPlannerTrajectory trajectory, boolean isAutoPath) {

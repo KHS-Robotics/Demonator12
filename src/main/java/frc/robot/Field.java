@@ -64,6 +64,8 @@ public class Field {
                     Units.inchesToMeters(18.22))
     };
 
+    public static final double DIST_FROM_NODE_X_METERS = Units.inchesToMeters(35.28);
+
     // flips coordinates to be correctly aligned with alliance
     public static Translation3d flip(Translation3d translation) {
         if (DriverStation.getAlliance() == Alliance.Red) {
