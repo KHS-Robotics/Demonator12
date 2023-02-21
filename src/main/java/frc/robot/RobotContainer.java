@@ -5,8 +5,6 @@
 
 package frc.robot;
 
-import org.apache.commons.lang3.text.translate.NumericEntityUnescaper.OPTION;
-
 import com.kauailabs.navx.frc.AHRS;
 import com.pathplanner.lib.PathConstraints;
 import com.pathplanner.lib.PathPlanner;
@@ -80,7 +78,12 @@ public class RobotContainer
         chooser.addOption("two piece (loading station) (engage)", AutoRoutineBuilder.getAutonomousCommand(AutoRoutineBuilder.Place2LoadingStation));
         chooser.addOption("three piece (cable protector)", AutoRoutineBuilder.getAutonomousCommand(AutoRoutineBuilder.Place3CableProtector));
         chooser.addOption("three piece (loading station)", AutoRoutineBuilder.getAutonomousCommand(AutoRoutineBuilder.Place3LoadingStation));
+        SmartDashboard.putData(chooser);
         SmartDashboard.putData("field", field);
+        SmartDashboard.putNumber("xFF", AutoRoutineBuilder.PlaceEngage.sample(0).velocityMetersPerSecond * AutoRoutineBuilder.PlaceEngage.sample(0).poseMeters.getRotation().getCos());
+        SmartDashboard.putNumber("yFF", AutoRoutineBuilder.PlaceEngage.sample(0).velocityMetersPerSecond * AutoRoutineBuilder.PlaceEngage.sample(0).poseMeters.getRotation().getSin());
+        SmartDashboard.putNumber("desiredX", AutoRoutineBuilder.PlaceEngage.sample(0).poseMeters.getX());
+        SmartDashboard.putNumber("curX", swerveDrive.getPose().getX());
 
     }
     
@@ -103,10 +106,8 @@ public class RobotContainer
         resetNavx.onTrue(new InstantCommand( () -> swerveDrive.resetNavx()));
 
         Trigger test = driverController.y();
-        test.onTrue(swerveDrive.followTrajectoryCommand(PathPlanner.generatePath(
-            new PathConstraints(0.5, 1), 
-            new PathPoint(RobotContainer.swerveDrive.getPose().getTranslation(), Rotation2d.fromDegrees(RobotContainer.swerveDrive.getHeading()), Rotation2d.fromDegrees(RobotContainer.swerveDrive.getPose().getRotation().getDegrees())),  // position, heading(direction of travel), holonomic rotation
-            new PathPoint(new Translation2d(0, 0), Rotation2d.fromDegrees(0), Rotation2d.fromDegrees(0))), false));
+        test.onTrue(swerveDrive.followTrajectoryCommand(AutoRoutineBuilder.PlaceEngage, true));
+
 
         Trigger resetOdometry = driverController.a();
         resetOdometry.onTrue(new InstantCommand(() -> swerveDrive.resetOdometry()));

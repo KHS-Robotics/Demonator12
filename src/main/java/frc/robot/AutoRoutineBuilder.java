@@ -82,8 +82,8 @@ public class AutoRoutineBuilder {
         return command;
     }
 
-    private static CustomSwerveControllerCommand generateSwerveCommand(Trajectory trajectory) {
-        return new CustomSwerveControllerCommand(
+    private static SwerveControllerCommand generateSwerveCommand(Trajectory trajectory) {
+        return new SwerveControllerCommand(
                 trajectory,
                 RobotContainer.swerveDrive::getPose,
                 RobotContainer.swerveDrive.kinematics,
@@ -92,31 +92,5 @@ public class AutoRoutineBuilder {
                 SwerveThetaPIDController,
                 RobotContainer.swerveDrive::setModuleStates,
                 RobotContainer.swerveDrive);
-    }
-
-    public static class CustomSwerveControllerCommand extends SwerveControllerCommand {
-
-        public CustomSwerveControllerCommand(Trajectory trajectory, Supplier<Pose2d> pose,
-                SwerveDriveKinematics kinematics, PIDController xController, PIDController yController,
-                ProfiledPIDController thetaController, Consumer<SwerveModuleState[]> outputModuleStates,
-                SwerveDrive swervedrive) {
-            super(trajectory, pose, kinematics, xController, yController, thetaController, outputModuleStates,
-                    swervedrive);
-        }
-
-        public CustomSwerveControllerCommand(Trajectory trajectory, Supplier<Pose2d> pose,
-                SwerveDriveKinematics kinematics, PIDController xController, PIDController yController,
-                ProfiledPIDController thetaController, Supplier<Rotation2d> desiredRotation,
-                Consumer<SwerveModuleState[]> outputModuleStates,
-                SwerveDrive swervedrive) {
-            super(trajectory, pose, kinematics, xController, yController, thetaController, desiredRotation,
-                    outputModuleStates, swervedrive);
-        }
-
-        @Override
-        public void end(boolean interrupted) {
-            super.end(interrupted);
-            RobotContainer.swerveDrive.stop();
-        }
     }
 }
