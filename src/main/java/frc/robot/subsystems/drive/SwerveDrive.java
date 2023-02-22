@@ -74,7 +74,8 @@ public class SwerveDrive extends SubsystemBase {
     Constants.FRONT_LEFT_DRIVE_KS,
     Constants.FRONT_LEFT_DRIVE_KV,
     Constants.FRONT_LEFT_DRIVE_KA,
-    RobotMap.FRONT_LEFT_DIGITAL_INPUT
+    RobotMap.FRONT_LEFT_DIGITAL_INPUT,
+    true
   );
   public static final SwerveModule frontRight = new SwerveModule(
     "FR",
@@ -92,7 +93,8 @@ public class SwerveDrive extends SubsystemBase {
     Constants.FRONT_LEFT_DRIVE_KS,
     Constants.FRONT_LEFT_DRIVE_KV,
     Constants.FRONT_LEFT_DRIVE_KA,
-    RobotMap.FRONT_RIGHT_DIGITAL_INPUT
+    RobotMap.FRONT_RIGHT_DIGITAL_INPUT,
+    true
   );
   public static final SwerveModule rearLeft = new SwerveModule(
     "RL",
@@ -110,7 +112,8 @@ public class SwerveDrive extends SubsystemBase {
     Constants.FRONT_LEFT_DRIVE_KS,
     Constants.FRONT_LEFT_DRIVE_KV,
     Constants.FRONT_LEFT_DRIVE_KA,
-    RobotMap.REAR_LEFT_DIGITAL_INPUT
+    RobotMap.REAR_LEFT_DIGITAL_INPUT,
+    true
   );
   public static final SwerveModule rearRight = new SwerveModule(
     "RR",
@@ -128,7 +131,8 @@ public class SwerveDrive extends SubsystemBase {
     Constants.FRONT_LEFT_DRIVE_KS,
     Constants.FRONT_LEFT_DRIVE_KV,
     Constants.FRONT_LEFT_DRIVE_KA,
-    RobotMap.REAR_RIGHT_DIGITAL_INPUT
+    RobotMap.REAR_RIGHT_DIGITAL_INPUT,
+    true
   );
 
   public final SwerveDriveKinematics kinematics = new SwerveDriveKinematics(frontLeftLocation,
