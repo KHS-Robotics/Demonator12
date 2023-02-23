@@ -28,7 +28,6 @@
     public final String name;
 
     private boolean isFlipped;
-    private final boolean isInverted;
 
     private final CANSparkMax driveMotor;
     private final RelativeEncoder driveEncoder;
@@ -55,7 +54,6 @@
      * @param reversed          true if drive motor is reversed
      */
     public SwerveModule(String name, int driveMotorChannel, int pivotMotorChannel, double pivotP, double pivotI, double pivotD, double pivotkS, double pivotkV, double pivotkA, double driveP, double driveI, double driveD, double drivekS, double drivekV, double drivekA, int digitalInputPort, boolean reversed) {
-      isInverted = reversed;
 
       this.name = name;
 
@@ -71,7 +69,7 @@
       pivotEncoder.setPositionConversionFactor(360.0 / 18.0); // 360 degree per rotation, 18:1 -> 360 * 1/18
 
       driveEncoder = driveMotor.getEncoder();
-      driveMotor.setInverted(false);
+      driveMotor.setInverted(true);
       driveEncoder.setVelocityConversionFactor(Constants.DRIVE_VEL_ENCODER); // 4" diameter wheel (0.0508 meter radius), 8.33:1 -> 2*pi*0.0508 / 8.33
       driveEncoder.setPositionConversionFactor(Constants.DRIVE_POS_ENCODER); // 4" diameter wheel (0.0508 meter radius), 8.33:1 -> 2*pi*0.0508 / 8.33
 
@@ -114,7 +112,7 @@
      * @return The current state of the module.
      */
     public SwerveModuleState getState() {
-      return new SwerveModuleState((isInverted ? -1 : 1) * driveEncoder.getVelocity(), Rotation2d.fromDegrees(getAngle()));
+      return new SwerveModuleState(driveEncoder.getVelocity(), Rotation2d.fromDegrees(getAngle()));
     }
 
     public SwerveModulePosition getPosition() {
@@ -140,7 +138,7 @@
      */
     public void setDesiredState(SwerveModuleState state, boolean useShortestPath) {
       pivotMotor.set(MathUtil.clamp(pivotPID.calculate(getAngle(), useShortestPath ? calculateShortestPath(state.angle.getDegrees()) : state.angle.getDegrees()), -1, 1));
-      driveMotor.setVoltage(driveFeedFoward.calculate(state.speedMetersPerSecond  * (isInverted ? -1 : 1) * (isFlipped && useShortestPath ? -1 : 1)) + drivePID.calculate(driveEncoder.getVelocity(), state.speedMetersPerSecond  * (isInverted ? -1 : 1) * (isFlipped && useShortestPath ? -1 : 1)));
+      driveMotor.setVoltage(driveFeedFoward.calculate(state.speedMetersPerSecond  * (isFlipped && useShortestPath ? -1 : 1)) + drivePID.calculate(driveEncoder.getVelocity(), state.speedMetersPerSecond  * (isFlipped && useShortestPath ? -1 : 1)));
     }
 
     /**
