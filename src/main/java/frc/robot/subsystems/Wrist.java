@@ -5,15 +5,21 @@ import frc.robot.RobotContainer;
 import frc.robot.RobotMap;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
+import com.revrobotics.SparkMaxLimitSwitch;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import com.revrobotics.SparkMaxLimitSwitch.Type;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Wrist extends SubsystemBase {
     private final CANSparkMax pivotMotor;
     private final RelativeEncoder pivotEncoder;
+
+    private final SparkMaxLimitSwitch forwardLimitSwitch;
+    private final SparkMaxLimitSwitch reverseLimitSwitch;
 
     private final PIDController wristPID;
 
@@ -21,20 +27,29 @@ public class Wrist extends SubsystemBase {
     public Wrist() {
         pivotMotor = new CANSparkMax(RobotMap.WRIST_PIVOT, MotorType.kBrushless);
         pivotEncoder = pivotMotor.getEncoder();
-        pivotEncoder.setPositionConversionFactor(2 * Math.PI / Constants.WRIST_GEARING); //encoder in radians
+        pivotEncoder.setPositionConversionFactor(2 * Math.PI / Constants.WRIST_GEARING);
+        pivotEncoder.setVelocityConversionFactor(2 * Math.PI / Constants.WRIST_GEARING); //encoder in radians
         wristPID = new PIDController(Constants.WRIST_P, Constants.WRIST_I, Constants.WRIST_D);
+        forwardLimitSwitch = pivotMotor.getForwardLimitSwitch(Type.kNormallyOpen);
+        reverseLimitSwitch = pivotMotor.getReverseLimitSwitch(Type.kNormallyOpen);
+        forwardLimitSwitch.enableLimitSwitch(false);
+        reverseLimitSwitch.enableLimitSwitch(false);
+        
+
+        
     }
 
     public void goToAngle(Rotation2d angle) {
         pivotMotor.setVoltage(wristPID.calculate(pivotEncoder.getPosition(), angle.getRadians()));
+        SmartDashboard.putNumber("voltage", wristPID.calculate(pivotEncoder.getPosition(), angle.getRadians()));
     }
 
     public void goToAbsoluteAngle(Rotation2d absoluteAngle) {
         pivotMotor.setVoltage(wristPID.calculate(pivotEncoder.getPosition(), toRelativeAngle(absoluteAngle).getRadians()));
     }
 
-    public void setVoltage(double voltage) {
-        pivotMotor.setVoltage(voltage);
+    public void setVelocity(double angularVelocity) {
+        pivotMotor.setVoltage(wristPID.calculate(pivotEncoder.getVelocity(), angularVelocity));
     }
 
     public Rotation2d getRelativeAngle() {
@@ -51,5 +66,19 @@ public class Wrist extends SubsystemBase {
 
     public Rotation2d toRelativeAngle(Rotation2d absoluteAngle) {
         return absoluteAngle.minus(RobotContainer.arm.getAngle());
+    }
+
+    public void zeroWrist() {
+        pivotEncoder.setPosition(0);
+    }
+
+    public void stop() {
+        pivotMotor.setVoltage(0);
+    }
+
+    @Override
+    public void periodic() {
+      SmartDashboard.putNumber("wristPos", pivotEncoder.getPosition());
+      SmartDashboard.putNumber("wristVelocity", pivotEncoder.getPosition());
     }
 }

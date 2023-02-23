@@ -23,9 +23,9 @@ public class RobotMap {
   public static final int GRABBER_INTAKE = 30;
   public static final int GRABBER_PNEUMATIC_HUB = 31;
   public static final int GRABBER_COMPRESSOR = 32;
-  public static final int GRABBER_SOLENOID_FORWARD = 33;
-  public static final int GRABBER_SOLENOID_REVERSE = 34;
-  public static final int GRABBER_SOLENOID = 35;
+  public static final int GRABBER_SOLENOID_FORWARD = 13;
+  public static final int GRABBER_SOLENOID_REVERSE = 14;
+  public static final int GRABBER_SOLENOID = 12;
 
   public static final int WRIST_PIVOT = 36;
 
