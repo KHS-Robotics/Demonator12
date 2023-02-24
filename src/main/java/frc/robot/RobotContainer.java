@@ -24,6 +24,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.Pathing.AutoRoutineBuilder;
 import frc.robot.commands.CenterSwerveModules;
 import frc.robot.commands.DriveSwerveWithXbox;
 import frc.robot.commands.WristGoToAngle;
@@ -32,6 +33,7 @@ import frc.robot.subsystems.Arm;
 //import frc.robot.subsystems.Grabber;
 import frc.robot.subsystems.Wrist;
 import frc.robot.subsystems.drive.SwerveDrive;
+import frc.robot.Pathing.*;
 
 
 
@@ -111,7 +113,7 @@ public class RobotContainer
         resetNavx.onTrue(new InstantCommand( () -> swerveDrive.resetNavx()));
 
         Trigger test = driverController.y();
-        test.onTrue(AutoRoutineBuilder.generateSwerveCommand(AutoRoutineBuilder.PlaceEngage));
+        test.onTrue(swerveDrive.followTrajectoryCommand(AutoRoutineBuilder.Place3LoadingStation, true));
 
 
         Trigger resetOdometry = driverController.a();

@@ -35,6 +35,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotMap;
+import frc.robot.Pathing.PPSwerveControllerCommandReversed;
 import frc.robot.subsystems.vision.PhotonWrapper;
 import frc.robot.Constants;
 import frc.robot.Field;
@@ -74,8 +75,7 @@ public class SwerveDrive extends SubsystemBase {
     Constants.FRONT_LEFT_DRIVE_KS,
     Constants.FRONT_LEFT_DRIVE_KV,
     Constants.FRONT_LEFT_DRIVE_KA,
-    RobotMap.FRONT_LEFT_DIGITAL_INPUT,
-    true
+    RobotMap.FRONT_LEFT_DIGITAL_INPUT
   );
   public static final SwerveModule frontRight = new SwerveModule(
     "FR",
@@ -93,8 +93,7 @@ public class SwerveDrive extends SubsystemBase {
     Constants.FRONT_LEFT_DRIVE_KS,
     Constants.FRONT_LEFT_DRIVE_KV,
     Constants.FRONT_LEFT_DRIVE_KA,
-    RobotMap.FRONT_RIGHT_DIGITAL_INPUT,
-    true
+    RobotMap.FRONT_RIGHT_DIGITAL_INPUT
   );
   public static final SwerveModule rearLeft = new SwerveModule(
     "RL",
@@ -112,8 +111,7 @@ public class SwerveDrive extends SubsystemBase {
     Constants.FRONT_LEFT_DRIVE_KS,
     Constants.FRONT_LEFT_DRIVE_KV,
     Constants.FRONT_LEFT_DRIVE_KA,
-    RobotMap.REAR_LEFT_DIGITAL_INPUT,
-    true
+    RobotMap.REAR_LEFT_DIGITAL_INPUT
   );
   public static final SwerveModule rearRight = new SwerveModule(
     "RR",
@@ -131,8 +129,7 @@ public class SwerveDrive extends SubsystemBase {
     Constants.FRONT_LEFT_DRIVE_KS,
     Constants.FRONT_LEFT_DRIVE_KV,
     Constants.FRONT_LEFT_DRIVE_KA,
-    RobotMap.REAR_RIGHT_DIGITAL_INPUT,
-    true
+    RobotMap.REAR_RIGHT_DIGITAL_INPUT
   );
 
   public final SwerveDriveKinematics kinematics = new SwerveDriveKinematics(frontLeftLocation,
@@ -200,7 +197,7 @@ public class SwerveDrive extends SubsystemBase {
       rearRight.setDesiredState(new SwerveModuleState(0.0, Rotation2d.fromDegrees(rearRight.getAngle())));
     } else {
       var swerveModuleStates = kinematics
-        .toSwerveModuleStates(fieldRelative ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, getAngle())
+        .toSwerveModuleStates(fieldRelative ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, getPose().getRotation())
           : new ChassisSpeeds(xSpeed, ySpeed, rot));
 
       frontLeft.setDesiredState(swerveModuleStates[0]);
@@ -217,8 +214,19 @@ public class SwerveDrive extends SubsystemBase {
     rearRight.setDesiredState(desiredStates[3], true);
   }
 
+  public void setModuleStatesNegated(SwerveModuleState[] desiredStates) {
+    SwerveModuleState[] negated = new SwerveModuleState[4];
+    ChassisSpeeds speeds = kinematics.toChassisSpeeds(desiredStates);
+    ChassisSpeeds negatedChassisSpeeds = new ChassisSpeeds(-speeds.vxMetersPerSecond, -speeds.vyMetersPerSecond, kMaxAngularSpeed);
+    negated = kinematics.toSwerveModuleStates(negatedChassisSpeeds);
+    frontLeft.setDesiredState(negated[0], true);
+    frontRight.setDesiredState(negated[1], true);
+    rearLeft.setDesiredState(negated[2], true);
+    rearRight.setDesiredState(desiredStates[3], true);
+  }
+
   public void setModuleStates(ChassisSpeeds chassisSpeeds) {
-    setModuleStates(kinematics.toSwerveModuleStates(ChassisSpeeds.fromFieldRelativeSpeeds(chassisSpeeds, getAngle())));
+    setModuleStates(kinematics.toSwerveModuleStates(ChassisSpeeds.fromFieldRelativeSpeeds(chassisSpeeds, poseEstimator.getEstimatedPosition().getRotation())));
   }
 
   public Command goToNode(int apriltag, int node) {
@@ -239,17 +247,16 @@ public class SwerveDrive extends SubsystemBase {
           this.poseEstimator.resetPosition(getAngle(), getSwerveModulePositions(), trajectory.getInitialHolonomicPose());
         }
       }),
-      new PPSwerveControllerCommand(
-        trajectory, 
-        this::getPose, 
-        new PIDController(0, 0, 0),
-        new PIDController(0, 0, 0), 
-        new PIDController(0, 0, 0),
-        this::setModuleStates,
-        true,
-        this
-      )
-    );
+      new PPSwerveControllerCommandReversed(
+      trajectory, 
+      this::getPose, 
+      new PIDController(0, 0, 0),
+      new PIDController(0, 0, 0), 
+      new PIDController(0, 0, 0),
+      this::setModuleStates,
+      true,
+      this)
+      );
   }
 
   public void setPID(double p, double i, double d) {
@@ -305,7 +312,7 @@ public class SwerveDrive extends SubsystemBase {
   public double getHeading() {
     ChassisSpeeds chassisSpeeds = getChassisSpeeds();
     double headingRR = Math.toDegrees(Math.atan2(chassisSpeeds.vxMetersPerSecond, chassisSpeeds.vyMetersPerSecond));
-    double headingFR = headingRR + getAngle().getDegrees();
+    double headingFR = headingRR + getPose().getRotation().getDegrees();
     return headingFR;
   }
 
@@ -335,12 +342,12 @@ public class SwerveDrive extends SubsystemBase {
   }
 
   public void resetNavx() {
-    resetNavx(new Pose2d(0, 0, Rotation2d.fromDegrees(180)));
+    resetNavx(getPose());
   }
 
   public void resetNavx(Pose2d currentPose) {
     targetPid.reset();
-    offset = currentPose.getRotation().getDegrees();
+    offset = (currentPose.getRotation().getDegrees() + 180) % 360;
     RobotContainer.navx.reset();
     startingPose = currentPose;
   }
@@ -376,11 +383,21 @@ public class SwerveDrive extends SubsystemBase {
     return angle;
   }
 
+  public void logTargetChassisSpeeds(ChassisSpeeds chassisSpeeds) {
+    SmartDashboard.putNumber("vxChassis", chassisSpeeds.vxMetersPerSecond);
+    SmartDashboard.putNumber("vyChassis", chassisSpeeds.vyMetersPerSecond);
+  }
+
+  public Pose2d getPoseInverted() {
+    return new Pose2d(getPose().getX(), getPose().getY(), getPose().getRotation().plus(new Rotation2d(Math.PI)));
+  }
+
   @Override
   public void periodic() {
     updateOdometry();
     RobotContainer.field.setRobotPose(poseEstimator.getEstimatedPosition());
     SmartDashboard.putNumber("navx yaw", getYaw());
+    SmartDashboard.putNumber("Pose angle", getPose().getRotation().getDegrees());
     SmartDashboard.putNumber("module 1", getSwerveModulePositions()[0].angle.getDegrees());
     SmartDashboard.putNumber("module 2", getSwerveModulePositions()[1].angle.getDegrees());
     SmartDashboard.putNumber("module 3", getSwerveModulePositions()[2].angle.getDegrees());

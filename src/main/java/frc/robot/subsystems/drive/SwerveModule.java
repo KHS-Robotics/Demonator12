@@ -69,7 +69,7 @@
       pivotEncoder.setPositionConversionFactor(360.0 / 18.0); // 360 degree per rotation, 18:1 -> 360 * 1/18
 
       driveEncoder = driveMotor.getEncoder();
-      driveMotor.setInverted(true);
+      driveMotor.setInverted(false);
       driveEncoder.setVelocityConversionFactor(Constants.DRIVE_VEL_ENCODER); // 4" diameter wheel (0.0508 meter radius), 8.33:1 -> 2*pi*0.0508 / 8.33
       driveEncoder.setPositionConversionFactor(Constants.DRIVE_POS_ENCODER); // 4" diameter wheel (0.0508 meter radius), 8.33:1 -> 2*pi*0.0508 / 8.33
 
