@@ -16,6 +16,8 @@ public class Balance extends CommandBase {
 
     @Override
     public void initialize() {
+        lastPitch = RobotContainer.navx.getPitch();
+        lastMovingTimestamp = Timer.getFPGATimestamp();
     }
 
     @Override
