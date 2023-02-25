@@ -22,6 +22,7 @@ public class Wrist extends SubsystemBase {
     private final SparkMaxLimitSwitch reverseLimitSwitch;
 
     private final PIDController wristPID;
+    private Rotation2d angleSetpoint;
 
 
     public Wrist() {
@@ -74,6 +75,14 @@ public class Wrist extends SubsystemBase {
 
     public void stop() {
         pivotMotor.setVoltage(0);
+    }
+
+    public Rotation2d getAngleSetpoint() {
+        return angleSetpoint;
+    }
+
+    public void setAngleSetpoint(Rotation2d angleSetpoint) {
+        this.angleSetpoint = angleSetpoint;
     }
 
     @Override

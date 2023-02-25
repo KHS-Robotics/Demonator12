@@ -8,8 +8,6 @@ public class OperatorBox extends Joystick {
         super(port);
     }
 
-    public boolean holdWrist() {
-        return this.getRawButton(0);
-      }
+    
     
 }
