@@ -36,7 +36,7 @@
     private final RelativeEncoder pivotEncoder;
     private final PIDController drivePID;
     private final SimpleMotorFeedforward driveFeedFoward;
-    private final SimpleMotorFeedforward pivotFeedForward;
+    // private final SimpleMotorFeedforward pivotFeedForward;
 
     private final PIDController pivotPID;
     private final DigitalInput setDetection;
@@ -77,7 +77,7 @@
       driveFeedFoward = new SimpleMotorFeedforward(drivekS, drivekV, drivekA);
 
       pivotPID = new PIDController(pivotP, pivotI, pivotD);
-      pivotFeedForward = new SimpleMotorFeedforward(pivotkS, pivotkV, pivotkA);
+      // pivotFeedForward = new SimpleMotorFeedforward(pivotkS, pivotkV, pivotkA);
       
       pivotPID.enableContinuousInput(-180, 180);
       pivotPID.setTolerance(1);

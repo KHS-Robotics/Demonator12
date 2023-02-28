@@ -6,13 +6,9 @@
 package frc.robot;
 
 import com.kauailabs.navx.frc.AHRS;
-import com.pathplanner.lib.PathConstraints;
-import com.pathplanner.lib.PathPlanner;
-import com.pathplanner.lib.PathPoint;
 import com.pathplanner.lib.commands.PPSwerveControllerCommand;
 
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.SerialPort.Port;
@@ -28,13 +24,10 @@ import frc.robot.Pathing.AutoRoutineBuilder;
 import frc.robot.commands.CenterSwerveModules;
 import frc.robot.commands.DriveSwerveWithXbox;
 import frc.robot.commands.WristGoToAngle;
-import frc.robot.commands.Arm.ArmControlSetpoint;
 import frc.robot.subsystems.Arm;
-//import frc.robot.subsystems.Grabber;
+import frc.robot.subsystems.LEDStrip;
 import frc.robot.subsystems.Wrist;
 import frc.robot.subsystems.drive.SwerveDrive;
-import frc.robot.Pathing.*;
-
 
 
 /**
@@ -63,6 +56,8 @@ public class RobotContainer
     
     public static final SendableChooser<Command> autoChooser = new SendableChooser<>();
     public static final Field2d field = new Field2d();
+
+    public static final LEDStrip led = new LEDStrip(4);
     
 
     

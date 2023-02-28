@@ -5,8 +5,6 @@
 package frc.robot.Pathing;
 
 import java.util.HashMap;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
 
 import com.pathplanner.lib.PathConstraints;
 import com.pathplanner.lib.PathPlanner;
@@ -16,15 +14,11 @@ import com.pathplanner.lib.commands.FollowPathWithEvents;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
-import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.trajectory.*;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import frc.robot.RobotContainer;
-import frc.robot.subsystems.drive.SwerveDrive;
 
 /**
  * Used to build autonomous routines.
