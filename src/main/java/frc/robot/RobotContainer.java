@@ -25,11 +25,13 @@ import frc.robot.Pathing.AutoRoutineBuilder;
 import frc.robot.commands.CenterSwerveModules;
 import frc.robot.commands.DriveSwerveWithXbox;
 import frc.robot.commands.WristGoToAngle;
+import frc.robot.commands.WristHoldSetpoint;
+import frc.robot.commands.Arm.ArmControlPL;
 import frc.robot.commands.Arm.ArmControlSetpoint;
 import frc.robot.subsystems.Arm;
-import frc.robot.subsystems.LEDStrip;
 import frc.robot.subsystems.Wrist;
 import frc.robot.subsystems.drive.SwerveDrive;
+
 
 
 /**
@@ -59,8 +61,6 @@ public class RobotContainer
     
     public static final SendableChooser<Command> autoChooser = new SendableChooser<>();
     public static final Field2d field = new Field2d();
-
-    public static final LEDStrip led = new LEDStrip(4);
     
 
     
