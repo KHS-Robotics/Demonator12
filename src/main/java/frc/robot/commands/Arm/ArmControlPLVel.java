@@ -13,14 +13,14 @@ import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.drive.SwerveDrive;
 
 @SuppressWarnings("GrazieInspection")
-public class ArmControlPL extends CommandBase {
-  double angle;
-  double length;
+public class ArmControlPLVel extends CommandBase {
+  double angleV;
+  double lengthV;
 
-  public ArmControlPL(double angle, double length) {
+  public ArmControlPLVel(double angleV, double lengthV) {
     addRequirements(RobotContainer.arm);
-    this.length = length;
-    this.angle = angle;
+    this.angleV = angleV;
+    this.lengthV = lengthV;
   }
 
   // Called just before this Command runs the first time
@@ -32,8 +32,8 @@ public class ArmControlPL extends CommandBase {
   // Called repeatedly when this Command is scheduled to run
   @Override
   public void execute() {
-    RobotContainer.arm.setLength(length);
-    RobotContainer.arm.setAngle(angle);
+    RobotContainer.arm.setLengthV(lengthV);
+    RobotContainer.arm.setAngleV(angleV);
   }
 
   // Make this return true when this Command no longer needs to run execute()

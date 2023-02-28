@@ -9,6 +9,7 @@ import com.kauailabs.navx.frc.AHRS;
 import com.pathplanner.lib.commands.PPSwerveControllerCommand;
 
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.SerialPort.Port;
@@ -24,6 +25,7 @@ import frc.robot.Pathing.AutoRoutineBuilder;
 import frc.robot.commands.CenterSwerveModules;
 import frc.robot.commands.DriveSwerveWithXbox;
 import frc.robot.commands.WristGoToAngle;
+import frc.robot.commands.Arm.ArmControlSetpoint;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.LEDStrip;
 import frc.robot.subsystems.Wrist;
@@ -53,6 +55,7 @@ public class RobotContainer
     
     public static final CommandXboxController driverController = new CommandXboxController(RobotMap.XBOX_PORT);
     public static final OperatorBox operatorBox = new OperatorBox(RobotMap.SWITCHBOX_PORT);
+    public static final OperatorStick operatorStick = new OperatorStick(RobotMap.JOYSTICK_PORT);
     
     public static final SendableChooser<Command> autoChooser = new SendableChooser<>();
     public static final Field2d field = new Field2d();
@@ -114,9 +117,6 @@ public class RobotContainer
         Trigger resetOdometry = driverController.a();
         resetOdometry.onTrue(new InstantCommand(() -> swerveDrive.resetOdometry()));
 
-        Trigger holdWristFlat = new Trigger(operatorBox::holdWrist);
-        holdWristFlat.whileTrue(new InstantCommand(() -> wrist.goToAbsoluteAngle(new Rotation2d(0))));
-
         //Trigger placeHigh = driverController.x();
         //placeHigh.onTrue(swerveDrive.goToNode(7, 0).andThen(new ArmControlSetpoint(Field.getNodeCoordinatesFieldRelative(7, 0))));
 
@@ -135,6 +135,44 @@ public class RobotContainer
 
         Trigger zeroWrist = driverController.start();
         zeroWrist.onTrue(new InstantCommand(() -> wrist.zeroWrist()));
+
+        Trigger highPos = new Trigger(operatorStick::highPos);
+        highPos.onTrue(new ArmControlSetpoint(new Translation3d()));
+        
+        Trigger midPos = new Trigger(operatorStick::midPos);
+        midPos.onTrue(new ArmControlSetpoint(new Translation3d()));
+        
+        Trigger lowPos = new Trigger(operatorStick::lowPos);
+        lowPos.onTrue(new ArmControlSetpoint(new Translation3d()));
+
+        Trigger home = new Trigger(operatorStick::home);
+        home.onTrue(new ArmControlPL(Math.toRadians(60), Constants.MIN_LENGTH).alongWith(
+                    new InstantCommand(() -> wrist.goToAngle(new Rotation2d(Math.toRadians(35))))));
+        
+        Trigger stow = new Trigger(operatorStick::stow);
+        stow.onTrue(new ArmControlPL(Math.toRadians(0), Constants.MIN_LENGTH).alongWith(
+                    new InstantCommand(() -> wrist.goToAbsoluteAngle(new Rotation2d(Math.toRadians(90))))));
+
+        Trigger scoreAngle = new Trigger(operatorStick::home);
+        scoreAngle.onTrue(new ArmControlPL(Math.toRadians(40), Constants.MIN_LENGTH));
+
+        Trigger wristFlat = new Trigger(operatorStick::wristFlat);
+        wristFlat.onTrue(new InstantCommand(() -> wrist.setAngleSetpoint(new Rotation2d())).andThen(new WristHoldSetpoint()));
+
+        Trigger wristStepUp = new Trigger(operatorStick::wristFlat);
+        wristStepUp.onTrue(new InstantCommand(() -> wrist.setAngleSetpoint(wrist.getAngleSetpoint().plus(Rotation2d.fromDegrees(10)))).andThen(new WristHoldSetpoint()));
+
+        Trigger wristStepDown = new Trigger(operatorStick::wristFlat);
+        wristStepDown.onTrue(new InstantCommand(() -> wrist.setAngleSetpoint(wrist.getAngleSetpoint().minus(Rotation2d.fromDegrees(10)))).andThen(new WristHoldSetpoint()));
+
+        Trigger wristStraightDown = new Trigger(operatorStick::wristFlat);
+        wristStraightDown.onTrue(new InstantCommand(() -> wrist.setAngleSetpoint(Rotation2d.fromDegrees(-90))).andThen(new WristHoldSetpoint()));
+
+        Trigger wristDownOverride = new Trigger(operatorStick::wristDownOverride);
+        wristDownOverride.onTrue(new WristGoToAngle(wrist.getRelativeAngle().minus(Rotation2d.fromDegrees(10))));
+
+        Trigger wristUpOverride = new Trigger(operatorStick::wristDownOverride);
+        wristUpOverride.onTrue(new WristGoToAngle(wrist.getRelativeAngle().minus(Rotation2d.fromDegrees(10))));
         
     }
 
