@@ -7,10 +7,12 @@
   package frc.robot.subsystems.drive;
 
   import com.revrobotics.CANSparkMax;
-  import com.revrobotics.CANSparkMax.IdleMode;
+import com.revrobotics.CANSparkMax.IdleMode;
   import com.revrobotics.CANSparkMaxLowLevel.MotorType;
   import com.revrobotics.RelativeEncoder;
-  import edu.wpi.first.math.MathUtil;
+import com.revrobotics.SparkMaxPIDController;
+
+import edu.wpi.first.math.MathUtil;
   import edu.wpi.first.math.controller.PIDController;
   import edu.wpi.first.math.controller.SimpleMotorFeedforward;
   import edu.wpi.first.math.geometry.Rotation2d;
@@ -34,7 +36,7 @@
 
     private final CANSparkMax pivotMotor;
     private final RelativeEncoder pivotEncoder;
-    private final PIDController drivePID;
+    private final SparkMaxPIDController drivePID;
     private final SimpleMotorFeedforward driveFeedFoward;
     // private final SimpleMotorFeedforward pivotFeedForward;
 
@@ -73,10 +75,16 @@
       driveEncoder.setVelocityConversionFactor(Constants.DRIVE_VEL_ENCODER); // 4" diameter wheel (0.0508 meter radius), 8.33:1 -> 2*pi*0.0508 / 8.33
       driveEncoder.setPositionConversionFactor(Constants.DRIVE_POS_ENCODER); // 4" diameter wheel (0.0508 meter radius), 8.33:1 -> 2*pi*0.0508 / 8.33
 
-      drivePID = new PIDController(driveP, driveI, driveD);
+      drivePID = driveMotor.getPIDController();
+      drivePID.setP(driveP);
+      drivePID.setI(driveI);
+      drivePID.setD(driveD);
+
+
       driveFeedFoward = new SimpleMotorFeedforward(drivekS, drivekV, drivekA);
 
       pivotPID = new PIDController(pivotP, pivotI, pivotD);
+      
       // pivotFeedForward = new SimpleMotorFeedforward(pivotkS, pivotkV, pivotkA);
       
       pivotPID.enableContinuousInput(-180, 180);
@@ -137,8 +145,8 @@
      * @param useShortestPath whether or not to use the shortest path
      */
     public void setDesiredState(SwerveModuleState state, boolean useShortestPath) {
+      drivePID.setReference(state.speedMetersPerSecond  * (isFlipped && useShortestPath ? -1 : 1), CANSparkMax.ControlType.kVoltage, 1, driveFeedFoward.calculate(state.speedMetersPerSecond  * (isFlipped && useShortestPath ? -1 : 1)));
       pivotMotor.set(MathUtil.clamp(pivotPID.calculate(getAngle(), useShortestPath ? calculateShortestPath(state.angle.getDegrees()) : state.angle.getDegrees()), -1, 1));
-      driveMotor.setVoltage(driveFeedFoward.calculate(state.speedMetersPerSecond  * (isFlipped && useShortestPath ? -1 : 1)) + drivePID.calculate(driveEncoder.getVelocity(), state.speedMetersPerSecond  * (isFlipped && useShortestPath ? -1 : 1)));
     }
 
     /**
