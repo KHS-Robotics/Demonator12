@@ -10,9 +10,6 @@ package frc.robot.commands.Arm;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.RobotContainer;
-import frc.robot.subsystems.Arm;
-import frc.robot.subsystems.drive.SwerveDrive;
-
 @SuppressWarnings("GrazieInspection")
 public class ArmControlJoystick extends CommandBase {
   double angleV;

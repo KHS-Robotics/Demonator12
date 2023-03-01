@@ -179,6 +179,7 @@ public class Arm extends SubsystemBase {
     }
 
     public SequentialCommandGroup goToSetpoint(Translation3d target) {
+        target = target.minus(new Translation3d(Constants.GRIPPERHOLDDISTANCE, new Rotation3d(0, RobotContainer.wrist.getAbsoluteAngle().getRadians(), 0)));
         if(isFurhter(target)) {
             SequentialCommandGroup commandGroup = new SequentialCommandGroup(new ArmControlPivot(rotToPoint(target).getRadians()), new ArmControlLength(lengthToPoint(target)));
             return commandGroup;

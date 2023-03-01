@@ -21,6 +21,7 @@ public class Constants {
   public static final Translation3d ARMOFFSET = new Translation3d(0.0, 0.0, 0.0);
   public static final double MIN_LENGTH = 0;
   public static final double GRIPPERLENGTH = 0;
+  public static final double GRIPPERHOLDDISTANCE = 0;
 
   public static final Translation3d MID_POS = new Translation3d(Units.inchesToMeters(41.7), Units.inchesToMeters(0), Units.inchesToMeters(40));
   public static final Translation3d HIGH_POS = new Translation3d(Units.inchesToMeters(58.73), Units.inchesToMeters(0), Units.inchesToMeters(52));

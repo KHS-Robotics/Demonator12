@@ -9,9 +9,7 @@ import com.kauailabs.navx.frc.AHRS;
 import com.pathplanner.lib.commands.PPSwerveControllerCommand;
 
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation3d;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.SerialPort.Port;
@@ -120,10 +118,10 @@ public class RobotContainer
         //Trigger placeHigh = driverController.x();
         //placeHigh.onTrue(swerveDrive.goToNode(7, 0).andThen(new ArmControlSetpoint(Field.getNodeCoordinatesFieldRelative(7, 0))));
 
-        Trigger intake = driverController.leftBumper();
+        //Trigger intake = driverController.leftBumper();
         //intake.onTrue(new InstantCommand(() -> grabber.intake(0.2)));
 
-        Trigger outtake = driverController.leftBumper();
+        //Trigger outtake = driverController.leftBumper();
         //outtake.onTrue(new InstantCommand(() -> grabber.outtake(0.2)));
 
         Trigger wristUp = driverController.x();
