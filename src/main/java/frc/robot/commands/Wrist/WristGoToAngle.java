@@ -1,4 +1,4 @@
-package frc.robot.commands;
+package frc.robot.commands.Wrist;
 
 
 import edu.wpi.first.math.geometry.Rotation2d;

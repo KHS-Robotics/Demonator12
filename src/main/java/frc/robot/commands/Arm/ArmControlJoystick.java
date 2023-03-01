@@ -34,7 +34,7 @@ public class ArmControlJoystick extends CommandBase {
   @Override
   public void execute() {
     RobotContainer.arm.setLengthV(RobotContainer.arm.isLegal(RobotContainer.arm.getTranslation()) ? RobotContainer.operatorStick.getExtendSpeed() : MathUtil.clamp(RobotContainer.operatorStick.getExtendSpeed(), -1, 0));
-    RobotContainer.arm.setAngleV(RobotContainer.arm.isLegal(RobotContainer.arm.getTranslation()) ? RobotContainer.operatorStick.getPitchSpeed() : MathUtil.clamp(RobotContainer.operatorStick.getPitchSpeed(), -1, 0));
+    RobotContainer.arm.setAngleV(RobotContainer.arm.isLegal(RobotContainer.arm.getTranslation()) ? RobotContainer.operatorStick.getPitchSpeed() : MathUtil.clamp(RobotContainer.operatorStick.getPitchSpeed(), 0, 1));
   }
 
   // Make this return true when this Command no longer needs to run execute()
