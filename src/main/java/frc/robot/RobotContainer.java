@@ -9,7 +9,9 @@ import com.kauailabs.navx.frc.AHRS;
 import com.pathplanner.lib.commands.PPSwerveControllerCommand;
 
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.SerialPort.Port;
@@ -26,8 +28,6 @@ import frc.robot.commands.CenterSwerveModules;
 import frc.robot.commands.DriveSwerveWithXbox;
 import frc.robot.commands.WristGoToAngle;
 import frc.robot.commands.WristHoldSetpoint;
-import frc.robot.commands.Arm.ArmControlPL;
-import frc.robot.commands.Arm.ArmControlSetpoint;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Wrist;
 import frc.robot.subsystems.drive.SwerveDrive;
@@ -137,24 +137,24 @@ public class RobotContainer
         zeroWrist.onTrue(new InstantCommand(() -> wrist.zeroWrist()));
 
         Trigger highPos = new Trigger(operatorStick::highPos);
-        highPos.onTrue(new ArmControlSetpoint(new Translation3d()));
+        highPos.onTrue(RobotContainer.arm.goToSetpoint(Constants.HIGH_POS));
         
         Trigger midPos = new Trigger(operatorStick::midPos);
-        midPos.onTrue(new ArmControlSetpoint(new Translation3d()));
+        midPos.onTrue(RobotContainer.arm.goToSetpoint(Constants.MID_POS));
         
         Trigger lowPos = new Trigger(operatorStick::lowPos);
-        lowPos.onTrue(new ArmControlSetpoint(new Translation3d()));
+        lowPos.onTrue(RobotContainer.arm.goToSetpoint(new Translation3d()));
 
         Trigger home = new Trigger(operatorStick::home);
-        home.onTrue(new ArmControlPL(Math.toRadians(60), Constants.MIN_LENGTH).alongWith(
+        home.onTrue(RobotContainer.arm.goToPL(Math.toRadians(60), Constants.MIN_LENGTH).alongWith(
                     new InstantCommand(() -> wrist.goToAngle(new Rotation2d(Math.toRadians(35))))));
         
         Trigger stow = new Trigger(operatorStick::stow);
-        stow.onTrue(new ArmControlPL(Math.toRadians(0), Constants.MIN_LENGTH).alongWith(
+        stow.onTrue(RobotContainer.arm.goToPL(Math.toRadians(0), Constants.MIN_LENGTH).alongWith(
                     new InstantCommand(() -> wrist.goToAbsoluteAngle(new Rotation2d(Math.toRadians(90))))));
 
         Trigger scoreAngle = new Trigger(operatorStick::home);
-        scoreAngle.onTrue(new ArmControlPL(Math.toRadians(40), Constants.MIN_LENGTH));
+        scoreAngle.onTrue(RobotContainer.arm.goToPL(Math.toRadians(40), Constants.MIN_LENGTH));
 
         Trigger wristFlat = new Trigger(operatorStick::wristFlat);
         wristFlat.onTrue(new InstantCommand(() -> wrist.setAngleSetpoint(new Rotation2d())).andThen(new WristHoldSetpoint()));

@@ -7,17 +7,18 @@
 
 package frc.robot.commands.Arm;
 
-import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.RobotContainer;
+import frc.robot.subsystems.Arm;
+import frc.robot.subsystems.drive.SwerveDrive;
 
 @SuppressWarnings("GrazieInspection")
-public class ArmControlSetpoint extends CommandBase {
-  Translation3d target;
+public class ArmControlPivot extends CommandBase {
+  double angle;
 
-  public ArmControlSetpoint(Translation3d target) {
+  public ArmControlPivot(double angle) {
     addRequirements(RobotContainer.arm);
-    this.target = target;
+    this.angle = angle;
   }
 
   // Called just before this Command runs the first time
@@ -29,14 +30,13 @@ public class ArmControlSetpoint extends CommandBase {
   // Called repeatedly when this Command is scheduled to run
   @Override
   public void execute() {
-    RobotContainer.arm.setLength(RobotContainer.arm.lengthToPoint(target));
-    RobotContainer.arm.setAngle(RobotContainer.arm.rotToPoint(target).getRadians());
+    RobotContainer.arm.setAngle(angle);
   }
 
   // Make this return true when this Command no longer needs to run execute()
   @Override
   public boolean isFinished() {
-    return false;
+    return Math.abs(RobotContainer.arm.getAngle().getRadians() - angle) < 0.03;
   }
 
   // Called once after isFinished returns true

@@ -9,13 +9,17 @@ import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.RobotContainer;
+import frc.robot.commands.Arm.ArmControlLength;
+import frc.robot.commands.Arm.ArmControlPivot;
 
 
 public class Arm extends SubsystemBase {
@@ -97,7 +101,7 @@ public class Arm extends SubsystemBase {
     }
 
     public void setAngleV(double vAngle) {
-        pivotMotor.setVoltage(armFeedFoward.calculate(getAngle().getRadians() + vAngle * kDt, vAngle) + extendPID.calculate(getLengthV(), vAngle));
+        pivotMotor.setVoltage(armFeedFoward.calculate(getAngle().getRadians() + vAngle * kDt, vAngle) + armPID.calculate(getLengthV(), vAngle));
     }
 
     public double getAngleV() {
@@ -168,5 +172,35 @@ public class Arm extends SubsystemBase {
         Translation2d gripper = new Translation2d(Constants.GRIPPERLENGTH, targetXZ.getAngle().plus(RobotContainer.wrist.getRelativeAngle()));
         return targetXZ.plus(gripper).plus(new Translation2d(Constants.ARMOFFSET.getX(), Constants.ARMOFFSET.getZ())).getX() < Units.inchesToMeters(45) //45 inches to leave some tolerance
         && targetXZ.plus(gripper).plus(new Translation2d(Constants.ARMOFFSET.getX(), Constants.ARMOFFSET.getZ())).getY() < Units.inchesToMeters(72); //left some inches since we shouldnt go this high ever (limit is 72 in instead of legal 78)
+    }
+
+    public boolean isFurhter(Translation3d target) {
+        return getTranslation().getNorm() < target.getNorm();
+    }
+
+    public SequentialCommandGroup goToSetpoint(Translation3d target) {
+        if(isFurhter(target)) {
+            SequentialCommandGroup commandGroup = new SequentialCommandGroup(new ArmControlPivot(rotToPoint(target).getRadians()), new ArmControlLength(lengthToPoint(target)));
+            return commandGroup;
+        }
+        else {
+            SequentialCommandGroup commandGroup = new SequentialCommandGroup(new ArmControlLength(lengthToPoint(target)), new ArmControlPivot(rotToPoint(target).getRadians()));
+            return commandGroup;
+        }
+    }
+
+    public SequentialCommandGroup goToPL(double pivot, double length) {
+        if(isFurhter(new Translation3d(length, new Rotation3d(0, pivot, 0)))) {
+            SequentialCommandGroup commandGroup = new SequentialCommandGroup(new ArmControlPivot(pivot), new ArmControlLength(length));
+            return commandGroup;
+        }
+        else {
+            SequentialCommandGroup commandGroup = new SequentialCommandGroup(new ArmControlLength(length), new ArmControlPivot(pivot));
+            return commandGroup;
+        }
+    }
+
+    public Translation3d getTranslation() {
+        return new Translation3d(getLength(), new Rotation3d(0, getAngle().getRadians(), 0));
     }
 }
