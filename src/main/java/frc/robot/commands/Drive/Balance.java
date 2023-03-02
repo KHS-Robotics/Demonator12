@@ -26,7 +26,7 @@ public class Balance extends CommandBase {
         
         if(Math.abs(pitch - lastPitch) < 0.25) {
             var xSpeed = Math.signum(pitch) * SwerveDrive.kMaxSpeed * 0.1;
-            RobotContainer.swerveDrive.drive(xSpeed, 0, 0, true);
+            RobotContainer.swerveDrive.drive(xSpeed, 0, 0, false);
         } 
         else if (Math.abs(pitch) > 1){
             lastMovingTimestamp = Timer.getFPGATimestamp();

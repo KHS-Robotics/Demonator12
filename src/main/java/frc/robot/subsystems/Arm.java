@@ -77,6 +77,7 @@ public class Arm extends SubsystemBase {
     
     //extends the arm
     public void setLength(double length) {
+        length = length - Constants.MIN_LENGTH;
         TrapezoidProfile profile = new TrapezoidProfile(armConstraints, new TrapezoidProfile.State(length, 0), new TrapezoidProfile.State(getLength(), getLengthV()));
         TrapezoidProfile.State setpoint = profile.calculate(kDt);
         extendMotor.setVoltage(extendFeedFoward.calculate(setpoint.velocity) + extendPID.calculate(getLengthV(), setpoint.velocity));
