@@ -10,6 +10,7 @@ import com.pathplanner.lib.commands.PPSwerveControllerCommand;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.SerialPort.Port;
@@ -152,7 +153,10 @@ public class RobotContainer
                     new InstantCommand(() -> wrist.goToAbsoluteAngle(new Rotation2d(Math.toRadians(90))))));
 
         Trigger scoreAngle = new Trigger(operatorStick::home);
-        scoreAngle.onTrue(RobotContainer.arm.goToPL(Math.toRadians(40), Constants.MIN_LENGTH));
+        scoreAngle.onTrue(RobotContainer.arm.goToPL(0.75, Constants.MIN_LENGTH));
+
+        //Trigger shelfPos = new Trigger(operatorStick::shelfPos);
+        //shelfPos.onTrue(RobotContainer.arm.goToSetpoint(new Translation3d(Units.inchesToMeters(20), 0, Units.inchesToMeters(40.81))));
 
         Trigger wristFlat = new Trigger(operatorStick::wristFlat);
         wristFlat.onTrue(new InstantCommand(() -> wrist.setAngleSetpoint(new Rotation2d())).andThen(new WristHoldSetpoint()));

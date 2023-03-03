@@ -34,7 +34,7 @@ public class ArmControlPivot extends CommandBase {
   // Make this return true when this Command no longer needs to run execute()
   @Override
   public boolean isFinished() {
-    return Math.abs(RobotContainer.arm.getAngle().getRadians() - angle) < 0.03;
+    return (Math.abs(RobotContainer.arm.getAngle().getRadians() - angle) < 0.03) || !RobotContainer.arm.isLegal(RobotContainer.arm.getTranslation());
   }
 
   // Called once after isFinished returns true
