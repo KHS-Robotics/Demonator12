@@ -213,17 +213,6 @@ public class SwerveDrive extends SubsystemBase {
     rearRight.setDesiredState(desiredStates[3], true);
   }
 
-  public void setModuleStatesNegated(SwerveModuleState[] desiredStates) {
-    SwerveModuleState[] negated = new SwerveModuleState[4];
-    ChassisSpeeds speeds = kinematics.toChassisSpeeds(desiredStates);
-    ChassisSpeeds negatedChassisSpeeds = new ChassisSpeeds(-speeds.vxMetersPerSecond, -speeds.vyMetersPerSecond, kMaxAngularSpeed);
-    negated = kinematics.toSwerveModuleStates(negatedChassisSpeeds);
-    frontLeft.setDesiredState(negated[0], true);
-    frontRight.setDesiredState(negated[1], true);
-    rearLeft.setDesiredState(negated[2], true);
-    rearRight.setDesiredState(desiredStates[3], true);
-  }
-
   public void setModuleStates(ChassisSpeeds chassisSpeeds) {
     setModuleStates(kinematics.toSwerveModuleStates(ChassisSpeeds.fromFieldRelativeSpeeds(chassisSpeeds, poseEstimator.getEstimatedPosition().getRotation())));
   }
@@ -296,7 +285,7 @@ public class SwerveDrive extends SubsystemBase {
     Optional<EstimatedRobotPose> estimatedPose = photonCamera.getEstimatedGlobalPose(poseEstimator.getEstimatedPosition());
     if (estimatedPose.isPresent()) {
       EstimatedRobotPose camPose = estimatedPose.get();
-      poseEstimator.addVisionMeasurement(camPose.estimatedPose.toPose2d(), Timer.getFPGATimestamp());
+      poseEstimator.addVisionMeasurement(camPose.estimatedPose.toPose2d(), camPose.timestampSeconds);
     }
   }
 
