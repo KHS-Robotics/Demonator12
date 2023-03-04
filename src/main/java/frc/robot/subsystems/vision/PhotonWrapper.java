@@ -32,5 +32,4 @@ public class PhotonWrapper {
         photonPoseEstimator.setReferencePose(previousEstimatedPose);
         return photonPoseEstimator.update();
     }
-    
 }

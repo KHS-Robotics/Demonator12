@@ -4,7 +4,6 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
-import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
@@ -13,21 +12,13 @@ import frc.robot.RobotMap;
 
 public class Grabber extends SubsystemBase {
     private final CANSparkMax intakeMotor;
-    private final Compressor compressor;
     private final DoubleSolenoid grabSolenoid;
-
-    
 
     public Grabber() {
         intakeMotor = new CANSparkMax(RobotMap.GRABBER_INTAKE, MotorType.kBrushless);
         intakeMotor.setIdleMode(IdleMode.kBrake);
-
-        
-        compressor = new Compressor(RobotMap.GRABBER_COMPRESSOR, PneumaticsModuleType.REVPH);
-        compressor.enableDigital();
         
         grabSolenoid = new DoubleSolenoid(PneumaticsModuleType.REVPH, RobotMap.GRABBER_SOLENOID_FORWARD, RobotMap.GRABBER_SOLENOID_REVERSE);
-        
     }
 
     public void intake(double speed) {
@@ -49,10 +40,4 @@ public class Grabber extends SubsystemBase {
     public void release() {
         grabSolenoid.set(Value.kReverse);
     }
-
-    
-
-    
-    
-    
 }

@@ -26,24 +26,24 @@ public class ArmControlLength extends CommandBase {
     if(length < Constants.MIN_LENGTH) {
         length = Constants.MIN_LENGTH;
     }
-
   }
 
   // Called repeatedly when this Command is scheduled to run
   @Override
   public void execute() {
     RobotContainer.arm.setLength(length);
+    RobotContainer.arm.setAngle(RobotContainer.arm.armPivotSetpointRadians);
   }
 
   // Make this return true when this Command no longer needs to run execute()
   @Override
   public boolean isFinished() {
-    return (Math.abs(RobotContainer.arm.getLength() - length) < 0.03) || !RobotContainer.arm.isLegal(RobotContainer.arm.getTranslation());
+    return (Math.abs(RobotContainer.arm.getLength() - length) < 0.03) || !RobotContainer.arm.isLegalExtension(RobotContainer.arm.getTranslation());
   }
 
   // Called once after isFinished returns true
   @Override
   public void end(boolean interrupted) {
-
+    RobotContainer.arm.armLengthSetpoint = length;
   }
 }

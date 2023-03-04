@@ -10,15 +10,11 @@ package frc.robot.commands.Arm;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.RobotContainer;
+
 @SuppressWarnings("GrazieInspection")
 public class ArmControlJoystick extends CommandBase {
-  double angleV;
-  double lengthV;
-
-  public ArmControlJoystick(double angleV, double lengthV) {
+  public ArmControlJoystick() {
     addRequirements(RobotContainer.arm);
-    this.angleV = angleV;
-    this.lengthV = lengthV;
   }
 
   // Called just before this Command runs the first time
@@ -30,18 +26,23 @@ public class ArmControlJoystick extends CommandBase {
   // Called repeatedly when this Command is scheduled to run
   @Override
   public void execute() {
-    RobotContainer.arm.setLengthV(RobotContainer.arm.isLegal(RobotContainer.arm.getTranslation()) ? RobotContainer.operatorStick.getExtendSpeed() : MathUtil.clamp(RobotContainer.operatorStick.getExtendSpeed(), -1, 0));
-    RobotContainer.arm.setAngleV(RobotContainer.arm.isLegal(RobotContainer.arm.getTranslation()) ? RobotContainer.operatorStick.getPitchSpeed() : MathUtil.clamp(RobotContainer.operatorStick.getPitchSpeed(), 0, 1));
+    var isLegalExtension = RobotContainer.arm.isLegalExtension(RobotContainer.arm.getTranslation());
+    var isLegalHeight = RobotContainer.arm.isLegalHeight(RobotContainer.arm.getTranslation());
+
+    RobotContainer.arm.setLengthV(isLegalExtension || isLegalHeight ? RobotContainer.operatorStick.getExtendSpeed() : MathUtil.clamp(RobotContainer.operatorStick.getExtendSpeed(), -1, 0));
+    RobotContainer.arm.setAngleV(isLegalExtension ? (isLegalHeight ? RobotContainer.operatorStick.getPitchSpeed() : MathUtil.clamp(RobotContainer.operatorStick.getPitchSpeed(), -1, 0)) : MathUtil.clamp(RobotContainer.operatorStick.getPitchSpeed(), 0, 1));
   }
 
   // Make this return true when this Command no longer needs to run execute()
   @Override
   public boolean isFinished() {
-    return false;
+    return RobotContainer.operatorStick.getX() <= 0.025 && RobotContainer.operatorStick.getY() <= 0.025;
   }
 
   // Called once after isFinished returns true
   @Override
   public void end(boolean interrupted) {
+    RobotContainer.arm.armLengthSetpoint = RobotContainer.arm.getLength();
+    RobotContainer.arm.armPivotSetpointRadians = RobotContainer.arm.getAngle().getRadians();
   }
 }

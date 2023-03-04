@@ -6,7 +6,7 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.RobotContainer;
 
 public class WristHoldSetpoint extends CommandBase {
-    Rotation2d angle;
+    private Rotation2d setpoint;
 
     public WristHoldSetpoint() {
         this.addRequirements(RobotContainer.wrist);
@@ -14,12 +14,12 @@ public class WristHoldSetpoint extends CommandBase {
 
     @Override
     public void initialize() {
-        this.angle = RobotContainer.wrist.getAngleSetpoint();
+        this.setpoint = RobotContainer.wrist.getAngleSetpoint();
     }
 
     @Override
     public void execute() {
-        RobotContainer.wrist.goToAbsoluteAngle(RobotContainer.wrist.getAngleSetpoint());
+        RobotContainer.wrist.goToAbsoluteAngle(setpoint);
     }
 
     @Override
@@ -28,8 +28,5 @@ public class WristHoldSetpoint extends CommandBase {
     }
 
     @Override
-    public void end(boolean interrupted) {
-        RobotContainer.wrist.stop();
-    }
-    
+    public void end(boolean interrupted) {}
 }

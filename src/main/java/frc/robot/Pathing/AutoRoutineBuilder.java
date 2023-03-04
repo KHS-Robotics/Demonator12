@@ -72,8 +72,7 @@ public class AutoRoutineBuilder {
     public static PathPlannerTrajectory PlaceEngage = PathPlanner.loadPath("Place and Engage", new PathConstraints(4, 3));
 
     public static Command getAutonomousCommand(PathPlannerTrajectory trajectory) {
-        FollowPathWithEvents command = new FollowPathWithEvents(generateSwerveCommand(trajectory),
-                trajectory.getMarkers(), eventMap);
+        FollowPathWithEvents command = new FollowPathWithEvents(generateSwerveCommand(trajectory), trajectory.getMarkers(), eventMap);
         return command;
     }
 
@@ -86,6 +85,7 @@ public class AutoRoutineBuilder {
                 SwerveYPIDController,
                 SwerveThetaPIDController,
                 RobotContainer.swerveDrive::setModuleStates,
-                RobotContainer.swerveDrive);
+                RobotContainer.swerveDrive
+        );
     }
 }

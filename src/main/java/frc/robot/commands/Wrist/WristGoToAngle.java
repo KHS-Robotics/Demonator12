@@ -6,31 +6,35 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.RobotContainer;
 
 public class WristGoToAngle extends CommandBase {
-    Rotation2d angle;
+    private Rotation2d angle;
+    private double tolerance;
 
-    public WristGoToAngle(Rotation2d angle) {
+    public WristGoToAngle(Rotation2d angle, double tolerance) {
         this.addRequirements(RobotContainer.wrist);
         this.angle = angle;
     }
 
-    @Override
-    public void initialize() {
+    public WristGoToAngle(Rotation2d angle) {
+        this(angle, 0.05);
     }
 
     @Override
-    public void execute() {
+    public void initialize() {
         RobotContainer.wrist.goToAngle(angle);
     }
 
     @Override
-    public boolean isFinished() {
-        return Math.abs(RobotContainer.wrist.getRelativeAngle().getRadians() - angle.getRadians()) < 0.05;
-
+    public void execute() {
+        
     }
 
     @Override
-    public void end(boolean interrupted) {
-        RobotContainer.wrist.stop();
+    public boolean isFinished() {
+        var current = RobotContainer.wrist.getRelativeAngle().getRadians();
+        var setpoint = angle.getRadians();
+        return Math.abs(setpoint - current) < tolerance;
     }
-    
+
+    @Override
+    public void end(boolean interrupted) {}
 }

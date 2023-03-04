@@ -10,9 +10,8 @@ import com.pathplanner.lib.commands.PPSwerveControllerCommand;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation3d;
-import edu.wpi.first.math.util.Units;
-import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.PowerDistribution;
+import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.SerialPort.Port;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -23,15 +22,16 @@ import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Pathing.AutoRoutineBuilder;
+import frc.robot.commands.Arm.ArmControlJoystick;
+import frc.robot.commands.Arm.ArmHoldSetpoint;
 import frc.robot.commands.Drive.CenterSwerveModules;
 import frc.robot.commands.Drive.DriveSwerveWithXbox;
 import frc.robot.commands.Wrist.WristGoToAngle;
 import frc.robot.commands.Wrist.WristHoldSetpoint;
 import frc.robot.subsystems.Arm;
+import frc.robot.subsystems.Grabber;
 import frc.robot.subsystems.Wrist;
 import frc.robot.subsystems.drive.SwerveDrive;
-
-
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -39,58 +39,49 @@ import frc.robot.subsystems.drive.SwerveDrive;
  * periodic methods (other than the scheduler calls). Instead, the structure of the robot (including
  * subsystems, commands, and trigger mappings) should be declared here.
  */
-public class RobotContainer
-{
-    // The robot's subsystems and commands are defined here...
-    public static NetworkTableInstance networkTable;
+public class RobotContainer {
+    private static RobotContainer instance;
+    public static RobotContainer getInstance() {
+        if (instance == null) {
+            instance = new RobotContainer();
+        }
+        return instance;
+    }
 
+    private static final SendableChooser<Command> autoChooser = new SendableChooser<>();
+    /** Gets the selected autonomous command. */
+    public Command getAutonomousRoutine() {
+        return autoChooser.getSelected();
+    }
+
+    public static final Field2d field = new Field2d();
     public static final AHRS navx = new AHRS(Port.kUSB);
     public static final PowerDistribution pdp = new PowerDistribution();
     
-    public static final SwerveDrive swerveDrive = new SwerveDrive();   
-    public static final Arm arm = new Arm(RobotMap.PIVOT_CANCODER, RobotMap.ARM_PIVOT, RobotMap.ARM_EXTEND, 
-                                          Constants.ARM_KS, Constants.ARM_KG, Constants.ARM_KV, Constants.ARM_KA, Constants.ARM_P, Constants.ARM_I, Constants.ARM_D, 
-                                          Constants.EXTEND_KS, Constants.EXTEND_KV, Constants.EXTEND_KA, Constants.EXTEND_P, Constants.EXTEND_I, Constants.EXTEND_D);
-    public static final Wrist wrist = new Wrist();
-    //public static final Grabber grabber = new Grabber();
-    
+    // Human Interface Devices (HIDs)
     public static final CommandXboxController driverController = new CommandXboxController(RobotMap.XBOX_PORT);
     public static final OperatorBox operatorBox = new OperatorBox(RobotMap.SWITCHBOX_PORT);
     public static final OperatorStick operatorStick = new OperatorStick(RobotMap.JOYSTICK_PORT);
-    
-    public static final SendableChooser<Command> autoChooser = new SendableChooser<>();
-    public static final Field2d field = new Field2d();
+
+    // Subsystems
+    public static final SwerveDrive swerveDrive = new SwerveDrive();   
+    public static final Arm arm = new Arm();
+    public static final Wrist wrist = new Wrist();
+    public static final Grabber grabber = new Grabber();
     
 
-    
-    
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
-    public RobotContainer()
-    {
-        networkTable = NetworkTableInstance.getDefault();
-        swerveDrive.setDefaultCommand(new DriveSwerveWithXbox());
-        configureBindings();
-        autoChooser.setDefaultOption("nothing", new PrintCommand("No auto :("));
-        autoChooser.addOption("one piece", new PrintCommand("placeholder for single placement command"));
-        autoChooser.addOption("one piece + engage", AutoRoutineBuilder.getAutonomousCommand(AutoRoutineBuilder.PlaceEngage));
-        autoChooser.addOption("one piece + engage + leave", AutoRoutineBuilder.getAutonomousCommand(AutoRoutineBuilder.PlaceEngageLeave));
-        autoChooser.addOption("two piece (cable protector)", AutoRoutineBuilder.getAutonomousCommand(AutoRoutineBuilder.Place2CableProtector));
-        autoChooser.addOption("two piece (loading station)", AutoRoutineBuilder.getAutonomousCommand(AutoRoutineBuilder.Place2LoadingStation));
-        autoChooser.addOption("two piece (cable protector) (engage)", AutoRoutineBuilder.getAutonomousCommand(AutoRoutineBuilder.Place2CableProtectorEngage));
-        autoChooser.addOption("two piece (loading station) (engage)", AutoRoutineBuilder.getAutonomousCommand(AutoRoutineBuilder.Place2LoadingStation));
-        autoChooser.addOption("three piece (cable protector)", AutoRoutineBuilder.getAutonomousCommand(AutoRoutineBuilder.Place3CableProtector));
-        autoChooser.addOption("three piece (loading station)", AutoRoutineBuilder.getAutonomousCommand(AutoRoutineBuilder.Place3LoadingStation));
-        SmartDashboard.putData(autoChooser);
-        SmartDashboard.putData("field", field);
-        SmartDashboard.putNumber("xFF", AutoRoutineBuilder.PlaceEngage.sample(0).velocityMetersPerSecond * AutoRoutineBuilder.PlaceEngage.sample(0).poseMeters.getRotation().getCos());
-        SmartDashboard.putNumber("yFF", AutoRoutineBuilder.PlaceEngage.sample(0).velocityMetersPerSecond * AutoRoutineBuilder.PlaceEngage.sample(0).poseMeters.getRotation().getSin());
-        SmartDashboard.putNumber("desiredX", AutoRoutineBuilder.PlaceEngage.sample(0).poseMeters.getX());
-        SmartDashboard.putNumber("curX", swerveDrive.getPose().getX());
-        PPSwerveControllerCommand.setLoggingCallbacks(null, RobotContainer.field::setRobotPose, swerveDrive::logTargetChassisSpeeds, null);
-
-
+    private RobotContainer() {
+        this.configureSubsystemDefaultCommands();
+        this.configureBindings();
+        this.configureAutonmousChooser();
     }
     
+    /** Configures the subsystem's default commands.  */
+    private void configureSubsystemDefaultCommands() {
+        swerveDrive.setDefaultCommand(new DriveSwerveWithXbox());
+        arm.setDefaultCommand(new ArmHoldSetpoint());
+    }
     
     /**
      * Use this method to define your trigger->command mappings. Triggers can be created via the
@@ -101,8 +92,21 @@ public class RobotContainer
      * PS4} controllers or {@link edu.wpi.first.wpilibj2.command.button.CommandJoystick Flight
      * joysticks}.
      */
-    private void configureBindings()
-    {
+    private void configureBindings() {
+        this.configureAutomatedBindings();
+        this.configureXboxControllerBindings();
+        this.configureOperatorBoxBindings();
+        this.configureOperatorStickBindings();
+    }
+
+    /** Automated bindings that happen without pressing any buttons. */
+    private void configureAutomatedBindings() {
+        Trigger autoCalibrateTeleop = new Trigger(() -> (!swerveDrive.isCalibrated && RobotState.isTeleop() && RobotState.isEnabled()));
+        autoCalibrateTeleop.onTrue(new CenterSwerveModules(true));
+    }
+
+    /** Binds commands to xbox controller buttons. */
+    private void configureXboxControllerBindings() {
         Trigger forceCalibrate = driverController.back();
         forceCalibrate.onTrue(new CenterSwerveModules(true));
 
@@ -111,7 +115,6 @@ public class RobotContainer
 
         Trigger test = driverController.y();
         test.onTrue(swerveDrive.followTrajectoryCommand(AutoRoutineBuilder.Place3LoadingStation, true));
-
 
         Trigger resetOdometry = driverController.a();
         resetOdometry.onTrue(new InstantCommand(() -> swerveDrive.resetOdometry()));
@@ -131,10 +134,17 @@ public class RobotContainer
         Trigger wristDown = driverController.b();
         wristDown.onTrue(new WristGoToAngle(new Rotation2d(-Math.PI / 4)));
 
-
         Trigger zeroWrist = driverController.start();
         zeroWrist.onTrue(new InstantCommand(() -> wrist.zeroWrist()));
+    }
 
+    /** Binds commands to the operator box. */
+    private void configureOperatorBoxBindings() {
+
+    }
+    
+    /** Binds commands to the operator stick. */
+    private void configureOperatorStickBindings() {
         Trigger highPos = new Trigger(operatorStick::highPos);
         highPos.onTrue(RobotContainer.arm.goToSetpoint(Constants.HIGH_POS));
         
@@ -145,15 +155,15 @@ public class RobotContainer
         lowPos.onTrue(RobotContainer.arm.goToSetpoint(new Translation3d()));
 
         Trigger home = new Trigger(operatorStick::home);
-        home.onTrue(RobotContainer.arm.goToPL(Math.toRadians(60), Constants.MIN_LENGTH).alongWith(
+        home.onTrue(RobotContainer.arm.goToPivotLength(Math.toRadians(60), Constants.MIN_LENGTH).alongWith(
                     new InstantCommand(() -> wrist.goToAngle(new Rotation2d(Math.toRadians(35))))));
         
         Trigger stow = new Trigger(operatorStick::stow);
-        stow.onTrue(RobotContainer.arm.goToPL(Math.toRadians(0), Constants.MIN_LENGTH).alongWith(
+        stow.onTrue(RobotContainer.arm.goToPivotLength(Math.toRadians(0), Constants.MIN_LENGTH).alongWith(
                     new InstantCommand(() -> wrist.goToAbsoluteAngle(new Rotation2d(Math.toRadians(90))))));
 
         Trigger scoreAngle = new Trigger(operatorStick::home);
-        scoreAngle.onTrue(RobotContainer.arm.goToPL(0.75, Constants.MIN_LENGTH));
+        scoreAngle.onTrue(RobotContainer.arm.goToPivotLength(0.75, Constants.MIN_LENGTH));
 
         //Trigger shelfPos = new Trigger(operatorStick::shelfPos);
         //shelfPos.onTrue(RobotContainer.arm.goToSetpoint(new Translation3d(Units.inchesToMeters(20), 0, Units.inchesToMeters(40.81))));
@@ -175,10 +185,31 @@ public class RobotContainer
 
         Trigger wristUpOverride = new Trigger(operatorStick::wristDownOverride);
         wristUpOverride.onTrue(new WristGoToAngle(wrist.getRelativeAngle().minus(Rotation2d.fromDegrees(10))));
-        
+
+        Trigger moveArm = new Trigger(() -> operatorStick.getX() > 0.025 || operatorStick.getY() > 0.025);
+        moveArm.onTrue(new ArmControlJoystick());
     }
 
-    public Command getAutonomousCommand() {
-        return autoChooser.getSelected();
+    /** Configures the autonomous chooser over Network Tables (e.g. Smart Dashboard). */
+    private void configureAutonmousChooser() {
+        autoChooser.setDefaultOption("nothing", new PrintCommand("No auto :("));
+        autoChooser.addOption("one piece", new PrintCommand("placeholder for single placement command"));
+        autoChooser.addOption("one piece + engage", AutoRoutineBuilder.getAutonomousCommand(AutoRoutineBuilder.PlaceEngage));
+        autoChooser.addOption("one piece + engage + leave", AutoRoutineBuilder.getAutonomousCommand(AutoRoutineBuilder.PlaceEngageLeave));
+        autoChooser.addOption("two piece (cable protector)", AutoRoutineBuilder.getAutonomousCommand(AutoRoutineBuilder.Place2CableProtector));
+        autoChooser.addOption("two piece (loading station)", AutoRoutineBuilder.getAutonomousCommand(AutoRoutineBuilder.Place2LoadingStation));
+        autoChooser.addOption("two piece (cable protector) (engage)", AutoRoutineBuilder.getAutonomousCommand(AutoRoutineBuilder.Place2CableProtectorEngage));
+        autoChooser.addOption("two piece (loading station) (engage)", AutoRoutineBuilder.getAutonomousCommand(AutoRoutineBuilder.Place2LoadingStation));
+        autoChooser.addOption("three piece (cable protector)", AutoRoutineBuilder.getAutonomousCommand(AutoRoutineBuilder.Place3CableProtector));
+        autoChooser.addOption("three piece (loading station)", AutoRoutineBuilder.getAutonomousCommand(AutoRoutineBuilder.Place3LoadingStation));
+        SmartDashboard.putData(autoChooser);
+        
+        SmartDashboard.putData("field", field);
+        SmartDashboard.putNumber("xFF", AutoRoutineBuilder.PlaceEngage.sample(0).velocityMetersPerSecond * AutoRoutineBuilder.PlaceEngage.sample(0).poseMeters.getRotation().getCos());
+        SmartDashboard.putNumber("yFF", AutoRoutineBuilder.PlaceEngage.sample(0).velocityMetersPerSecond * AutoRoutineBuilder.PlaceEngage.sample(0).poseMeters.getRotation().getSin());
+        SmartDashboard.putNumber("desiredX", AutoRoutineBuilder.PlaceEngage.sample(0).poseMeters.getX());
+        SmartDashboard.putNumber("curX", swerveDrive.getPose().getX());
+        
+        PPSwerveControllerCommand.setLoggingCallbacks(null, RobotContainer.field::setRobotPose, swerveDrive::logTargetChassisSpeeds, null);
     }
 }
