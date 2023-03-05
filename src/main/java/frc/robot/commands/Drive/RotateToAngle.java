@@ -10,42 +10,43 @@ package frc.robot.commands.drive;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.RobotContainer;
 
-public class CenterSwerveModules extends CommandBase {
-  private boolean force;
+public class RotateToAngle extends CommandBase {
+  private double angle, error;
 
   /**
-   * Creates a new CenterSwerveModules.
+   * Creates a new RotateToAngle.
    */
-  public CenterSwerveModules(boolean force) {
-    this.addRequirements(RobotContainer.swerveDrive);
-    this.force = force;
+  public RotateToAngle(double angle) {
+    this(angle, 1);
   }
+
+  public RotateToAngle(double angle, double error) {
+    this.angle = angle;
+    this.error = error;
+    addRequirements(RobotContainer.swerveDrive);
+  }
+
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    RobotContainer.swerveDrive.stop();
-    RobotContainer.swerveDrive.isCalibrated = !force && RobotContainer.swerveDrive.isCalibrated;
+    RobotContainer.swerveDrive.resetPid();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if (!RobotContainer.swerveDrive.isCalibrated) {
-      RobotContainer.swerveDrive.isCalibrated = RobotContainer.swerveDrive.resetEncoders();
-    }
+    RobotContainer.swerveDrive.rotateToAngleInPlace(angle);
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    RobotContainer.swerveDrive.stop();
-    RobotContainer.swerveDrive.isCalibrated = !interrupted;
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return RobotContainer.swerveDrive.isCalibrated;
+    return RobotContainer.swerveDrive.atSetpoint(error);
   }
 }

@@ -22,12 +22,13 @@ import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Pathing.AutoRoutineBuilder;
-import frc.robot.commands.Arm.ArmControlJoystick;
-import frc.robot.commands.Arm.ArmHoldSetpoint;
-import frc.robot.commands.Drive.CenterSwerveModules;
-import frc.robot.commands.Drive.DriveSwerveWithXbox;
-import frc.robot.commands.Wrist.WristGoToAngle;
-import frc.robot.commands.Wrist.WristHoldSetpoint;
+import frc.robot.commands.arm.ArmControlJoystick;
+import frc.robot.commands.arm.ArmHoldSetpoint;
+import frc.robot.commands.drive.CenterSwerveModules;
+import frc.robot.commands.drive.DriveSwerveWithXbox;
+import frc.robot.commands.drive.balance.BalanceOnChargeStation;
+import frc.robot.commands.wrist.WristGoToAngle;
+import frc.robot.commands.wrist.WristHoldSetpoint;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Grabber;
 import frc.robot.subsystems.Wrist;
@@ -136,6 +137,12 @@ public class RobotContainer {
 
         Trigger zeroWrist = driverController.start();
         zeroWrist.onTrue(new InstantCommand(() -> wrist.zeroWrist()));
+
+        Trigger setBalanceAngleZero = driverController.pov(0);
+        setBalanceAngleZero.onTrue(new BalanceOnChargeStation(0));
+
+        Trigger setBalanceAngle180 = driverController.pov(180);
+        setBalanceAngle180.onTrue(new BalanceOnChargeStation(180));
     }
 
     /** Binds commands to the operator box. */

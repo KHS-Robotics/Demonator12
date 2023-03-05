@@ -48,6 +48,7 @@ public class SwerveDrive extends SubsystemBase {
   public static double kMaxAngularSpeed = 2 * Math.PI; // pi radians per second
   public static double offset;
   public Pose2d startingPose;
+  public double angleSetpoint;
   private PIDController targetPid;
   private final Translation2d frontLeftLocation = new Translation2d(0.327025, 0.2693162);
   private final Translation2d frontRightLocation = new Translation2d(0.327025, -0.2693162);

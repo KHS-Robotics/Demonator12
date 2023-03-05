@@ -117,7 +117,7 @@ public class Constants {
   public static final double ARM_GEARING = 48;
 
   public static final double TARGET_P = 0.03;
-  public static final double TARGET_I = 0.0035;
+  public static final double TARGET_I = 0.0;
   public static final double TARGET_D = 0.0025;
 
   public static final int LED_LENGTH = 88;

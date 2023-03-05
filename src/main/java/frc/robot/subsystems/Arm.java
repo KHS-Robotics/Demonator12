@@ -19,8 +19,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.RobotContainer;
 import frc.robot.RobotMap;
-import frc.robot.commands.Arm.ArmControlLength;
-import frc.robot.commands.Arm.ArmControlPivot;
+import frc.robot.commands.arm.ArmControlLength;
+import frc.robot.commands.arm.ArmControlPivot;
 
 
 public class Arm extends SubsystemBase {
