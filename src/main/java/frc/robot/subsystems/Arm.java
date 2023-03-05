@@ -198,4 +198,9 @@ public class Arm extends SubsystemBase {
         Translation2d gripper = new Translation2d(Constants.GRIPPERLENGTH, targetXZ.getAngle().plus(RobotContainer.wrist.getRelativeAngle()));
         return targetXZ.plus(gripper).plus(new Translation2d(Constants.ARMOFFSET.getX(), Constants.ARMOFFSET.getZ()));
     }
+
+    public void zeroArmLength() {
+        extendEncoder.setPosition(0);
+    }
+
 }

@@ -17,8 +17,10 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
+import edu.wpi.first.wpilibj2.command.ProxyCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.arm.ArmControlJoystick;
@@ -146,9 +148,6 @@ public class RobotContainer {
         Trigger wristDown = driverController.b();
         wristDown.onTrue(new WristGoToAngle(() -> new Rotation2d(-Math.PI / 4)));
 
-        Trigger zeroWrist = driverController.start();
-        zeroWrist.onTrue(new InstantCommand(() -> wrist.zeroWrist()));
-
         Trigger setBalanceAngleZero = driverController.pov(0);
         setBalanceAngleZero.onTrue(new BalanceSequence(0));
 
@@ -158,6 +157,26 @@ public class RobotContainer {
 
     /** Binds commands to the operator box. */
     private void configureOperatorBoxBindings() {
+        Trigger leftNode = new Trigger(operatorBox::leftNode);
+        leftNode.onTrue(new ProxyCommand(() -> swerveDrive.goToNode(Field.aprilTagFromInput(operatorBox.getGrid()), operatorBox.getHeight() * 3)));
+
+        Trigger midNode = new Trigger(operatorBox::cubeNode);
+        midNode.onTrue(new ProxyCommand(() -> swerveDrive.goToNode(Field.aprilTagFromInput(operatorBox.getGrid()), operatorBox.getHeight() * 3 + 1)));
+        
+        Trigger rightNode = new Trigger(operatorBox::rightNode);
+        rightNode.onTrue(new ProxyCommand(() -> swerveDrive.goToNode(Field.aprilTagFromInput(operatorBox.getGrid()), operatorBox.getHeight() * 3 + 2)));
+
+        Trigger abort = new Trigger(operatorBox::abort);
+        abort.onTrue(new InstantCommand(() -> CommandScheduler.getInstance().cancelAll()));
+
+        Trigger zeroWrist = new Trigger(operatorBox::zeroWristPivot);
+        zeroWrist.onTrue(new InstantCommand(() -> wrist.zeroWrist()));
+        
+        //Trigger zeroArmPivot = new Trigger(operatorBox::zeroArmPivot);
+        //zeroArmPivot.onTrue(new InstantCommand(() -> arm.zeroArmPivot()));
+        
+        Trigger zeroArmLength = new Trigger(operatorBox::zeroArmLength);
+        zeroArmLength.onTrue(new InstantCommand(() -> arm.zeroArmLength()));
 
     }
     

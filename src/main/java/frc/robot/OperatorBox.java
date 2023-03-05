@@ -1,6 +1,7 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.Joystick;
+import frc.robot.Field.GridPosition;
 
 public class OperatorBox extends Joystick {
 
@@ -8,16 +9,16 @@ public class OperatorBox extends Joystick {
         super(port);
     }
 
-    public int getGrid() {
+    public GridPosition getGrid() {
         double switchVal = this.getRawAxis(0 /*SET TO HORIZONTAL SWITCH AXIS */);
         if(switchVal < -0.5) {
-            return -1;
+            return GridPosition.LEFT;
         }
         else if(switchVal > 0.5) {
-            return 1;
+            return GridPosition.MID;
         }
         else {
-            return 0;
+            return GridPosition.RIGHT;
         }
     }
 
