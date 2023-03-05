@@ -26,7 +26,7 @@ import frc.robot.commands.arm.ArmControlJoystick;
 import frc.robot.commands.arm.ArmHoldSetpoint;
 import frc.robot.commands.drive.CenterSwerveModules;
 import frc.robot.commands.drive.DriveSwerveWithXbox;
-import frc.robot.commands.drive.balance.BalanceOnChargeStation;
+import frc.robot.commands.drive.balance.BalanceSequence;
 import frc.robot.commands.wrist.WristGoToAngle;
 import frc.robot.commands.wrist.WristHoldSetpoint;
 import frc.robot.subsystems.Arm;
@@ -139,10 +139,10 @@ public class RobotContainer {
         zeroWrist.onTrue(new InstantCommand(() -> wrist.zeroWrist()));
 
         Trigger setBalanceAngleZero = driverController.pov(0);
-        setBalanceAngleZero.onTrue(new BalanceOnChargeStation(0));
+        setBalanceAngleZero.onTrue(new BalanceSequence(0));
 
         Trigger setBalanceAngle180 = driverController.pov(180);
-        setBalanceAngle180.onTrue(new BalanceOnChargeStation(180));
+        setBalanceAngle180.onTrue(new BalanceSequence(180));
     }
 
     /** Binds commands to the operator box. */

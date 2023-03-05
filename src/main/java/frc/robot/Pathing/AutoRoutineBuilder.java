@@ -18,7 +18,9 @@ import edu.wpi.first.math.trajectory.*;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
+import frc.robot.Constants;
 import frc.robot.RobotContainer;
+import frc.robot.commands.drive.balance.BalanceSequence;
 
 /**
  * Used to build autonomous routines.
@@ -36,10 +38,13 @@ public class AutoRoutineBuilder {
     static HashMap<String, Command> eventMap = new HashMap<>();
 
     public static void setEventMap() {
-        eventMap.put("intake", new PrintCommand("placeholder for intake command"));
-        eventMap.put("placehigh", new PrintCommand("placeholder for place high"));
-        eventMap.put("placemid", new PrintCommand("placeholder for place mid"));
-        eventMap.put("placemid", new PrintCommand("placeholder for place mid"));
+        eventMap.put("Intake", new PrintCommand("placeholder for intake command"));
+        eventMap.put("PlaceHigh", new PrintCommand("placeholder for place high"));
+        eventMap.put("PlaceMid", new PrintCommand("placeholder for place mid"));
+        eventMap.put("PlaceHybrid", new PrintCommand("placeholder for place hybrid"));
+        eventMap.put("BalanceClose", new BalanceSequence(0));
+        eventMap.put("BalanceFar", new BalanceSequence(180));
+        eventMap.put("ScoreAngle", RobotContainer.arm.goToPivotLength(0.75, Constants.MIN_LENGTH));
     }
 
     /***
