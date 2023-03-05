@@ -11,14 +11,20 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.RobotContainer;
 
 public class ApproachChargeStation extends CommandBase {
-    private static final double TargetPitchToEndCommand = 10;
+    private static final double AbsoluteTargetPitchToEndCommand = 10;
     private static final double ApporachSpeedMetersPerSecond = 0.5;
     private double yaw;
+    private boolean reverse;
 
-    public ApproachChargeStation(double yaw) {
+    public ApproachChargeStation(double yaw, boolean reverse) {
         addRequirements(RobotContainer.swerveDrive);
+        this.yaw = yaw;
+        this.reverse = reverse;
     }
 
+    public ApproachChargeStation(double yaw) {
+        this(yaw, false);
+    }
 
     // Called when the command is initially scheduled.
     @Override
@@ -29,7 +35,7 @@ public class ApproachChargeStation extends CommandBase {
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
-        RobotContainer.swerveDrive.holdAngleWhileDriving(ApporachSpeedMetersPerSecond, 0, yaw, false);
+        RobotContainer.swerveDrive.holdAngleWhileDriving((reverse ? -1 : 1) * ApporachSpeedMetersPerSecond, 0, yaw, false);
     }
 
     // Called once the command ends or is interrupted.
@@ -40,7 +46,6 @@ public class ApproachChargeStation extends CommandBase {
     // Returns true when the command should end.
     @Override
     public boolean isFinished() {
-        // TODO: need to negate pitch?? depends on how it is mounted
-        return RobotContainer.navx.getPitch() > TargetPitchToEndCommand;
+        return Math.abs(RobotContainer.navx.getPitch()) > AbsoluteTargetPitchToEndCommand;
     }
 }

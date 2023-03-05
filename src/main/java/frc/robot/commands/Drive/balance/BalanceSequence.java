@@ -11,7 +11,11 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.commands.drive.RotateToAngle;
 
 public class BalanceSequence extends SequentialCommandGroup {
+  public BalanceSequence(double yaw, boolean reversed) {
+    this.addCommands(new RotateToAngle(yaw), new ApproachChargeStation(yaw, reversed), new AutoBalance(yaw, reversed));
+  }
+
   public BalanceSequence(double yaw) {
-    this.addCommands(new RotateToAngle(yaw), new ApproachChargeStation(yaw), new AutoBalance(yaw));
+    this(yaw, false);
   }
 }

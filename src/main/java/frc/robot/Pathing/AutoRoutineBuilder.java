@@ -42,8 +42,10 @@ public class AutoRoutineBuilder {
         eventMap.put("PlaceHigh", new PrintCommand("placeholder for place high"));
         eventMap.put("PlaceMid", new PrintCommand("placeholder for place mid"));
         eventMap.put("PlaceHybrid", new PrintCommand("placeholder for place hybrid"));
-        eventMap.put("BalanceClose", new BalanceSequence(0));
-        eventMap.put("BalanceFar", new BalanceSequence(180));
+        eventMap.put("BalanceFacingAway", new BalanceSequence(0));
+        eventMap.put("BalanceFacingAwayReverse", new BalanceSequence(0, true));
+        eventMap.put("BalanceFacingDriver", new BalanceSequence(180));
+        eventMap.put("BalanceFacingDriverReverse", new BalanceSequence(180, true));
         eventMap.put("ScoreAngle", RobotContainer.arm.goToPivotLength(0.75, Constants.MIN_LENGTH));
     }
 
@@ -73,8 +75,8 @@ public class AutoRoutineBuilder {
             new PathConstraints(4, 3));
     public static PathPlannerTrajectory Place3LoadingStation = PathPlanner.loadPath("Place 3 Loading Station",
             new PathConstraints(4, 3));
-    public static PathPlannerTrajectory PlaceEngageLeave = PathPlanner.loadPath("Place and Engage+", new PathConstraints(4, 3));
-    public static PathPlannerTrajectory PlaceEngage = PathPlanner.loadPath("Place and Engage", new PathConstraints(4, 3));
+    public static PathPlannerTrajectory PlaceEngageLeave = PathPlanner.loadPath("Place and Engage+", new PathConstraints(2, 3));
+    public static PathPlannerTrajectory PlaceEngage = PathPlanner.loadPath("Place and Engage", new PathConstraints(2, 3));
 
     public static Command getAutonomousCommand(PathPlannerTrajectory trajectory) {
         FollowPathWithEvents command = new FollowPathWithEvents(generateSwerveCommand(trajectory), trajectory.getMarkers(), eventMap);
