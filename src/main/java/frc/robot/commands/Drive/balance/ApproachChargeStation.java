@@ -46,6 +46,6 @@ public class ApproachChargeStation extends CommandBase {
     // Returns true when the command should end.
     @Override
     public boolean isFinished() {
-        return Math.abs(RobotContainer.navx.getPitch()) > AbsoluteTargetPitchToEndCommand;
+        return Math.abs(RobotContainer.getRobotPitch()) > AbsoluteTargetPitchToEndCommand;
     }
 }

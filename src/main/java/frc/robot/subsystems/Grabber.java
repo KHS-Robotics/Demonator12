@@ -19,13 +19,10 @@ public class Grabber extends SubsystemBase {
         intakeMotor.setIdleMode(IdleMode.kBrake);
         
         grabSolenoid = new DoubleSolenoid(PneumaticsModuleType.REVPH, RobotMap.GRABBER_SOLENOID_FORWARD, RobotMap.GRABBER_SOLENOID_REVERSE);
+        turnOffGrabSolenoid();
     }
 
-    public void intake(double speed) {
-        intakeMotor.setVoltage(12 * speed);
-    }
-
-    public void outtake(double speed) {
+    public void set(double speed) {
         intakeMotor.setVoltage(12 * speed);
     }
 
@@ -39,5 +36,9 @@ public class Grabber extends SubsystemBase {
 
     public void release() {
         grabSolenoid.set(Value.kReverse);
+    }
+
+    public void turnOffGrabSolenoid() {
+        grabSolenoid.set(Value.kOff);
     }
 }

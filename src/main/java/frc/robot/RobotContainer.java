@@ -55,8 +55,19 @@ public class RobotContainer {
         return autoChooser.getSelected();
     }
 
-    public static final Field2d field = new Field2d();
     public static final AHRS navx = new AHRS(Port.kUSB);
+
+    /** Returns the angle or "yaw" of the robot in degrees. CW positive ranging from [-180, 180]. */
+    public static double getRobotYaw() {
+        return navx.getYaw();
+    }
+
+    /** Returns the pitch angle of the robot in degrees. This tracks the forwards/backwards tilt of the robot. */
+    public static double getRobotPitch() {
+        return navx.getPitch();
+    }
+
+    public static final Field2d field = new Field2d();
     public static final PowerDistribution pdp = new PowerDistribution();
     
     // Human Interface Devices (HIDs)
@@ -130,10 +141,10 @@ public class RobotContainer {
         //outtake.onTrue(new InstantCommand(() -> grabber.outtake(0.2)));
 
         Trigger wristUp = driverController.x();
-        wristUp.onTrue(new WristGoToAngle(new Rotation2d()));
+        wristUp.onTrue(new WristGoToAngle(() -> new Rotation2d()));
 
         Trigger wristDown = driverController.b();
-        wristDown.onTrue(new WristGoToAngle(new Rotation2d(-Math.PI / 4)));
+        wristDown.onTrue(new WristGoToAngle(() -> new Rotation2d(-Math.PI / 4)));
 
         Trigger zeroWrist = driverController.start();
         zeroWrist.onTrue(new InstantCommand(() -> wrist.zeroWrist()));
@@ -188,12 +199,12 @@ public class RobotContainer {
         wristStraightDown.onTrue(new InstantCommand(() -> wrist.setAngleSetpoint(Rotation2d.fromDegrees(-90))).andThen(new WristHoldSetpoint()));
 
         Trigger wristDownOverride = new Trigger(operatorStick::wristDownOverride);
-        wristDownOverride.onTrue(new WristGoToAngle(wrist.getRelativeAngle().minus(Rotation2d.fromDegrees(10))));
+        wristDownOverride.onTrue(new WristGoToAngle(() -> wrist.getRelativeAngle().minus(Rotation2d.fromDegrees(10))));
 
         Trigger wristUpOverride = new Trigger(operatorStick::wristDownOverride);
-        wristUpOverride.onTrue(new WristGoToAngle(wrist.getRelativeAngle().minus(Rotation2d.fromDegrees(10))));
+        wristUpOverride.onTrue(new WristGoToAngle(() -> wrist.getRelativeAngle().plus(Rotation2d.fromDegrees(10))));
 
-        Trigger moveArm = new Trigger(() -> operatorStick.getX() > 0.025 || operatorStick.getY() > 0.025);
+        Trigger moveArm = new Trigger(() -> Math.abs(operatorStick.getX()) > 0.025 || Math.abs(operatorStick.getY()) > 0.025);
         moveArm.onTrue(new ArmControlJoystick());
     }
 
