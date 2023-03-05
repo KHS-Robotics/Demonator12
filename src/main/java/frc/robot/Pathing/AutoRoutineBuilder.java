@@ -13,7 +13,6 @@ import com.pathplanner.lib.commands.FollowPathWithEvents;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.trajectory.*;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
@@ -24,29 +23,25 @@ import frc.robot.commands.drive.balance.BalanceSequence;
 
 /**
  * Used to build autonomous routines.
- *
- * @see AutonomousRoutine
- * @see AutoRoutineBuilder#build()
- * @see frc.robot.subsystems.SwerveDrive
- * @see frc.robot.subsystems.SwerveDrive#getPose()
- * @see frc.robot.subsystems.SwerveDrive#kinematics
- * @see frc.robot.subsystems.SwerveDrive#setModuleStates(edu.wpi.first.math.kinematics.SwerveModuleState[])
- * @see frc.robot.subsystems.SwerveDrive#resetNavx(Pose2d)
  */
 public class AutoRoutineBuilder {
+    private static final HashMap<String, Command> AutonomousEventMap = new HashMap<>();
 
-    static HashMap<String, Command> eventMap = new HashMap<>();
+    /** Gets the event map for PathPlanner's FollowPathWithEvents. */
+    private static HashMap<String, Command> getAutonomousEventMap() {
+        if (AutonomousEventMap.isEmpty()) {
+            AutonomousEventMap.put("Intake", new PrintCommand("placeholder for intake command"));
+            AutonomousEventMap.put("PlaceHigh", new PrintCommand("placeholder for place high"));
+            AutonomousEventMap.put("PlaceMid", new PrintCommand("placeholder for place mid"));
+            AutonomousEventMap.put("PlaceHybrid", new PrintCommand("placeholder for place hybrid"));
+            AutonomousEventMap.put("BalanceFacingAway", new BalanceSequence(0));
+            AutonomousEventMap.put("BalanceFacingAwayReverse", new BalanceSequence(0, true));
+            AutonomousEventMap.put("BalanceFacingDriver", new BalanceSequence(180));
+            AutonomousEventMap.put("BalanceFacingDriverReverse", new BalanceSequence(180, true));
+            AutonomousEventMap.put("ScoreAngle", RobotContainer.arm.goToPivotLength(0.75, Constants.MIN_LENGTH));
+        }
 
-    public static void setEventMap() {
-        eventMap.put("Intake", new PrintCommand("placeholder for intake command"));
-        eventMap.put("PlaceHigh", new PrintCommand("placeholder for place high"));
-        eventMap.put("PlaceMid", new PrintCommand("placeholder for place mid"));
-        eventMap.put("PlaceHybrid", new PrintCommand("placeholder for place hybrid"));
-        eventMap.put("BalanceFacingAway", new BalanceSequence(0));
-        eventMap.put("BalanceFacingAwayReverse", new BalanceSequence(0, true));
-        eventMap.put("BalanceFacingDriver", new BalanceSequence(180));
-        eventMap.put("BalanceFacingDriverReverse", new BalanceSequence(180, true));
-        eventMap.put("ScoreAngle", RobotContainer.arm.goToPivotLength(0.75, Constants.MIN_LENGTH));
+        return AutonomousEventMap;
     }
 
     /***
@@ -64,22 +59,22 @@ public class AutoRoutineBuilder {
             new TrapezoidProfile.Constraints(Math.PI, Math.PI));
 
     public static PathPlannerTrajectory Place2CableProtectorEngage = PathPlanner.loadPath("Place 2 Cable Protector Engage",
-            new PathConstraints(4, 3));
+            new PathConstraints(2, 3));
     public static PathPlannerTrajectory Place2CableProtector = PathPlanner.loadPath("Place 2 Cable Protector",
-            new PathConstraints(4, 3));
+            new PathConstraints(2, 3));
     public static PathPlannerTrajectory Place2LoadingStationEngage = PathPlanner.loadPath("Place 2 Loading Station Engage",
-            new PathConstraints(4, 3));
+            new PathConstraints(2, 3));
     public static PathPlannerTrajectory Place2LoadingStation = PathPlanner.loadPath("Place 2 Loading Station",
-            new PathConstraints(4, 3));
+            new PathConstraints(2, 3));
     public static PathPlannerTrajectory Place3CableProtector = PathPlanner.loadPath("Place 3 Cable Protector",
-            new PathConstraints(4, 3));
+            new PathConstraints(2, 3));
     public static PathPlannerTrajectory Place3LoadingStation = PathPlanner.loadPath("Place 3 Loading Station",
-            new PathConstraints(4, 3));
+            new PathConstraints(2, 3));
     public static PathPlannerTrajectory PlaceEngageLeave = PathPlanner.loadPath("Place and Engage+", new PathConstraints(2, 3));
     public static PathPlannerTrajectory PlaceEngage = PathPlanner.loadPath("Place and Engage", new PathConstraints(2, 3));
 
     public static Command getAutonomousCommand(PathPlannerTrajectory trajectory) {
-        FollowPathWithEvents command = new FollowPathWithEvents(generateSwerveCommand(trajectory), trajectory.getMarkers(), eventMap);
+        FollowPathWithEvents command = new FollowPathWithEvents(generateSwerveCommand(trajectory), trajectory.getMarkers(), getAutonomousEventMap());
         return command;
     }
 
