@@ -1,4 +1,4 @@
-package frc.robot.Pathing;
+package frc.robot.pathing;
 
 import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.PathPlannerTrajectory.PathPlannerState;

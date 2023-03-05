@@ -18,7 +18,6 @@ public class AutoBalance extends CommandBase {
         this.addRequirements(RobotContainer.swerveDrive);
         this.yaw = yaw;
         this.reverse = reverse;
-        this.slopeTolerance = (reverse ? -1 : 1) * slopeTolerance;
     }
 
     public AutoBalance(double yaw) {
@@ -35,7 +34,10 @@ public class AutoBalance extends CommandBase {
         currentPitch = RobotContainer.getRobotPitch();
         slope = (currentPitch - previousPitch) / dt;
 
-        var isAscending = slope < slopeTolerance;
+        var isStable = Math.abs(slope) < slopeTolerance;
+        var isTilted = Math.abs(currentPitch) > levelPitch;
+
+        var isAscending = isStable && isTilted;
         if (isAscending) {
             var xSpeed = (reverse ? -1 : 1) * Math.signum(currentPitch) * balanceSpeedMetersPerSecond;
             RobotContainer.swerveDrive.holdAngleWhileDriving(xSpeed, 0, yaw, true);
@@ -48,7 +50,7 @@ public class AutoBalance extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        var isSlopeWithinTolerance = slope < slopeTolerance;
+        var isSlopeWithinTolerance = Math.abs(slope) < slopeTolerance;
         var isPitchWithinTolerance = Math.abs(currentPitch) < levelPitch;
 
         var isRobotPitchWithinTolerance = isSlopeWithinTolerance && isPitchWithinTolerance;

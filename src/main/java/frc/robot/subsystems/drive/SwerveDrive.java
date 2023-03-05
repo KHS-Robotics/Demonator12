@@ -34,7 +34,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotMap;
-import frc.robot.Pathing.PPSwerveControllerCommandReversed;
+import frc.robot.pathing.PPSwerveControllerCommandReversed;
 import frc.robot.subsystems.vision.PhotonWrapper;
 import frc.robot.Constants;
 import frc.robot.Field;

@@ -21,7 +21,6 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.Pathing.AutoRoutineBuilder;
 import frc.robot.commands.arm.ArmControlJoystick;
 import frc.robot.commands.arm.ArmHoldSetpoint;
 import frc.robot.commands.drive.CenterSwerveModules;
@@ -29,6 +28,7 @@ import frc.robot.commands.drive.DriveSwerveWithXbox;
 import frc.robot.commands.drive.balance.BalanceSequence;
 import frc.robot.commands.wrist.WristGoToAngle;
 import frc.robot.commands.wrist.WristHoldSetpoint;
+import frc.robot.pathing.AutoRoutineBuilder;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Grabber;
 import frc.robot.subsystems.Wrist;
@@ -201,7 +201,7 @@ public class RobotContainer {
         Trigger wristDownOverride = new Trigger(operatorStick::wristDownOverride);
         wristDownOverride.onTrue(new WristGoToAngle(() -> wrist.getRelativeAngle().minus(Rotation2d.fromDegrees(10))));
 
-        Trigger wristUpOverride = new Trigger(operatorStick::wristDownOverride);
+        Trigger wristUpOverride = new Trigger(operatorStick::wristUpOverride);
         wristUpOverride.onTrue(new WristGoToAngle(() -> wrist.getRelativeAngle().plus(Rotation2d.fromDegrees(10))));
 
         Trigger moveArm = new Trigger(() -> Math.abs(operatorStick.getX()) > 0.025 || Math.abs(operatorStick.getY()) > 0.025);
