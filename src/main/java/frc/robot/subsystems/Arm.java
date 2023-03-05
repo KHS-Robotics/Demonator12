@@ -45,6 +45,7 @@ public class Arm extends SubsystemBase {
 
     public Arm () {
         pivotMotor = new CANSparkMax(RobotMap.ARM_PIVOT, MotorType.kBrushless);
+        pivotMotor.setInverted(true);
         extendMotor = new CANSparkMax(RobotMap.ARM_EXTEND, MotorType.kBrushless);
 
         pivotCANCoder = new CANCoder(RobotMap.PIVOT_CANCODER);

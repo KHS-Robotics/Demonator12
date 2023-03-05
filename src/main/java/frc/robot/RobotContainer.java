@@ -28,6 +28,7 @@ import frc.robot.commands.arm.ArmHoldSetpoint;
 import frc.robot.commands.drive.CenterSwerveModules;
 import frc.robot.commands.drive.DriveSwerveWithXbox;
 import frc.robot.commands.drive.balance.BalanceSequence;
+import frc.robot.commands.grabber.SetGrabber;
 import frc.robot.commands.wrist.WristGoToAngle;
 import frc.robot.commands.wrist.WristHoldSetpoint;
 import frc.robot.pathing.AutoRoutineBuilder;
@@ -225,6 +226,12 @@ public class RobotContainer {
 
         Trigger moveArm = new Trigger(() -> Math.abs(operatorStick.getX()) > 0.025 || Math.abs(operatorStick.getY()) > 0.025);
         moveArm.onTrue(new ArmControlJoystick());
+
+        Trigger grip = new Trigger(operatorStick::closeClaw);
+        grip.onTrue(new SetGrabber(true));
+
+        Trigger release = new Trigger(operatorStick::openClaw);
+        release.onTrue(new SetGrabber(false));
     }
 
     /** Configures the autonomous chooser over Network Tables (e.g. Smart Dashboard). */
