@@ -84,7 +84,7 @@ public class Arm extends SubsystemBase {
 
     //gets the arm extension
     public double getLength() {
-        return extendEncoder.getPosition();
+        return extendEncoder.getPosition() + Constants.MIN_LENGTH;
     }
 
     public void setLengthV(double vLength) {
