@@ -14,6 +14,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -48,7 +49,7 @@ public class Arm extends SubsystemBase {
         pivotMotor.setInverted(true);
         extendMotor = new CANSparkMax(RobotMap.ARM_EXTEND, MotorType.kBrushless);
 
-        pivotCANCoder = new CANCoder(RobotMap.PIVOT_CANCODER);
+        pivotCANCoder = new CANCoder(RobotMap.ARM_PIVOT_CANCODER);
         extendEncoder = extendMotor.getEncoder();
         //DO THIS extendEncoder.setPositionConversionFactor();
         //DO THIS extendEncoder.setVelocityConversionFactor();
@@ -63,6 +64,11 @@ public class Arm extends SubsystemBase {
         this.kGL = 0;
         this.kAL = 0;
         this.kDt = 0.02; // 20 ms assumed for control loops
+    }
+
+    @Override
+    public void periodic() {
+        SmartDashboard.putNumber("ArmPivot", this.getAngle().getDegrees());
     }
 
     //converts point from robot relative to arm relative
