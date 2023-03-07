@@ -25,13 +25,13 @@ public class OperatorBox extends Joystick {
     public int getHeight() {
         double switchVal = this.getRawAxis(0 /*SET TO VERTICAL  SWITCH AXIS */);
         if(switchVal < -0.5) {
-            return -1;
+            return 0;
         }
         else if(switchVal > 0.5) {
-            return 1;
+            return 2;
         }
         else {
-            return 0;
+            return 1;
         }
     }
 

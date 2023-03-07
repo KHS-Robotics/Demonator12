@@ -206,6 +206,9 @@ public class RobotContainer {
         //Trigger shelfPos = new Trigger(operatorStick::shelfPos);
         //shelfPos.onTrue(RobotContainer.arm.goToSetpoint(new Translation3d(Units.inchesToMeters(20), 0, Units.inchesToMeters(40.81))));
 
+        //Trigger singlePos = new Trigger(operatorStick::singlePos);
+        //singlePos.onTrue(RobotContainer.arm.goToPivotLength(Math.toRadians(15), Constants.MIN_LENGTH).alongWith(wrist.goToAbsoluteAngle(Math.toRadians(45));));
+
         Trigger wristFlat = new Trigger(operatorStick::wristFlat);
         wristFlat.onTrue(new InstantCommand(() -> wrist.setAngleSetpoint(new Rotation2d())).andThen(new WristHoldSetpoint()));
 
