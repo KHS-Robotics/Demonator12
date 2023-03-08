@@ -16,6 +16,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -44,6 +45,7 @@ public class Arm extends SubsystemBase {
     private final SimpleMotorFeedforward extendFeedFoward;
     private final PIDController extendPID;
     private double kGL, kAL, kDt;
+    private double lastVelocity;
 
     TrapezoidProfile.Constraints armConstraints;
 
@@ -68,8 +70,8 @@ public class Arm extends SubsystemBase {
 
         armConstraints = new TrapezoidProfile.Constraints(1, 1);
 
-        this.kGL = 0;
-        this.kAL = 0;
+        this.kGL = 0.71656966792;
+        this.kAL = 1.22566276313;
         this.kDt = 0.02; // 20 ms assumed for control loops
     }
 
@@ -87,6 +89,8 @@ public class Arm extends SubsystemBase {
         SmartDashboard.putNumber("ExtendNeoPosition", extendEncoder.getPosition());
         SmartDashboard.putNumber("ExtendVelocity", extendEncoder.getVelocity());
         SmartDashboard.putNumber("ExtendJoystick", RobotContainer.operatorStick.getExtendSpeed());
+        SmartDashboard.putNumber("volatge old", armFeedFoward.calculate(getAngle().getRadians() + RobotContainer.operatorStick.getExtendSpeed() * kDt, RobotContainer.operatorStick.getExtendSpeed()));
+        SmartDashboard.putNumber("voltage exp", calcVoltagePivot(RobotContainer.operatorStick.getExtendSpeed()));
     }
 
     //converts point from robot relative to arm relative
@@ -127,7 +131,7 @@ public class Arm extends SubsystemBase {
     }
 
     public void setAngleV(double vAngle) {
-        var voltage = MathUtil.clamp(armFeedFoward.calculate(getAngle().getRadians() + vAngle * kDt, vAngle) + armPID.calculate(getAngleV(), vAngle), -5, 8);
+        var voltage = MathUtil.clamp(calcVoltagePivot(vAngle), -5, 8);
         pivotMotor.setVoltage(voltage);
         SmartDashboard.putNumber("PivotVoltage", voltage);
     }
@@ -137,9 +141,11 @@ public class Arm extends SubsystemBase {
     }
 
     //takes in the position, vel, and accel setpoints, outputs the voltage for telescoping arm (rad, rad/s, rad/s^2)
-    public double calcVoltagePivot(double position, double velocity, double accel) {
-        return Constants.ARM_KS * Math.signum(velocity) + Constants.ARM_KV * velocity + (getLength() * kGL * Math.cos(position)) + Math.pow(getLength(), 2) * kAL * accel;
+    public double calcVoltagePivot(double vAngle) {
+        double accel = 0;
+        return Constants.ARM_KS * Math.signum(vAngle) + Constants.ARM_KV * vAngle + (getLength() * kGL * Math.cos(getAngle().getRadians() + vAngle * kDt)) + Math.pow(getLength(), 2) * kAL * accel;
     }
+    
 
     public void setAngle(double angle) {
         TrapezoidProfile profile = new TrapezoidProfile(armConstraints, new TrapezoidProfile.State(angle, 0), pivotSetpoint);

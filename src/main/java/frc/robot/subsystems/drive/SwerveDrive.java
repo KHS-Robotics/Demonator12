@@ -386,6 +386,8 @@ public class SwerveDrive extends SubsystemBase {
     updateOdometry();
     RobotContainer.field.setRobotPose(poseEstimator.getEstimatedPosition());
     SmartDashboard.putNumber("navx yaw", getYaw());
+    SmartDashboard.putNumber("navx pitch", RobotContainer.getRobotPitch());
+    SmartDashboard.putNumber("nax roll", RobotContainer.getRobotRoll());
     SmartDashboard.putNumber("Pose angle", getPose().getRotation().getDegrees());
     SmartDashboard.putNumber("module 1", getSwerveModulePositions()[0].angle.getDegrees());
     SmartDashboard.putNumber("module 2", getSwerveModulePositions()[1].angle.getDegrees());

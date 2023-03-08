@@ -67,7 +67,11 @@ public class RobotContainer {
 
     /** Returns the pitch angle of the robot in degrees. This tracks the forwards/backwards tilt of the robot. */
     public static double getRobotPitch() {
-        return navx.getPitch();
+        return navx.getRoll();
+    }
+
+    public static double getRobotRoll() {
+        return -navx.getPitch();
     }
 
     public static final Field2d field = new Field2d();
