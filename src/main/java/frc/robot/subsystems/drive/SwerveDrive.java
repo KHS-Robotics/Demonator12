@@ -391,6 +391,7 @@ public class SwerveDrive extends SubsystemBase {
     SmartDashboard.putNumber("module 2", getSwerveModulePositions()[1].angle.getDegrees());
     SmartDashboard.putNumber("module 3", getSwerveModulePositions()[2].angle.getDegrees());
     SmartDashboard.putNumber("module 4", getSwerveModulePositions()[3].angle.getDegrees());
+    SmartDashboard.putBoolean("Calibrated", isCalibrated);
   }
 
 

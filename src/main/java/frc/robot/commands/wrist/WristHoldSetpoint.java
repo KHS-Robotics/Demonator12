@@ -9,17 +9,17 @@ public class WristHoldSetpoint extends CommandBase {
     private Rotation2d setpoint;
 
     public WristHoldSetpoint() {
-        this.addRequirements(RobotContainer.wrist);
+       // this.addRequirements(RobotContainer.wrist);
     }
 
     @Override
     public void initialize() {
-        this.setpoint = RobotContainer.wrist.getAngleSetpoint();
+       // this.setpoint = RobotContainer.wrist.getAngleSetpoint();
     }
 
     @Override
     public void execute() {
-        RobotContainer.wrist.goToAbsoluteAngle(setpoint);
+      //  RobotContainer.wrist.goToAbsoluteAngle(setpoint);
     }
 
     @Override

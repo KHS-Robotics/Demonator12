@@ -12,7 +12,7 @@ public class WristGoToAngle extends CommandBase {
     private double tolerance;
 
     public WristGoToAngle(Supplier<Rotation2d> angle, double tolerance) {
-        this.addRequirements(RobotContainer.wrist);
+        //this.addRequirements(RobotContainer.wrist);
         this.angle = angle;
     }
 
@@ -22,7 +22,7 @@ public class WristGoToAngle extends CommandBase {
 
     @Override
     public void initialize() {
-        RobotContainer.wrist.goToAngle(angle.get());
+        //RobotContainer.wrist.goToAngle(angle.get());
     }
 
     @Override
@@ -33,8 +33,9 @@ public class WristGoToAngle extends CommandBase {
     @Override
     public boolean isFinished() {
         var setpoint = angle.get().getRadians();
-        var current = RobotContainer.wrist.getRelativeAngle().getRadians();
-        return Math.abs(setpoint - current) < tolerance;
+        //var current = RobotContainer.wrist.getRelativeAngle().getRadians();
+        //return Math.abs(setpoint - current) < tolerance;
+        return false;
     }
 
     @Override

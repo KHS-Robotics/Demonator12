@@ -3,8 +3,10 @@ package frc.robot.subsystems;
 import com.ctre.phoenix.sensors.CANCoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
+import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
@@ -18,6 +20,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.OperatorStick;
 import frc.robot.RobotContainer;
 import frc.robot.RobotMap;
 import frc.robot.commands.arm.ArmControlLength;
@@ -34,7 +37,9 @@ public class Arm extends SubsystemBase {
 
     private final ArmFeedforward armFeedFoward;
     private final PIDController armPID;
-    public double armPivotSetpointRadians, armLengthSetpoint;
+    public double armPivotSetpointRadians = 0.5, armLengthSetpoint = Constants.MIN_LENGTH;
+    public TrapezoidProfile.State pivotSetpoint = new TrapezoidProfile.State();
+    public TrapezoidProfile.State lengthSetpoint = new TrapezoidProfile.State();
 
     private final SimpleMotorFeedforward extendFeedFoward;
     private final PIDController extendPID;
@@ -42,17 +47,19 @@ public class Arm extends SubsystemBase {
 
     TrapezoidProfile.Constraints armConstraints;
 
-    static final Translation3d OFFSET = new Translation3d(0.0, 0.0, 0.0);
-
     public Arm () {
         pivotMotor = new CANSparkMax(RobotMap.ARM_PIVOT, MotorType.kBrushless);
         pivotMotor.setInverted(true);
+        pivotMotor.setIdleMode(IdleMode.kBrake);
+
         extendMotor = new CANSparkMax(RobotMap.ARM_EXTEND, MotorType.kBrushless);
+        extendMotor.setIdleMode(IdleMode.kBrake);
 
         pivotCANCoder = new CANCoder(RobotMap.ARM_PIVOT_CANCODER);
         extendEncoder = extendMotor.getEncoder();
-        //DO THIS extendEncoder.setPositionConversionFactor();
-        //DO THIS extendEncoder.setVelocityConversionFactor();
+        extendEncoder.setPositionConversionFactor(Units.inchesToMeters(Math.PI) / 3.2); // 1" diameter spool, 3.2:1 ratio
+        extendEncoder.setVelocityConversionFactor(Units.inchesToMeters(Math.PI) / (3.2 * 60));
+
         armFeedFoward = new ArmFeedforward(Constants.ARM_KS, Constants.ARM_KG, Constants.ARM_KV, Constants.ARM_KA);
         armPID = new PIDController(Constants.ARM_P, Constants.ARM_I, Constants.ARM_D);
         
@@ -68,25 +75,35 @@ public class Arm extends SubsystemBase {
 
     @Override
     public void periodic() {
+        var translation = getTranslation();
         SmartDashboard.putNumber("ArmPivot", this.getAngle().getDegrees());
+        SmartDashboard.putNumber("PivotJoystick", RobotContainer.operatorStick.getPitchSpeed());
+        SmartDashboard.putNumber("PivotV", Math.toRadians(pivotCANCoder.getVelocity()));
+        SmartDashboard.putBoolean("isLegalH", isLegalHeight(translation));
+        SmartDashboard.putBoolean("isLegalE", isLegalExtension(translation));
+        SmartDashboard.putNumber("translationx", translation.getX());
+        SmartDashboard.putNumber("translationy", translation.getY());
+        SmartDashboard.putNumber("ExtendArmPosition", getLength());
+        SmartDashboard.putNumber("ExtendNeoPosition", extendEncoder.getPosition());
+        SmartDashboard.putNumber("ExtendVelocity", extendEncoder.getVelocity());
+        SmartDashboard.putNumber("ExtendJoystick", RobotContainer.operatorStick.getExtendSpeed());
     }
 
     //converts point from robot relative to arm relative
     public Translation3d toArmRelative(Translation3d robotRelative) {
-        return robotRelative.minus(OFFSET);
+        return robotRelative.minus(Constants.ARMOFFSET);
     }
 
     //converts point from arm relative to robot relative
     public Translation3d toRobotRelative(Translation3d armRelative) {
-        return armRelative.plus(OFFSET);
+        return armRelative.plus(Constants.ARMOFFSET);
     }
     
     //extends the arm
     public void setLength(double length) {
-        length = length - Constants.MIN_LENGTH;
-        TrapezoidProfile profile = new TrapezoidProfile(armConstraints, new TrapezoidProfile.State(length, 0), new TrapezoidProfile.State(getLength(), getLengthV()));
-        TrapezoidProfile.State setpoint = profile.calculate(kDt);
-        extendMotor.setVoltage(extendFeedFoward.calculate(setpoint.velocity) + extendPID.calculate(getLengthV(), setpoint.velocity));
+        TrapezoidProfile profile = new TrapezoidProfile(armConstraints, new TrapezoidProfile.State(length, 0), lengthSetpoint);
+        lengthSetpoint = profile.calculate(kDt);
+        setLengthV(lengthSetpoint.velocity);
     }
 
     //gets the arm extension
@@ -95,7 +112,9 @@ public class Arm extends SubsystemBase {
     }
 
     public void setLengthV(double vLength) {
-        extendMotor.setVoltage(extendFeedFoward.calculate(vLength) + extendPID.calculate(getLengthV(), vLength));
+        var voltage = MathUtil.clamp(extendFeedFoward.calculate(vLength) + extendPID.calculate(getLengthV(), vLength), -3, 6);
+        extendMotor.setVoltage(voltage);
+        SmartDashboard.putNumber("ExtendVoltage", voltage);
     }
 
     public double getLengthV() {
@@ -108,7 +127,9 @@ public class Arm extends SubsystemBase {
     }
 
     public void setAngleV(double vAngle) {
-        pivotMotor.setVoltage(armFeedFoward.calculate(getAngle().getRadians() + vAngle * kDt, vAngle) + armPID.calculate(getLengthV(), vAngle));
+        var voltage = MathUtil.clamp(armFeedFoward.calculate(getAngle().getRadians() + vAngle * kDt, vAngle) + armPID.calculate(getAngleV(), vAngle), -5, 8);
+        pivotMotor.setVoltage(voltage);
+        SmartDashboard.putNumber("PivotVoltage", voltage);
     }
 
     public double getAngleV() {
@@ -121,9 +142,12 @@ public class Arm extends SubsystemBase {
     }
 
     public void setAngle(double angle) {
-        TrapezoidProfile profile = new TrapezoidProfile(armConstraints, new TrapezoidProfile.State(angle, 0), new TrapezoidProfile.State(getAngle().getRadians(), getAngleV()));
-        TrapezoidProfile.State setpoint = profile.calculate(kDt);
-        pivotMotor.setVoltage(armFeedFoward.calculate(getAngle().getRadians() + setpoint.velocity * kDt, setpoint.velocity) + armPID.calculate(getLengthV(), setpoint.velocity));
+        TrapezoidProfile profile = new TrapezoidProfile(armConstraints, new TrapezoidProfile.State(angle, 0), pivotSetpoint);
+        pivotSetpoint = profile.calculate(kDt);
+        SmartDashboard.putNumber("setpointAngleVelocity", pivotSetpoint.velocity);
+        SmartDashboard.putNumber("setpointAngleError", angle - getAngle().getRadians());
+        SmartDashboard.putNumber("setpointAnglePosition", pivotSetpoint.position);
+        setAngleV(pivotSetpoint.velocity);
     }
 
     //returns the required rotation to go to a setpoint in degrees (arm relative)
@@ -173,7 +197,7 @@ public class Arm extends SubsystemBase {
     }
 
     public SequentialCommandGroup goToSetpoint(Translation3d target) {
-        target = target.minus(new Translation3d(Constants.GRIPPERHOLDDISTANCE, new Rotation3d(0, RobotContainer.wrist.getAbsoluteAngle().getRadians(), 0)));
+        //target = target.minus(new Translation3d(Constants.GRIPPERHOLDDISTANCE, new Rotation3d(0, RobotContainer.wrist.getAbsoluteAngle().getRadians(), 0)));
         
         var command = new SequentialCommandGroup();
         if(isFurther(target)) {
@@ -202,8 +226,9 @@ public class Arm extends SubsystemBase {
 
     private Translation2d getFurthestPoint(Translation3d target) {
         Translation2d targetXZ = new Translation2d(target.getX(), target.getZ());
-        Translation2d gripper = new Translation2d(Constants.GRIPPERLENGTH, targetXZ.getAngle().plus(RobotContainer.wrist.getRelativeAngle()));
-        return targetXZ.plus(gripper).plus(new Translation2d(Constants.ARMOFFSET.getX(), Constants.ARMOFFSET.getZ()));
+        //Translation2d gripper = new Translation2d(Constants.GRIPPERLENGTH, targetXZ.getAngle().plus(RobotContainer.wrist.getRelativeAngle()));
+        //return targetXZ.plus(gripper).plus(new Translation2d(Constants.ARMOFFSET.getX(), Constants.ARMOFFSET.getZ()));
+        return targetXZ;
     }
 
     public void zeroArmLength() {

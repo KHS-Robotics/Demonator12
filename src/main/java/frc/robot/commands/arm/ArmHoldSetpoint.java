@@ -7,6 +7,7 @@
 
 package frc.robot.commands.arm;
 
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.RobotContainer;
 
@@ -18,7 +19,8 @@ public class ArmHoldSetpoint extends CommandBase {
     // Called just before this Command runs the first time
     @Override
     public void initialize() {
-
+        RobotContainer.arm.pivotSetpoint = new TrapezoidProfile.State(RobotContainer.arm.getAngle().getRadians(), RobotContainer.arm.getAngleV());
+        RobotContainer.arm.lengthSetpoint = new TrapezoidProfile.State(RobotContainer.arm.getLength(), RobotContainer.arm.getLengthV());
     }
 
     // Called repeatedly when this Command is scheduled to run

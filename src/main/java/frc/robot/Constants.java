@@ -19,7 +19,7 @@ public class Constants {
   public static final Transform3d CAMERA_1_POS = new Transform3d(new Translation3d(Units.inchesToMeters(14), Units.inchesToMeters(6.5), Units.inchesToMeters(9)),
       new Rotation3d(0, 0, 0));
   public static final Translation3d ARMOFFSET = new Translation3d(0.0, 0.0, Units.inchesToMeters(20));
-  public static final double MIN_LENGTH = Units.inchesToMeters(0);
+  public static final double MIN_LENGTH = Units.inchesToMeters(23.5);
   public static final double GRIPPERLENGTH = Units.inchesToMeters(16);
   public static final double GRIPPERHOLDDISTANCE = Units.inchesToMeters(10);
 
@@ -91,27 +91,26 @@ public class Constants {
   public static final double REAR_LEFT_DRIVE_KV = 3.4035;
   public static final double REAR_LEFT_DRIVE_KA = 0.093048;
 
-  public static final double ARM_P = 0;
-  public static final double ARM_I = 0;
-  public static final double ARM_D = 0;
-  public static final double ARM_KS = 0;
-  public static final double ARM_KG = 0;
-  public static final double ARM_KV = 0;
-  public static final double ARM_KA = 0;
+  public static final double ARM_P = 0.045;
+  public static final double ARM_I = 0.0;
+  public static final double ARM_D = 0.02;
+  public static final double ARM_KS = 0.26602;
+  public static final double ARM_KG = 0.41862;
+  public static final double ARM_KV = 4.1387;
+  public static final double ARM_KA = 0.27838;
 
   public static final double ARM_START_ANGLE = Math.toRadians(35);
 
-  public static final double EXTEND_P = 0;
+  public static final double EXTEND_P = 0.01;
   public static final double EXTEND_I = 0;
   public static final double EXTEND_D = 0;
-  public static final double EXTEND_KS = 0;
-  public static final double EXTEND_KV = 0;
-  public static final double EXTEND_KA = 0;
+  public static final double EXTEND_KS = 0.22841;
+  public static final double EXTEND_KV = 5.3504;
+  public static final double EXTEND_KA = 0.33319;
 
   public static final double WRIST_P = 9;
   public static final double WRIST_I = 0;
   public static final double WRIST_D = 0;
-
 
   public static final double WRIST_GEARING = 625/3;
   public static final double ARM_GEARING = 48;

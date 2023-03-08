@@ -6,7 +6,9 @@
   /*----------------------------------------------------------------------------*/
   package frc.robot.subsystems.drive;
 
-  import com.revrobotics.CANSparkMax;
+  import javax.net.ssl.HandshakeCompletedEvent;
+
+import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
   import com.revrobotics.CANSparkMaxLowLevel.MotorType;
   import com.revrobotics.RelativeEncoder;
@@ -19,7 +21,8 @@ import edu.wpi.first.math.MathUtil;
   import edu.wpi.first.math.kinematics.SwerveModulePosition;
   import edu.wpi.first.math.kinematics.SwerveModuleState;
   import edu.wpi.first.wpilibj.DigitalInput;
-  import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
   import frc.robot.Constants;
 
   /**
@@ -112,6 +115,9 @@ import edu.wpi.first.math.MathUtil;
 
     @Override
     public void periodic() {
+      SmartDashboard.putNumber(name + "-Drive", getState().speedMetersPerSecond);
+      SmartDashboard.putNumber(name + "-Pivot", getAngle());
+      SmartDashboard.putBoolean(name + "-Homed", !setDetection.get());
     }
 
     /**
