@@ -44,8 +44,7 @@ public class Arm extends SubsystemBase {
 
     private final SimpleMotorFeedforward extendFeedFoward;
     private final PIDController extendPID;
-    private double kGL, kAL, kDt;
-    private double lastVelocity;
+    private double kGL, kAL, kDt, kSpring;
 
     TrapezoidProfile.Constraints armConstraints;
 
@@ -146,6 +145,17 @@ public class Arm extends SubsystemBase {
         return Constants.ARM_KS * Math.signum(vAngle) + Constants.ARM_KV * vAngle + (getLength() * kGL * Math.cos(getAngle().getRadians() + vAngle * kDt)) + Math.pow(getLength(), 2) * kAL * accel;
     }
     
+
+    public double calcSpringVoltage(double position) {
+        double voltagePerTorque = Constants.ARM_KG / 344; //VOLTAGE TO HOLD ARM DIVIDED BY TORQUE TO HOLD IN IN-LBS
+        double force = kSpring;
+        double length = 23;
+        double height = Units.metersToInches(Constants.ARMOFFSET.getZ()) - 5;
+        double armAngle = getAngle().getRadians();
+        double forceAngle = Math.atan2(height - (length * Math.sin(armAngle)), length * Math.cos(armAngle) - 6);
+        double torque = force * Math.sin(forceAngle) * length * Math.cos(armAngle); 
+        return -torque * voltagePerTorque;
+    }
 
     public void setAngle(double angle) {
         TrapezoidProfile profile = new TrapezoidProfile(armConstraints, new TrapezoidProfile.State(angle, 0), pivotSetpoint);
