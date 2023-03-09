@@ -72,6 +72,7 @@ public class Arm extends SubsystemBase {
         this.kGL = 0.71656966792;
         this.kAL = 1.22566276313;
         this.kDt = 0.02; // 20 ms assumed for control loops
+        this.kSpring = 25;
     }
 
     @Override
@@ -90,6 +91,7 @@ public class Arm extends SubsystemBase {
         SmartDashboard.putNumber("ExtendJoystick", RobotContainer.operatorStick.getExtendSpeed());
         SmartDashboard.putNumber("volatge old", armFeedFoward.calculate(getAngle().getRadians() + RobotContainer.operatorStick.getExtendSpeed() * kDt, RobotContainer.operatorStick.getExtendSpeed()));
         SmartDashboard.putNumber("voltage exp", calcVoltagePivot(RobotContainer.operatorStick.getExtendSpeed()));
+        SmartDashboard.putNumber("springVoltage", calcSpringVoltage(getAngle().getRadians()));
     }
 
     //converts point from robot relative to arm relative
@@ -142,17 +144,18 @@ public class Arm extends SubsystemBase {
     //takes in the position, vel, and accel setpoints, outputs the voltage for telescoping arm (rad, rad/s, rad/s^2)
     public double calcVoltagePivot(double vAngle) {
         double accel = 0;
-        return Constants.ARM_KS * Math.signum(vAngle) + Constants.ARM_KV * vAngle + (getLength() * kGL * Math.cos(getAngle().getRadians() + vAngle * kDt)) + Math.pow(getLength(), 2) * kAL * accel;
+        return calcSpringVoltage(getAngle().getRadians()) + Constants.ARM_KS * Math.signum(vAngle) + Constants.ARM_KV * vAngle + (getLength() * kGL * Math.cos(getAngle().getRadians() + vAngle * kDt)) + Math.pow(getLength(), 2) * kAL * accel;
     }
     
 
     public double calcSpringVoltage(double position) {
         double voltagePerTorque = Constants.ARM_KG / 344; //VOLTAGE TO HOLD ARM DIVIDED BY TORQUE TO HOLD IN IN-LBS
         double force = kSpring;
-        double length = 23;
+        double length = 15;
         double height = Units.metersToInches(Constants.ARMOFFSET.getZ()) - 5;
         double armAngle = getAngle().getRadians();
         double forceAngle = Math.atan2(height - (length * Math.sin(armAngle)), length * Math.cos(armAngle) - 6);
+        SmartDashboard.putNumber("forceAngle", forceAngle);
         double torque = force * Math.sin(forceAngle) * length * Math.cos(armAngle); 
         return -torque * voltagePerTorque;
     }
@@ -200,7 +203,7 @@ public class Arm extends SubsystemBase {
     }
 
     public boolean isLegalExtension(Translation3d target) {
-        return this.getFurthestPoint(target).getX() < Units.inchesToMeters(45);
+        return this.getFurthestPoint(target).getX() < Units.inchesToMeters(61); //45 IN + 16 IN (HALF OF CHASSIS)
     }
 
     public boolean isLegalHeight(Translation3d target) {
@@ -213,7 +216,7 @@ public class Arm extends SubsystemBase {
     }
 
     public SequentialCommandGroup goToSetpoint(Translation3d target) {
-        //target = target.minus(new Translation3d(Constants.GRIPPERHOLDDISTANCE, new Rotation3d(0, RobotContainer.wrist.getAbsoluteAngle().getRadians(), 0)));
+        target = target.minus(new Translation3d(Constants.GRIPPERHOLDDISTANCE, new Rotation3d(0, RobotContainer.wrist.getAbsoluteAngle().getRadians(), 0)));
         
         var command = new SequentialCommandGroup();
         if(isFurther(target)) {
@@ -242,9 +245,8 @@ public class Arm extends SubsystemBase {
 
     private Translation2d getFurthestPoint(Translation3d target) {
         Translation2d targetXZ = new Translation2d(target.getX(), target.getZ());
-        //Translation2d gripper = new Translation2d(Constants.GRIPPERLENGTH, targetXZ.getAngle().plus(RobotContainer.wrist.getRelativeAngle()));
-        //return targetXZ.plus(gripper).plus(new Translation2d(Constants.ARMOFFSET.getX(), Constants.ARMOFFSET.getZ()));
-        return targetXZ;
+        Translation2d gripper = new Translation2d(Constants.GRIPPERLENGTH, targetXZ.getAngle().plus(RobotContainer.wrist.getRelativeAngle()));
+        return targetXZ.plus(gripper).plus(new Translation2d(Constants.ARMOFFSET.getX(), Constants.ARMOFFSET.getZ()));
     }
 
     public void zeroArmLength() {

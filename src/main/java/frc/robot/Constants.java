@@ -108,11 +108,15 @@ public class Constants {
   public static final double EXTEND_KV = 5.3504;
   public static final double EXTEND_KA = 0.33319;
 
-  public static final double WRIST_P = 9;
+  public static final double WRIST_P = 0.6;
   public static final double WRIST_I = 0;
-  public static final double WRIST_D = 0;
+  public static final double WRIST_D = 0.005;
+  public static final double WRIST_KS = 0.15463;
+  public static final double WRIST_KG = 0.59328;
+  public static final double WRIST_KV = 0.9972;
+  public static final double WRIST_KA = 0.025145;
 
-  public static final double WRIST_GEARING = 625/3;
+  public static final double WRIST_GEARING = 100;
   public static final double ARM_GEARING = 48;
 
   public static final double TARGET_P = 0.03;
