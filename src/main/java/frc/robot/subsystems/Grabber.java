@@ -13,37 +13,38 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotMap;
 
 public class Grabber extends SubsystemBase {
-    private final CANSparkMax intakeMotor;
-    private final SparkMaxLimitSwitch intakeSensor;
-    private final DoubleSolenoid grabSolenoid;
+  private final CANSparkMax intakeMotor;
+  private final SparkMaxLimitSwitch intakeSensor;
+  private final DoubleSolenoid grabSolenoid;
 
-    public Grabber() {
-        intakeMotor = new CANSparkMax(RobotMap.GRABBER_INTAKE, MotorType.kBrushless);
-        intakeMotor.setIdleMode(IdleMode.kBrake);
-        intakeSensor = intakeMotor.getForwardLimitSwitch(Type.kNormallyClosed);
-        intakeSensor.enableLimitSwitch(true);
-        
-        grabSolenoid = new DoubleSolenoid(PneumaticsModuleType.REVPH, RobotMap.GRABBER_SOLENOID_FORWARD, RobotMap.GRABBER_SOLENOID_REVERSE);
-        turnOffGrabSolenoid();
-    }
+  public Grabber() {
+    intakeMotor = new CANSparkMax(RobotMap.GRABBER_INTAKE, MotorType.kBrushless);
+    intakeMotor.setIdleMode(IdleMode.kBrake);
+    intakeSensor = intakeMotor.getForwardLimitSwitch(Type.kNormallyClosed);
+    intakeSensor.enableLimitSwitch(true);
 
-    public void set(double speed) {
-        intakeMotor.setVoltage(-12 * speed);
-    }
+    grabSolenoid = new DoubleSolenoid(PneumaticsModuleType.REVPH, RobotMap.GRABBER_SOLENOID_FORWARD,
+        RobotMap.GRABBER_SOLENOID_REVERSE);
+    turnOffGrabSolenoid();
+  }
 
-    public void stopMotor() {
-        intakeMotor.disable();
-    }
+  public void set(double speed) {
+    intakeMotor.setVoltage(-12 * speed);
+  }
 
-    public void grip() {
-        grabSolenoid.set(Value.kForward);
-    }
+  public void stopMotor() {
+    intakeMotor.disable();
+  }
 
-    public void release() {
-        grabSolenoid.set(Value.kReverse);
-    }
+  public void grip() {
+    grabSolenoid.set(Value.kForward);
+  }
 
-    public void turnOffGrabSolenoid() {
-        grabSolenoid.set(Value.kOff);
-    }
+  public void release() {
+    grabSolenoid.set(Value.kReverse);
+  }
+
+  public void turnOffGrabSolenoid() {
+    grabSolenoid.set(Value.kOff);
+  }
 }

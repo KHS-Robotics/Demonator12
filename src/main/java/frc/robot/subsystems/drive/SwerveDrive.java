@@ -60,92 +60,87 @@ public class SwerveDrive extends SubsystemBase {
   public boolean isCalibrated = false;
 
   public static final SwerveModule frontLeft = new SwerveModule(
-    "FL",
-    RobotMap.FRONT_LEFT_DRIVE,
-    RobotMap.FRONT_LEFT_PIVOT,
-    Constants.FRONT_LEFT_P,
-    Constants.FRONT_LEFT_I,
-    Constants.FRONT_LEFT_D,
-    Constants.FRONT_LEFT_KS,
-    Constants.FRONT_LEFT_KV,
-    Constants.FRONT_LEFT_KA,
-    Constants.FRONT_LEFT_DRIVE_P,
-    Constants.FRONT_LEFT_DRIVE_I,
-    Constants.FRONT_LEFT_DRIVE_D,
-    Constants.FRONT_LEFT_DRIVE_KS,
-    Constants.FRONT_LEFT_DRIVE_KV,
-    Constants.FRONT_LEFT_DRIVE_KA,
-    RobotMap.FRONT_LEFT_DIGITAL_INPUT
-  );
+      "FL",
+      RobotMap.FRONT_LEFT_DRIVE,
+      RobotMap.FRONT_LEFT_PIVOT,
+      Constants.FRONT_LEFT_P,
+      Constants.FRONT_LEFT_I,
+      Constants.FRONT_LEFT_D,
+      Constants.FRONT_LEFT_KS,
+      Constants.FRONT_LEFT_KV,
+      Constants.FRONT_LEFT_KA,
+      Constants.FRONT_LEFT_DRIVE_P,
+      Constants.FRONT_LEFT_DRIVE_I,
+      Constants.FRONT_LEFT_DRIVE_D,
+      Constants.FRONT_LEFT_DRIVE_KS,
+      Constants.FRONT_LEFT_DRIVE_KV,
+      Constants.FRONT_LEFT_DRIVE_KA,
+      RobotMap.FRONT_LEFT_DIGITAL_INPUT);
   public static final SwerveModule frontRight = new SwerveModule(
-    "FR",
-    RobotMap.FRONT_RIGHT_DRIVE,
-    RobotMap.FRONT_RIGHT_PIVOT,
-    Constants.FRONT_RIGHT_P,
-    Constants.FRONT_RIGHT_I,
-    Constants.FRONT_RIGHT_D,
-    Constants.FRONT_RIGHT_KS,
-    Constants.FRONT_RIGHT_KV,
-    Constants.FRONT_RIGHT_KA,
-    Constants.FRONT_RIGHT_DRIVE_P,
-    Constants.FRONT_RIGHT_DRIVE_I,
-    Constants.FRONT_RIGHT_DRIVE_D,
-    Constants.FRONT_LEFT_DRIVE_KS,
-    Constants.FRONT_LEFT_DRIVE_KV,
-    Constants.FRONT_LEFT_DRIVE_KA,
-    RobotMap.FRONT_RIGHT_DIGITAL_INPUT
-  );
+      "FR",
+      RobotMap.FRONT_RIGHT_DRIVE,
+      RobotMap.FRONT_RIGHT_PIVOT,
+      Constants.FRONT_RIGHT_P,
+      Constants.FRONT_RIGHT_I,
+      Constants.FRONT_RIGHT_D,
+      Constants.FRONT_RIGHT_KS,
+      Constants.FRONT_RIGHT_KV,
+      Constants.FRONT_RIGHT_KA,
+      Constants.FRONT_RIGHT_DRIVE_P,
+      Constants.FRONT_RIGHT_DRIVE_I,
+      Constants.FRONT_RIGHT_DRIVE_D,
+      Constants.FRONT_LEFT_DRIVE_KS,
+      Constants.FRONT_LEFT_DRIVE_KV,
+      Constants.FRONT_LEFT_DRIVE_KA,
+      RobotMap.FRONT_RIGHT_DIGITAL_INPUT);
   public static final SwerveModule rearLeft = new SwerveModule(
-    "RL",
-    RobotMap.REAR_LEFT_DRIVE,
-    RobotMap.REAR_LEFT_PIVOT,
-    Constants.REAR_LEFT_P,
-    Constants.REAR_LEFT_I,
-    Constants.REAR_LEFT_D,
-    Constants.REAR_LEFT_KS,
-    Constants.REAR_LEFT_KV,
-    Constants.REAR_LEFT_KA,
-    Constants.REAR_LEFT_DRIVE_P,
-    Constants.REAR_LEFT_DRIVE_I,
-    Constants.REAR_LEFT_DRIVE_D,
-    Constants.FRONT_LEFT_DRIVE_KS,
-    Constants.FRONT_LEFT_DRIVE_KV,
-    Constants.FRONT_LEFT_DRIVE_KA,
-    RobotMap.REAR_LEFT_DIGITAL_INPUT
-  );
+      "RL",
+      RobotMap.REAR_LEFT_DRIVE,
+      RobotMap.REAR_LEFT_PIVOT,
+      Constants.REAR_LEFT_P,
+      Constants.REAR_LEFT_I,
+      Constants.REAR_LEFT_D,
+      Constants.REAR_LEFT_KS,
+      Constants.REAR_LEFT_KV,
+      Constants.REAR_LEFT_KA,
+      Constants.REAR_LEFT_DRIVE_P,
+      Constants.REAR_LEFT_DRIVE_I,
+      Constants.REAR_LEFT_DRIVE_D,
+      Constants.FRONT_LEFT_DRIVE_KS,
+      Constants.FRONT_LEFT_DRIVE_KV,
+      Constants.FRONT_LEFT_DRIVE_KA,
+      RobotMap.REAR_LEFT_DIGITAL_INPUT);
   public static final SwerveModule rearRight = new SwerveModule(
-    "RR",
-    RobotMap.REAR_RIGHT_DRIVE,
-    RobotMap.REAR_RIGHT_PIVOT,
-    Constants.REAR_RIGHT_P,
-    Constants.REAR_RIGHT_I,
-    Constants.REAR_RIGHT_D,
-    Constants.REAR_RIGHT_KS,
-    Constants.REAR_RIGHT_KV,
-    Constants.REAR_RIGHT_KA,
-    Constants.REAR_RIGHT_DRIVE_P,
-    Constants.REAR_RIGHT_DRIVE_I,
-    Constants.REAR_RIGHT_DRIVE_D,
-    Constants.FRONT_LEFT_DRIVE_KS,
-    Constants.FRONT_LEFT_DRIVE_KV,
-    Constants.FRONT_LEFT_DRIVE_KA,
-    RobotMap.REAR_RIGHT_DIGITAL_INPUT
-  );
+      "RR",
+      RobotMap.REAR_RIGHT_DRIVE,
+      RobotMap.REAR_RIGHT_PIVOT,
+      Constants.REAR_RIGHT_P,
+      Constants.REAR_RIGHT_I,
+      Constants.REAR_RIGHT_D,
+      Constants.REAR_RIGHT_KS,
+      Constants.REAR_RIGHT_KV,
+      Constants.REAR_RIGHT_KA,
+      Constants.REAR_RIGHT_DRIVE_P,
+      Constants.REAR_RIGHT_DRIVE_I,
+      Constants.REAR_RIGHT_DRIVE_D,
+      Constants.FRONT_LEFT_DRIVE_KS,
+      Constants.FRONT_LEFT_DRIVE_KV,
+      Constants.FRONT_LEFT_DRIVE_KA,
+      RobotMap.REAR_RIGHT_DIGITAL_INPUT);
 
   public final SwerveDriveKinematics kinematics = new SwerveDriveKinematics(frontLeftLocation,
-    frontRightLocation, rearLeftLocation, rearRightLocation);
+      frontRightLocation, rearLeftLocation, rearRightLocation);
 
-  private final SwerveDrivePoseEstimator poseEstimator = new SwerveDrivePoseEstimator(kinematics, RobotContainer.navx.getRotation2d(), new SwerveModulePosition[] {
-    new SwerveModulePosition(0, new Rotation2d(frontLeft.getAngle())), 
-    new SwerveModulePosition(0, new Rotation2d(frontRight.getAngle())), 
-    new SwerveModulePosition(0, new Rotation2d(rearLeft.getAngle())), 
-    new SwerveModulePosition(0, new Rotation2d(rearRight.getAngle()))
-  }, new Pose2d(0, 0, Rotation2d.fromDegrees(0)));
+  private final SwerveDrivePoseEstimator poseEstimator = new SwerveDrivePoseEstimator(kinematics,
+      RobotContainer.navx.getRotation2d(), new SwerveModulePosition[] {
+          new SwerveModulePosition(0, new Rotation2d(frontLeft.getAngle())),
+          new SwerveModulePosition(0, new Rotation2d(frontRight.getAngle())),
+          new SwerveModulePosition(0, new Rotation2d(rearLeft.getAngle())),
+          new SwerveModulePosition(0, new Rotation2d(rearRight.getAngle()))
+      }, new Pose2d(0, 0, Rotation2d.fromDegrees(0)));
 
-    
-  
-  
-  //private final SwerveDriveOdometry odometry = new SwerveDriveOdometry(kinematics, this.getAngle());
+  // private final SwerveDriveOdometry odometry = new
+  // SwerveDriveOdometry(kinematics, this.getAngle());
 
   /**
    * Constructs Swerve Drive
@@ -197,8 +192,9 @@ public class SwerveDrive extends SubsystemBase {
       rearRight.setDesiredState(new SwerveModuleState(0.0, Rotation2d.fromDegrees(rearRight.getAngle())));
     } else {
       var swerveModuleStates = kinematics
-        .toSwerveModuleStates(fieldRelative ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, getPose().getRotation())
-          : new ChassisSpeeds(xSpeed, ySpeed, rot));
+          .toSwerveModuleStates(
+              fieldRelative ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, getPose().getRotation())
+                  : new ChassisSpeeds(xSpeed, ySpeed, rot));
 
       frontLeft.setDesiredState(swerveModuleStates[0]);
       frontRight.setDesiredState(swerveModuleStates[1]);
@@ -215,37 +211,41 @@ public class SwerveDrive extends SubsystemBase {
   }
 
   public void setModuleStates(ChassisSpeeds chassisSpeeds) {
-    setModuleStates(kinematics.toSwerveModuleStates(ChassisSpeeds.fromFieldRelativeSpeeds(chassisSpeeds, poseEstimator.getEstimatedPosition().getRotation())));
+    setModuleStates(kinematics.toSwerveModuleStates(
+        ChassisSpeeds.fromFieldRelativeSpeeds(chassisSpeeds, poseEstimator.getEstimatedPosition().getRotation())));
   }
 
   public Command goToNode(int apriltag, int node) {
 
-      Translation3d nodeTrans = Field.getNodeCoordinatesFieldRelative(apriltag, node);
-      Translation2d goal = new Translation2d(Field.fieldLayout.getTagPose(apriltag).get().getTranslation().getX() + Field.DIST_FROM_NODE_X_METERS, nodeTrans.getY());
-      PathPlannerTrajectory trajToGoal = PathPlanner.generatePath(
-        new PathConstraints(2, 3), 
+    Translation3d nodeTrans = Field.getNodeCoordinatesFieldRelative(apriltag, node);
+    Translation2d goal = new Translation2d(
+        Field.fieldLayout.getTagPose(apriltag).get().getTranslation().getX() + Field.DIST_FROM_NODE_X_METERS,
+        nodeTrans.getY());
+    PathPlannerTrajectory trajToGoal = PathPlanner.generatePath(
+        new PathConstraints(2, 3),
         PathPoint.fromCurrentHolonomicState(getPose(), getChassisSpeeds()),
-        new PathPoint(goal, Rotation2d.fromDegrees(0), Rotation2d.fromDegrees(180))); // position, heading(direction of travel), holonomic rotation
-      return followTrajectoryCommand(trajToGoal, false);
+        new PathPoint(goal, Rotation2d.fromDegrees(0), Rotation2d.fromDegrees(180))); // position, heading(direction of
+                                                                                      // travel), holonomic rotation
+    return followTrajectoryCommand(trajToGoal, false);
   }
 
   public Command followTrajectoryCommand(PathPlannerTrajectory trajectory, boolean isAutoPath) {
     return new SequentialCommandGroup(
-      new InstantCommand(() -> {
-        if (isAutoPath) {
-          this.poseEstimator.resetPosition(getAngle(), getSwerveModulePositions(), trajectory.getInitialHolonomicPose());
-        }
-      }),
-      new PPSwerveControllerCommandReversed(
-      trajectory, 
-      this::getPose, 
-      new PIDController(0, 0, 0),
-      new PIDController(0, 0, 0), 
-      new PIDController(0, 0, 0),
-      this::setModuleStates,
-      true,
-      this)
-      );
+        new InstantCommand(() -> {
+          if (isAutoPath) {
+            this.poseEstimator.resetPosition(getAngle(), getSwerveModulePositions(),
+                trajectory.getInitialHolonomicPose());
+          }
+        }),
+        new PPSwerveControllerCommandReversed(
+            trajectory,
+            this::getPose,
+            new PIDController(0, 0, 0),
+            new PIDController(0, 0, 0),
+            new PIDController(0, 0, 0),
+            this::setModuleStates,
+            true,
+            this));
   }
 
   public void setPID(double p, double i, double d) {
@@ -257,7 +257,8 @@ public class SwerveDrive extends SubsystemBase {
   }
 
   public void holdAngleWhileDriving(double x, double y, double setAngle, boolean fod) {
-    var rotateOutput = MathUtil.clamp(targetPid.calculate(getYaw(), normalizeAngle(setAngle)), -1, 1) * kMaxAngularSpeed;
+    var rotateOutput = MathUtil.clamp(targetPid.calculate(getYaw(), normalizeAngle(setAngle)), -1, 1)
+        * kMaxAngularSpeed;
     this.drive(x, y, rotateOutput, fod);
   }
 
@@ -270,11 +271,9 @@ public class SwerveDrive extends SubsystemBase {
     return targetPid.atSetpoint();
   }
 
-  
   public Pose2d getPose() {
     return poseEstimator.getEstimatedPosition();
   }
-  
 
   /**
    * Updates the field relative position of the robot.
@@ -283,7 +282,8 @@ public class SwerveDrive extends SubsystemBase {
   public void updateOdometry() {
     poseEstimator.updateWithTime(Timer.getFPGATimestamp(), getAngle(), getSwerveModulePositions());
 
-    Optional<EstimatedRobotPose> estimatedPose = photonCamera.getEstimatedGlobalPose(poseEstimator.getEstimatedPosition());
+    Optional<EstimatedRobotPose> estimatedPose = photonCamera
+        .getEstimatedGlobalPose(poseEstimator.getEstimatedPosition());
     if (estimatedPose.isPresent()) {
       EstimatedRobotPose camPose = estimatedPose.get();
       poseEstimator.addVisionMeasurement(camPose.estimatedPose.toPose2d(), camPose.timestampSeconds);
@@ -307,19 +307,19 @@ public class SwerveDrive extends SubsystemBase {
 
   public SwerveModuleState[] getSwerveModuleStates() {
     return new SwerveModuleState[] {
-      frontLeft.getState(),
-      frontRight.getState(),
-      rearLeft.getState(),
-      rearRight.getState()
+        frontLeft.getState(),
+        frontRight.getState(),
+        rearLeft.getState(),
+        rearRight.getState()
     };
   }
 
   public SwerveModulePosition[] getSwerveModulePositions() {
     return new SwerveModulePosition[] {
-      frontLeft.getPosition(),
-      frontRight.getPosition(),
-      rearLeft.getPosition(),
-      rearRight.getPosition()
+        frontLeft.getPosition(),
+        frontRight.getPosition(),
+        rearLeft.getPosition(),
+        rearRight.getPosition()
     };
   }
 
@@ -395,6 +395,5 @@ public class SwerveDrive extends SubsystemBase {
     SmartDashboard.putNumber("module 4", getSwerveModulePositions()[3].angle.getDegrees());
     SmartDashboard.putBoolean("Calibrated", isCalibrated);
   }
-
 
 }

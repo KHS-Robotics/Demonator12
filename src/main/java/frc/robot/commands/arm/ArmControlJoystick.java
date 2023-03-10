@@ -30,14 +30,19 @@ public class ArmControlJoystick extends CommandBase {
     var isLegalExtension = RobotContainer.arm.isLegalExtension(RobotContainer.arm.getTranslation());
     var isLegalHeight = RobotContainer.arm.isLegalHeight(RobotContainer.arm.getTranslation());
 
-    RobotContainer.arm.setLengthV(isLegalExtension && isLegalHeight ? RobotContainer.operatorStick.getExtendSpeed() : MathUtil.clamp(RobotContainer.operatorStick.getExtendSpeed(), -1, 0));
-    RobotContainer.arm.setAngleV(isLegalExtension ? (isLegalHeight ? RobotContainer.operatorStick.getPitchSpeed() : MathUtil.clamp(RobotContainer.operatorStick.getPitchSpeed(), -1, 0.25)) : MathUtil.clamp(RobotContainer.operatorStick.getPitchSpeed(), 0, 1));
+    RobotContainer.arm.setLengthV(isLegalExtension && isLegalHeight ? RobotContainer.operatorStick.getExtendSpeed()
+        : MathUtil.clamp(RobotContainer.operatorStick.getExtendSpeed(), -1, 0));
+    RobotContainer.arm.setAngleV(isLegalExtension
+        ? (isLegalHeight ? RobotContainer.operatorStick.getPitchSpeed()
+            : MathUtil.clamp(RobotContainer.operatorStick.getPitchSpeed(), -1, 0.25))
+        : MathUtil.clamp(RobotContainer.operatorStick.getPitchSpeed(), 0, 1));
   }
 
   // Make this return true when this Command no longer needs to run execute()
   @Override
   public boolean isFinished() {
-    return Math.abs(RobotContainer.operatorStick.getX()) <= 0.05 && Math.abs(RobotContainer.operatorStick.getY()) <= 0.05;
+    return Math.abs(RobotContainer.operatorStick.getX()) <= 0.05
+        && Math.abs(RobotContainer.operatorStick.getY()) <= 0.05;
   }
 
   // Called once after isFinished returns true

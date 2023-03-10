@@ -14,22 +14,24 @@ import edu.wpi.first.math.geometry.Pose2d;
 import frc.robot.Constants;
 
 public class PhotonWrapper {
-    private PhotonCamera camera;
-    private PhotonPoseEstimator photonPoseEstimator;
+  private PhotonCamera camera;
+  private PhotonPoseEstimator photonPoseEstimator;
 
-    public PhotonWrapper(String cameraName) {
-        camera = new PhotonCamera(cameraName);
+  public PhotonWrapper(String cameraName) {
+    camera = new PhotonCamera(cameraName);
 
-        try {
-            AprilTagFieldLayout fieldLayout = AprilTagFieldLayout.loadFromResource(AprilTagFields.k2023ChargedUp.m_resourceFile);
-            photonPoseEstimator = new PhotonPoseEstimator(fieldLayout, PoseStrategy.AVERAGE_BEST_TARGETS, camera, Constants.CAMERA_1_POS);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    try {
+      AprilTagFieldLayout fieldLayout = AprilTagFieldLayout
+          .loadFromResource(AprilTagFields.k2023ChargedUp.m_resourceFile);
+      photonPoseEstimator = new PhotonPoseEstimator(fieldLayout, PoseStrategy.AVERAGE_BEST_TARGETS, camera,
+          Constants.CAMERA_1_POS);
+    } catch (IOException e) {
+      e.printStackTrace();
     }
+  }
 
-    public Optional<EstimatedRobotPose> getEstimatedGlobalPose(Pose2d previousEstimatedPose) {
-        photonPoseEstimator.setReferencePose(previousEstimatedPose);
-        return photonPoseEstimator.update();
-    }
+  public Optional<EstimatedRobotPose> getEstimatedGlobalPose(Pose2d previousEstimatedPose) {
+    photonPoseEstimator.setReferencePose(previousEstimatedPose);
+    return photonPoseEstimator.update();
+  }
 }

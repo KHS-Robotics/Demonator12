@@ -11,41 +11,42 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.RobotContainer;
 
 public class ApproachChargeStation extends CommandBase {
-    private static final double AbsoluteTargetPitchToEndCommand = 10;
-    private static final double ApporachSpeedMetersPerSecond = 0.5;
-    private double yaw;
-    private boolean reverse;
+  private static final double AbsoluteTargetPitchToEndCommand = 10;
+  private static final double ApporachSpeedMetersPerSecond = 0.5;
+  private double yaw;
+  private boolean reverse;
 
-    public ApproachChargeStation(double yaw, boolean reverse) {
-        addRequirements(RobotContainer.swerveDrive);
-        this.yaw = yaw;
-        this.reverse = reverse;
-    }
+  public ApproachChargeStation(double yaw, boolean reverse) {
+    addRequirements(RobotContainer.swerveDrive);
+    this.yaw = yaw;
+    this.reverse = reverse;
+  }
 
-    public ApproachChargeStation(double yaw) {
-        this(yaw, false);
-    }
+  public ApproachChargeStation(double yaw) {
+    this(yaw, false);
+  }
 
-    // Called when the command is initially scheduled.
-    @Override
-    public void initialize() {
-        RobotContainer.swerveDrive.resetPid();
-    }
+  // Called when the command is initially scheduled.
+  @Override
+  public void initialize() {
+    RobotContainer.swerveDrive.resetPid();
+  }
 
-    // Called every time the scheduler runs while the command is scheduled.
-    @Override
-    public void execute() {
-        RobotContainer.swerveDrive.holdAngleWhileDriving((reverse ? -1 : 1) * ApporachSpeedMetersPerSecond, 0, yaw, false);
-    }
+  // Called every time the scheduler runs while the command is scheduled.
+  @Override
+  public void execute() {
+    RobotContainer.swerveDrive.holdAngleWhileDriving((reverse ? -1 : 1) * ApporachSpeedMetersPerSecond, 0, yaw,
+        false);
+  }
 
-    // Called once the command ends or is interrupted.
-    @Override
-    public void end(boolean interrupted) {
-    }
+  // Called once the command ends or is interrupted.
+  @Override
+  public void end(boolean interrupted) {
+  }
 
-    // Returns true when the command should end.
-    @Override
-    public boolean isFinished() {
-        return Math.abs(RobotContainer.getRobotPitch()) > AbsoluteTargetPitchToEndCommand;
-    }
+  // Returns true when the command should end.
+  @Override
+  public boolean isFinished() {
+    return Math.abs(RobotContainer.getRobotPitch()) > AbsoluteTargetPitchToEndCommand;
+  }
 }

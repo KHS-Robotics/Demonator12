@@ -5,78 +5,78 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.RobotContainer;
 
 public class AutoBalance extends CommandBase {
-    private Timer timer = new Timer();
-    private boolean isTimerRunning;
+  private Timer timer = new Timer();
+  private boolean isTimerRunning;
 
-    private boolean reverse;
-    private double slopeTolerance = 12.5;
-    private final double balanceSpeedMetersPerSecond = 0.3, levelPitch = 2, elapsedTimeToConsiderLevelInSeconds = 1;
-    private double yaw, slope, currentPitch, previousPitch;
-    private static final double dt = 0.02;
+  private boolean reverse;
+  private double slopeTolerance = 12.5;
+  private final double balanceSpeedMetersPerSecond = 0.3, levelPitch = 2, elapsedTimeToConsiderLevelInSeconds = 1;
+  private double yaw, slope, currentPitch, previousPitch;
+  private static final double dt = 0.02;
 
-    public AutoBalance(double yaw, boolean reverse) {
-        this.addRequirements(RobotContainer.swerveDrive);
-        this.yaw = yaw;
-        this.reverse = reverse;
+  public AutoBalance(double yaw, boolean reverse) {
+    this.addRequirements(RobotContainer.swerveDrive);
+    this.yaw = yaw;
+    this.reverse = reverse;
+  }
+
+  public AutoBalance(double yaw) {
+    this(yaw, false);
+  }
+
+  @Override
+  public void initialize() {
+
+  }
+
+  @Override
+  public void execute() {
+    currentPitch = RobotContainer.getRobotPitch();
+    slope = (currentPitch - previousPitch) / dt;
+
+    var isStable = Math.abs(slope) < slopeTolerance;
+    var isTilted = Math.abs(currentPitch) > levelPitch;
+
+    var isAscending = isStable && isTilted;
+    if (isAscending) {
+      var xSpeed = (reverse ? -1 : 1) * Math.signum(currentPitch) * balanceSpeedMetersPerSecond;
+      RobotContainer.swerveDrive.holdAngleWhileDriving(xSpeed, 0, yaw, true);
+    } else {
+      RobotContainer.swerveDrive.stop();
     }
 
-    public AutoBalance(double yaw) {
-        this(yaw, false);
+    previousPitch = currentPitch;
+  }
+
+  @Override
+  public boolean isFinished() {
+    var isSlopeWithinTolerance = Math.abs(slope) < slopeTolerance;
+    var isPitchWithinTolerance = Math.abs(currentPitch) < levelPitch;
+
+    var isRobotPitchWithinTolerance = isSlopeWithinTolerance && isPitchWithinTolerance;
+
+    if (!isTimerRunning && isRobotPitchWithinTolerance) {
+      timer.start();
+      isTimerRunning = true;
     }
 
-    @Override
-    public void initialize() {
-        
+    if (isTimerRunning && !isRobotPitchWithinTolerance) {
+      stopTimer();
+      isTimerRunning = false;
     }
 
-    @Override
-    public void execute() {
-        currentPitch = RobotContainer.getRobotPitch();
-        slope = (currentPitch - previousPitch) / dt;
+    var hasTimeElapsed = isTimerRunning && timer.advanceIfElapsed(elapsedTimeToConsiderLevelInSeconds);
 
-        var isStable = Math.abs(slope) < slopeTolerance;
-        var isTilted = Math.abs(currentPitch) > levelPitch;
+    return hasTimeElapsed && isRobotPitchWithinTolerance;
+  }
 
-        var isAscending = isStable && isTilted;
-        if (isAscending) {
-            var xSpeed = (reverse ? -1 : 1) * Math.signum(currentPitch) * balanceSpeedMetersPerSecond;
-            RobotContainer.swerveDrive.holdAngleWhileDriving(xSpeed, 0, yaw, true);
-        } else {
-            RobotContainer.swerveDrive.stop();
-        }
+  @Override
+  public void end(boolean interrupted) {
+    stopTimer();
+  }
 
-        previousPitch = currentPitch;
-    }
-
-    @Override
-    public boolean isFinished() {
-        var isSlopeWithinTolerance = Math.abs(slope) < slopeTolerance;
-        var isPitchWithinTolerance = Math.abs(currentPitch) < levelPitch;
-
-        var isRobotPitchWithinTolerance = isSlopeWithinTolerance && isPitchWithinTolerance;
-
-        if (!isTimerRunning && isRobotPitchWithinTolerance) {
-            timer.start();
-            isTimerRunning = true;
-        }
-        
-        if (isTimerRunning && !isRobotPitchWithinTolerance) {
-            stopTimer();
-            isTimerRunning = false;
-        }
-
-        var hasTimeElapsed = isTimerRunning && timer.advanceIfElapsed(elapsedTimeToConsiderLevelInSeconds);
-
-        return hasTimeElapsed && isRobotPitchWithinTolerance;
-    }
-
-    @Override
-    public void end(boolean interrupted) {
-        stopTimer();
-    }
-
-    private void stopTimer() {
-        timer.stop();
-        timer.reset();
-    }
+  private void stopTimer() {
+    timer.stop();
+    timer.reset();
+  }
 }

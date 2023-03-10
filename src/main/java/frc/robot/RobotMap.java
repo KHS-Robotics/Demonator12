@@ -38,7 +38,7 @@ public class RobotMap {
   public static final int FRONT_RIGHT_DRIVE = 6;
   public static final int REAR_LEFT_DRIVE = 7;
   public static final int REAR_RIGHT_DRIVE = 8;
-  
+
   public static final int ARM_PIVOT = 31;
   public static final int ARM_EXTEND = 32;
   public static final int ARM_PIVOT_CANCODER = 21;

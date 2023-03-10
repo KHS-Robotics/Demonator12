@@ -23,8 +23,8 @@ public class ArmControlLength extends CommandBase {
   // Called just before this Command runs the first time
   @Override
   public void initialize() {
-    if(length < Constants.MIN_LENGTH) {
-        length = Constants.MIN_LENGTH;
+    if (length < Constants.MIN_LENGTH) {
+      length = Constants.MIN_LENGTH;
     }
 
     RobotContainer.arm.armPivotSetpointRadians = RobotContainer.arm.getAngle().getRadians();
@@ -41,7 +41,8 @@ public class ArmControlLength extends CommandBase {
   // Make this return true when this Command no longer needs to run execute()
   @Override
   public boolean isFinished() {
-    return (Math.abs(RobotContainer.arm.getLength() - length) < 0.03) || !RobotContainer.arm.isLegalExtension(RobotContainer.arm.getTranslation());
+    return (Math.abs(RobotContainer.arm.getLength() - length) < 0.03)
+        || !RobotContainer.arm.isLegalExtension(RobotContainer.arm.getTranslation());
   }
 
   // Called once after isFinished returns true

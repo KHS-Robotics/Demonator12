@@ -26,7 +26,6 @@ public class RotateToAngle extends CommandBase {
     addRequirements(RobotContainer.swerveDrive);
   }
 
-
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {

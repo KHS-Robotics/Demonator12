@@ -16,15 +16,18 @@ import edu.wpi.first.math.util.Units;
  * constants
  */
 public class Constants {
-  public static final Transform3d CAMERA_1_POS = new Transform3d(new Translation3d(Units.inchesToMeters(14), Units.inchesToMeters(6.5), Units.inchesToMeters(9)),
+  public static final Transform3d CAMERA_1_POS = new Transform3d(
+      new Translation3d(Units.inchesToMeters(14), Units.inchesToMeters(6.5), Units.inchesToMeters(9)),
       new Rotation3d(0, 0, 0));
   public static final Translation3d ARMOFFSET = new Translation3d(0.0, 0.0, Units.inchesToMeters(20));
   public static final double MIN_LENGTH = Units.inchesToMeters(24.0);
   public static final double GRIPPERLENGTH = Units.inchesToMeters(16);
   public static final double GRIPPERHOLDDISTANCE = Units.inchesToMeters(11);
 
-  public static final Translation3d MID_POS = new Translation3d(Units.inchesToMeters(41.7), Units.inchesToMeters(0), Units.inchesToMeters(43));
-  public static final Translation3d HIGH_POS = new Translation3d(Units.inchesToMeters(58.73), Units.inchesToMeters(0), Units.inchesToMeters(52));
+  public static final Translation3d MID_POS = new Translation3d(Units.inchesToMeters(41.7), Units.inchesToMeters(0),
+      Units.inchesToMeters(43));
+  public static final Translation3d HIGH_POS = new Translation3d(Units.inchesToMeters(58.73), Units.inchesToMeters(0),
+      Units.inchesToMeters(52));
 
   public static final double SENS = 0.5;
 
