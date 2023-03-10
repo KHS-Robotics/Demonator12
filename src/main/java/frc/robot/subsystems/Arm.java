@@ -25,6 +25,7 @@ import frc.robot.RobotContainer;
 import frc.robot.RobotMap;
 import frc.robot.commands.arm.ArmControlLength;
 import frc.robot.commands.arm.ArmControlPivot;
+import frc.robot.commands.wrist.WristGoToSetpoint;
 
 public class Arm extends SubsystemBase {
   public Translation3d armTranslaton = new Translation3d();
@@ -180,10 +181,8 @@ public class Arm extends SubsystemBase {
     TrapezoidProfile profile = new TrapezoidProfile(armConstraints, new TrapezoidProfile.State(angle, 0),
         pivotSetpoint);
     pivotSetpoint = profile.calculate(kDt);
-    SmartDashboard.putNumber("setpointAngleVelocity", pivotSetpoint.velocity);
     SmartDashboard.putNumber("setpointAngleError", angle - getAngle().getRadians());
     SmartDashboard.putNumber("setpointAnglePosition", pivotSetpoint.position);
-    // setAngleV(pivotSetpoint.velocity);
 
     var armPidOutput = armPID.calculate(getAngle().getRadians(), pivotSetpoint.position);
     SmartDashboard.putNumber("ArmPidOutput", armPidOutput);
@@ -242,24 +241,32 @@ public class Arm extends SubsystemBase {
     return getTranslation().getNorm() < target.getNorm();
   }
 
-  public SequentialCommandGroup goToSetpoint(Translation3d target) {
+  public SequentialCommandGroup goToSetpoint(Translation3d target, Rotation2d wristAngle) {
     target = target.minus(new Translation3d(Constants.GRIPPERHOLDDISTANCE,
-        new Rotation3d(0, RobotContainer.wrist.getAbsoluteAngle().getRadians(), 0)));
+        new Rotation3d(0, wristAngle.getRadians(), 0)));
     armTranslaton = target;
 
     var command = new SequentialCommandGroup();
     if (isFurther(target)) {
       command = new SequentialCommandGroup(
-          new ArmControlPivot(rotToPoint(target).getRadians()).alongWith(new InstantCommand(
-              () -> RobotContainer.wrist.setAngleSetpoint(Rotation2d.fromDegrees(40)))),
+          new WristGoToSetpoint(wristAngle),
+          new ArmControlPivot(rotToPoint(target).getRadians()),
           new ArmControlLength(lengthToPoint(target)));
     } else {
       command = new SequentialCommandGroup(
+          new WristGoToSetpoint(wristAngle),
           new ArmControlLength(lengthToPoint(target)),
-          new ArmControlPivot(rotToPoint(target).getRadians()).alongWith(new InstantCommand(
-              () -> RobotContainer.wrist.setAngleSetpoint(Rotation2d.fromDegrees(40)))));
+          new ArmControlPivot(rotToPoint(target).getRadians()));
     }
     return command;
+  }
+
+  public SequentialCommandGroup goToSetpointScore(Translation3d target) {
+    return goToSetpoint(target, Rotation2d.fromDegrees(40));
+  }
+
+  public SequentialCommandGroup goToSetpoint(Translation3d target) {
+    return goToSetpoint(target, RobotContainer.wrist.getAbsoluteAngle());
   }
 
   public SequentialCommandGroup goToPivotLength(double pivot, double length) {

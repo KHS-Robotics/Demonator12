@@ -112,7 +112,7 @@ public class Constants {
   public static final double EXTEND_KA = 0.33319;
   public static final double EXTEND_KG = 0.88663;
 
-  public static final double WRIST_P = 0.6;
+  public static final double WRIST_P = 1;
   public static final double WRIST_I = 0;
   public static final double WRIST_D = 0.005;
   public static final double WRIST_KS = 0.15463;

@@ -212,13 +212,13 @@ public class RobotContainer {
   /** Binds commands to the operator stick. */
   private void configureOperatorStickBindings() {
     Trigger highPos = new Trigger(operatorStick::highPos);
-    highPos.onTrue(RobotContainer.arm.goToSetpoint(Constants.HIGH_POS));
+    highPos.onTrue(new ProxyCommand(() -> RobotContainer.arm.goToSetpointScore(Constants.HIGH_POS)));
 
     Trigger midPos = new Trigger(operatorStick::midPos);
-    midPos.onTrue(new PrintCommand("Testing").andThen(RobotContainer.arm.goToSetpoint(Constants.MID_POS)));
+    midPos.onTrue(new ProxyCommand(() -> RobotContainer.arm.goToSetpointScore(Constants.MID_POS)));
 
     Trigger lowPos = new Trigger(operatorStick::lowPos);
-    lowPos.onTrue(RobotContainer.arm.goToSetpoint(new Translation3d()));
+    lowPos.onTrue(new ProxyCommand(() -> RobotContainer.arm.goToSetpointScore(new Translation3d())));
 
     Trigger home = new Trigger(operatorStick::home);
     home.onTrue(RobotContainer.arm.goToPivotLength(Math.toRadians(60), Constants.MIN_LENGTH).alongWith(

@@ -121,9 +121,9 @@ public class SwerveModule extends SubsystemBase {
 
   @Override
   public void periodic() {
-    SmartDashboard.putNumber(name + "-Drive", getState().speedMetersPerSecond);
-    SmartDashboard.putNumber(name + "-Pivot", getAngle());
-    SmartDashboard.putBoolean(name + "-Homed", !setDetection.get());
+    //SmartDashboard.putNumber(name + "-Drive", getState().speedMetersPerSecond);
+    //SmartDashboard.putNumber(name + "-Pivot", getAngle());
+    //SmartDashboard.putBoolean(name + "-Homed", !setDetection.get());
   }
 
   /**
