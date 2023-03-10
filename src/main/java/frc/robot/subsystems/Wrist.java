@@ -35,7 +35,7 @@ public class Wrist extends SubsystemBase {
     public TrapezoidProfile.State wristSetpoint = new TrapezoidProfile.State();
     private static final double kDt = 0.02;
 
-    private Rotation2d angleSetpoint;
+    private Rotation2d angleSetpoint = new Rotation2d();
 
     public Wrist() {
         pivotMotor = new CANSparkMax(RobotMap.WRIST_PIVOT, MotorType.kBrushless);
@@ -96,7 +96,7 @@ public class Wrist extends SubsystemBase {
     }
 
     public void zeroWrist() {
-        pivotEncoder.setPosition(0);
+        pivotEncoder.setPosition(-1.56); // radians
     }
 
     public void stop() {
@@ -108,6 +108,7 @@ public class Wrist extends SubsystemBase {
     }
 
     public void setAngleSetpoint(Rotation2d angleSetpoint) {
+        System.out.println("Setting wrist angle to " + angleSetpoint.getRadians());
         this.angleSetpoint = angleSetpoint;
     }
 
@@ -115,5 +116,6 @@ public class Wrist extends SubsystemBase {
     public void periodic() {
       SmartDashboard.putNumber("wristPos", pivotEncoder.getPosition());
       SmartDashboard.putNumber("wristVel", pivotEncoder.getVelocity());
+      SmartDashboard.putNumber("wristSetpoint", angleSetpoint.getRadians());
     }
 }

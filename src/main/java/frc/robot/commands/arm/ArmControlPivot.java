@@ -7,6 +7,7 @@
 
 package frc.robot.commands.arm;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.RobotContainer;
 
@@ -22,12 +23,14 @@ public class ArmControlPivot extends CommandBase {
   // Called just before this Command runs the first time
   @Override
   public void initialize() {
-
+    RobotContainer.arm.armLengthSetpoint = RobotContainer.arm.getLength();
   }
 
   // Called repeatedly when this Command is scheduled to run
   @Override
   public void execute() {
+    System.out.println("ArmControlPivot with angle " + angle);
+    SmartDashboard.putNumber("ArmControlPivotCmdSetpoint", angle);
     RobotContainer.arm.setAngle(angle);
     RobotContainer.arm.setLength(RobotContainer.arm.armLengthSetpoint);
   }
@@ -35,7 +38,7 @@ public class ArmControlPivot extends CommandBase {
   // Make this return true when this Command no longer needs to run execute()
   @Override
   public boolean isFinished() {
-    return (Math.abs(RobotContainer.arm.getAngle().getRadians() - angle) < 0.03) || !RobotContainer.arm.isLegalHeight(RobotContainer.arm.getTranslation());
+    return (Math.abs(RobotContainer.arm.getAngle().getRadians() - angle) < Math.toRadians(3)) || !RobotContainer.arm.isLegalHeight(RobotContainer.arm.getTranslation());
   }
 
   // Called once after isFinished returns true

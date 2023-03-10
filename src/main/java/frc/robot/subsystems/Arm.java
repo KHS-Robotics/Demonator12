@@ -18,6 +18,7 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -29,6 +30,8 @@ import frc.robot.commands.arm.ArmControlPivot;
 
 
 public class Arm extends SubsystemBase {
+
+    public Translation3d armTranslaton = new Translation3d();
 
     private final CANSparkMax pivotMotor;
     private final CANCoder pivotCANCoder;
@@ -44,7 +47,7 @@ public class Arm extends SubsystemBase {
 
     private final SimpleMotorFeedforward extendFeedFoward;
     private final PIDController extendPID;
-    private double kGL, kAL, kDt, kSpring;
+    private double kAL, kDt = 0.02, kSpring;
 
     TrapezoidProfile.Constraints armConstraints;
 
@@ -69,7 +72,6 @@ public class Arm extends SubsystemBase {
 
         armConstraints = new TrapezoidProfile.Constraints(1, 1);
 
-        this.kGL = 0.71656966792;
         this.kAL = 1.22566276313;
         this.kDt = 0.02; // 20 ms assumed for control loops
         this.kSpring = 25;
@@ -78,20 +80,22 @@ public class Arm extends SubsystemBase {
     @Override
     public void periodic() {
         var translation = getTranslation();
-        SmartDashboard.putNumber("ArmPivot", this.getAngle().getDegrees());
+        SmartDashboard.putNumber("ArmPivotSetpoint", this.armPivotSetpointRadians);
+        SmartDashboard.putNumber("ArmPivot", this.getAngle().getRadians());
         SmartDashboard.putNumber("PivotJoystick", RobotContainer.operatorStick.getPitchSpeed());
-        SmartDashboard.putNumber("PivotV", Math.toRadians(pivotCANCoder.getVelocity()));
         SmartDashboard.putBoolean("isLegalH", isLegalHeight(translation));
         SmartDashboard.putBoolean("isLegalE", isLegalExtension(translation));
-        SmartDashboard.putNumber("translationx", translation.getX());
-        SmartDashboard.putNumber("translationy", translation.getY());
+
+        SmartDashboard.putNumber("ArmActualTranslationX", translation.getX());
+        SmartDashboard.putNumber("ArmActualTranslationY", translation.getY());
+        SmartDashboard.putNumber("ArmActualTranslationZ", translation.getZ());
+        SmartDashboard.putNumber("ArmDesiredTranslationX", armTranslaton.getX());
+        SmartDashboard.putNumber("ArmDesiredTranslationY", armTranslaton.getY());
+        SmartDashboard.putNumber("ArmDesiredTranslationZ", armTranslaton.getZ());
+
+        SmartDashboard.putNumber("ExtendArmSetpoint", armLengthSetpoint);
         SmartDashboard.putNumber("ExtendArmPosition", getLength());
-        SmartDashboard.putNumber("ExtendNeoPosition", extendEncoder.getPosition());
-        SmartDashboard.putNumber("ExtendVelocity", extendEncoder.getVelocity());
         SmartDashboard.putNumber("ExtendJoystick", RobotContainer.operatorStick.getExtendSpeed());
-        SmartDashboard.putNumber("volatge old", armFeedFoward.calculate(getAngle().getRadians() + RobotContainer.operatorStick.getExtendSpeed() * kDt, RobotContainer.operatorStick.getExtendSpeed()));
-        SmartDashboard.putNumber("voltage exp", calcVoltagePivot(RobotContainer.operatorStick.getExtendSpeed()));
-        SmartDashboard.putNumber("springVoltage", calcSpringVoltage(getAngle().getRadians()));
     }
 
     //converts point from robot relative to arm relative
@@ -108,7 +112,8 @@ public class Arm extends SubsystemBase {
     public void setLength(double length) {
         TrapezoidProfile profile = new TrapezoidProfile(armConstraints, new TrapezoidProfile.State(length, 0), lengthSetpoint);
         lengthSetpoint = profile.calculate(kDt);
-        setLengthV(lengthSetpoint.velocity);
+        //setLengthV(lengthSetpoint.velocity);
+        extendMotor.setVoltage(calcLengthV(lengthSetpoint.velocity) + extendPID.calculate(getLength(), lengthSetpoint.position));
     }
 
     //gets the arm extension
@@ -117,9 +122,16 @@ public class Arm extends SubsystemBase {
     }
 
     public void setLengthV(double vLength) {
-        var voltage = MathUtil.clamp(extendFeedFoward.calculate(vLength) + extendPID.calculate(getLengthV(), vLength), -3, 6);
+        var voltage = MathUtil.clamp(extendFeedFoward.calculate(vLength) + extendPID.calculate(getLengthV(), vLength) + Constants.EXTEND_KG*Math.sin(this.getAngle().getRadians()), -3, 6);
         extendMotor.setVoltage(voltage);
         SmartDashboard.putNumber("ExtendVoltage", voltage);
+    }
+
+    public double calcLengthV(double vLength) {
+        var voltage = MathUtil.clamp(extendFeedFoward.calculate(vLength) + extendPID.calculate(getLengthV(), vLength) + Constants.EXTEND_KG*Math.sin(this.getAngle().getRadians()), -3, 6);
+        //extendMotor.setVoltage(voltage);
+        SmartDashboard.putNumber("ExtendVoltage", voltage);
+        return voltage;
     }
 
     public double getLengthV() {
@@ -144,12 +156,14 @@ public class Arm extends SubsystemBase {
     //takes in the position, vel, and accel setpoints, outputs the voltage for telescoping arm (rad, rad/s, rad/s^2)
     public double calcVoltagePivot(double vAngle) {
         double accel = 0;
-        return calcSpringVoltage(getAngle().getRadians()) + Constants.ARM_KS * Math.signum(vAngle) + Constants.ARM_KV * vAngle + (getLength() * kGL * Math.cos(getAngle().getRadians() + vAngle * kDt)) + Math.pow(getLength(), 2) * kAL * accel;
+        var gravityTerm = (getLength() * Constants.ARM_KG * Math.cos(getAngle().getRadians() + vAngle * kDt));
+        SmartDashboard.putNumber("ArmGravityTerm", gravityTerm);
+        return calcSpringVoltage(getAngle().getRadians()) + Constants.ARM_KS * Math.signum(vAngle) + Constants.ARM_KV * vAngle + gravityTerm + Math.pow(getLength(), 2) * kAL * accel;
     }
     
 
     public double calcSpringVoltage(double position) {
-        double voltagePerTorque = Constants.ARM_KG / 344; //VOLTAGE TO HOLD ARM DIVIDED BY TORQUE TO HOLD IN IN-LBS
+        double voltagePerTorque = 0.41862 / 344; //VOLTAGE TO HOLD ARM DIVIDED BY TORQUE TO HOLD IN IN-LBS
         double force = kSpring;
         double length = 15;
         double height = Units.metersToInches(Constants.ARMOFFSET.getZ()) - 5;
@@ -166,7 +180,16 @@ public class Arm extends SubsystemBase {
         SmartDashboard.putNumber("setpointAngleVelocity", pivotSetpoint.velocity);
         SmartDashboard.putNumber("setpointAngleError", angle - getAngle().getRadians());
         SmartDashboard.putNumber("setpointAnglePosition", pivotSetpoint.position);
-        setAngleV(pivotSetpoint.velocity);
+        //setAngleV(pivotSetpoint.velocity);
+
+        var armPidOutput = armPID.calculate(getAngle().getRadians(), pivotSetpoint.position);
+        SmartDashboard.putNumber("ArmPidOutput", armPidOutput);
+        pivotMotor.setVoltage(calcAngleV(pivotSetpoint.velocity) + armPidOutput);
+    }
+
+    public double calcAngleV(double vAngle) {
+        var voltage = MathUtil.clamp(calcVoltagePivot(vAngle), -5, 8);
+        return voltage;
     }
 
     //returns the required rotation to go to a setpoint in degrees (arm relative)
@@ -217,12 +240,19 @@ public class Arm extends SubsystemBase {
 
     public SequentialCommandGroup goToSetpoint(Translation3d target) {
         target = target.minus(new Translation3d(Constants.GRIPPERHOLDDISTANCE, new Rotation3d(0, RobotContainer.wrist.getAbsoluteAngle().getRadians(), 0)));
-        
+        armTranslaton = target;
+
         var command = new SequentialCommandGroup();
         if(isFurther(target)) {
-            command = new SequentialCommandGroup(new ArmControlPivot(rotToPoint(target).getRadians()), new ArmControlLength(lengthToPoint(target)));
+            command = new SequentialCommandGroup(
+                new ArmControlPivot(rotToPoint(target).getRadians()).alongWith(new InstantCommand(() -> RobotContainer.wrist.setAngleSetpoint(Rotation2d.fromDegrees(40)))),
+                new ArmControlLength(lengthToPoint(target))
+            );
         } else {
-            command = new SequentialCommandGroup(new ArmControlLength(lengthToPoint(target)), new ArmControlPivot(rotToPoint(target).getRadians()));
+            command = new SequentialCommandGroup(
+                new ArmControlLength(lengthToPoint(target)), 
+                new ArmControlPivot(rotToPoint(target).getRadians()).alongWith(new InstantCommand(() -> RobotContainer.wrist.setAngleSetpoint(Rotation2d.fromDegrees(40))))
+            );
         }
         return command;
     }
@@ -240,7 +270,7 @@ public class Arm extends SubsystemBase {
     }
 
     public Translation3d getTranslation() {
-        return new Translation3d(getLength(), new Rotation3d(0, getAngle().getRadians(), 0));
+        return new Translation3d(getLength(), new Rotation3d(0, -getAngle().getRadians(), 0)).plus(Constants.ARMOFFSET);
     }
 
     private Translation2d getFurthestPoint(Translation3d target) {

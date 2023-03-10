@@ -15,12 +15,12 @@ public class WristHoldSetpoint extends CommandBase {
 
     @Override
     public void initialize() {
-      this.setpoint = RobotContainer.wrist.getAngleSetpoint();
       RobotContainer.wrist.wristSetpoint = new TrapezoidProfile.State(RobotContainer.wrist.getRelativeAngle().getRadians(), RobotContainer.wrist.getVelocity());
     }
 
     @Override
     public void execute() {
+      this.setpoint = RobotContainer.wrist.getAngleSetpoint();
       RobotContainer.wrist.goToAbsoluteAngle(setpoint);
     }
 

@@ -26,11 +26,14 @@ public class ArmControlLength extends CommandBase {
     if(length < Constants.MIN_LENGTH) {
         length = Constants.MIN_LENGTH;
     }
+
+    RobotContainer.arm.armPivotSetpointRadians = RobotContainer.arm.getAngle().getRadians();
   }
 
   // Called repeatedly when this Command is scheduled to run
   @Override
   public void execute() {
+    System.out.println("ArmControlLength");
     RobotContainer.arm.setLength(length);
     RobotContainer.arm.setAngle(RobotContainer.arm.armPivotSetpointRadians);
   }

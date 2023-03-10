@@ -19,11 +19,11 @@ public class Constants {
   public static final Transform3d CAMERA_1_POS = new Transform3d(new Translation3d(Units.inchesToMeters(14), Units.inchesToMeters(6.5), Units.inchesToMeters(9)),
       new Rotation3d(0, 0, 0));
   public static final Translation3d ARMOFFSET = new Translation3d(0.0, 0.0, Units.inchesToMeters(20));
-  public static final double MIN_LENGTH = Units.inchesToMeters(23.5);
+  public static final double MIN_LENGTH = Units.inchesToMeters(24.0);
   public static final double GRIPPERLENGTH = Units.inchesToMeters(16);
-  public static final double GRIPPERHOLDDISTANCE = Units.inchesToMeters(10);
+  public static final double GRIPPERHOLDDISTANCE = Units.inchesToMeters(11);
 
-  public static final Translation3d MID_POS = new Translation3d(Units.inchesToMeters(41.7), Units.inchesToMeters(0), Units.inchesToMeters(40));
+  public static final Translation3d MID_POS = new Translation3d(Units.inchesToMeters(41.7), Units.inchesToMeters(0), Units.inchesToMeters(43));
   public static final Translation3d HIGH_POS = new Translation3d(Units.inchesToMeters(58.73), Units.inchesToMeters(0), Units.inchesToMeters(52));
 
   public static final double SENS = 0.5;
@@ -91,22 +91,23 @@ public class Constants {
   public static final double REAR_LEFT_DRIVE_KV = 3.4035;
   public static final double REAR_LEFT_DRIVE_KA = 0.093048;
 
-  public static final double ARM_P = 0.045;
+  public static final double ARM_P = 0.5;
   public static final double ARM_I = 0.0;
-  public static final double ARM_D = 0.02;
+  public static final double ARM_D = 0.01;
   public static final double ARM_KS = 0.26602;
-  public static final double ARM_KG = 0.41862;
-  public static final double ARM_KV = 4.1387;
+  public static final double ARM_KG = 0.75656966792;
+  public static final double ARM_KV = 4.5387;
   public static final double ARM_KA = 0.27838;
 
   public static final double ARM_START_ANGLE = Math.toRadians(35);
 
-  public static final double EXTEND_P = 0.01;
+  public static final double EXTEND_P = 0.2;
   public static final double EXTEND_I = 0;
-  public static final double EXTEND_D = 0;
+  public static final double EXTEND_D = 0.0;
   public static final double EXTEND_KS = 0.22841;
   public static final double EXTEND_KV = 5.3504;
   public static final double EXTEND_KA = 0.33319;
+  public static final double EXTEND_KG = 0.88663;
 
   public static final double WRIST_P = 0.6;
   public static final double WRIST_I = 0;

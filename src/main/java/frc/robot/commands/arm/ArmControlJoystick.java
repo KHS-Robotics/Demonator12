@@ -37,7 +37,7 @@ public class ArmControlJoystick extends CommandBase {
   // Make this return true when this Command no longer needs to run execute()
   @Override
   public boolean isFinished() {
-    return Math.abs(RobotContainer.operatorStick.getX()) <= 0.025 && Math.abs(RobotContainer.operatorStick.getY()) <= 0.025;
+    return Math.abs(RobotContainer.operatorStick.getX()) <= 0.05 && Math.abs(RobotContainer.operatorStick.getY()) <= 0.05;
   }
 
   // Called once after isFinished returns true
@@ -45,8 +45,8 @@ public class ArmControlJoystick extends CommandBase {
   public void end(boolean interrupted) {
     RobotContainer.arm.armLengthSetpoint = RobotContainer.arm.getLength();
     RobotContainer.arm.armPivotSetpointRadians = RobotContainer.arm.getAngle().getRadians();
-    SmartDashboard.putNumber("ArmLengthSetpoint", RobotContainer.arm.getLength());
-    SmartDashboard.putNumber("ArmPivotSetpoint", RobotContainer.arm.getAngle().getRadians());
+    SmartDashboard.putNumber("ArmLength", RobotContainer.arm.getLength());
+    SmartDashboard.putNumber("ArmAngle", RobotContainer.arm.getAngle().getRadians());
 
   }
 }

@@ -24,8 +24,6 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 public class Robot extends TimedRobot {
     private RobotContainer robotContainer;
     private Command autonmousRoutine;
-    Solenoid deleteMe = new Solenoid(1, PneumaticsModuleType.REVPH, 11);
-    PneumaticHub testPCH= new PneumaticHub(1);
 
 
     /**
@@ -37,8 +35,6 @@ public class Robot extends TimedRobot {
         // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
         // autonomous chooser on the dashboard.
         robotContainer = RobotContainer.getInstance();
-        testPCH.enableCompressorAnalog(100, 120);
-        deleteMe.set(true);
     }
     
     /**
@@ -64,7 +60,11 @@ public class Robot extends TimedRobot {
     public void disabledInit() {}
     
     @Override
-    public void disabledPeriodic() {}
+    public void disabledPeriodic() {
+        if (RobotContainer.operatorStick.zeroWrist() && RobotContainer.wrist != null) {
+            RobotContainer.wrist.zeroWrist();
+        }
+    }
     
     /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
     @Override

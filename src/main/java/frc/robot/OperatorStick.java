@@ -54,7 +54,7 @@ public class OperatorStick extends Joystick {
         return this.getRawButton(9);
     }
 
-    public boolean wristStraightDown() {
+    public boolean wristScoreAngle() {
         return this.getRawButton(8);
     }
 
@@ -75,8 +75,15 @@ public class OperatorStick extends Joystick {
         return this.getRawAxis(0);
     }
 
+    public boolean outtake() {
+        return getPOV() == 0;
+    }
 
-
-
+    public boolean intake() {
+        return getPOV() == 180;
+    }
     
+    public boolean zeroWrist() {
+        return this.getRawButton(3);
+    }
 }
