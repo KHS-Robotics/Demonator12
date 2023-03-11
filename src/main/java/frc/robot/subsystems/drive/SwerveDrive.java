@@ -106,7 +106,7 @@ public class SwerveDrive extends SubsystemBase {
       Constants.REAR_LEFT_DRIVE_P,
       Constants.REAR_LEFT_DRIVE_I,
       Constants.REAR_LEFT_DRIVE_D,
-      Constants.FRONT_LEFT_DRIVE_KS,
+      Constants.REAR_LEFT_DRIVE_KS,
       Constants.REAR_LEFT_DRIVE_KV,
       Constants.REAR_LEFT_DRIVE_KA,
       RobotMap.REAR_LEFT_DIGITAL_INPUT);
