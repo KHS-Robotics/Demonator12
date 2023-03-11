@@ -69,6 +69,9 @@ public class Robot extends TimedRobot {
     if (RobotContainer.operatorStick.zeroWrist() && RobotContainer.wrist != null) {
       RobotContainer.wrist.zeroWrist();
     }
+    RobotContainer.arm.armPivotSetpointRadians = RobotContainer.arm.getAngle().getRadians();
+    RobotContainer.arm.armLengthSetpoint = RobotContainer.arm.getLength();
+    RobotContainer.wrist.setAngleSetpoint(RobotContainer.wrist.getAbsoluteAngle());
   }
 
   /**
@@ -88,8 +91,8 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopInit() {
-    RobotContainer.arm.armPivotSetpointRadians = 0.5;
-    RobotContainer.arm.armLengthSetpoint = Constants.MIN_LENGTH;
+    //RobotContainer.arm.armPivotSetpointRadians = 0.5;
+    //RobotContainer.arm.armLengthSetpoint = Constants.MIN_LENGTH;
 
     // This makes sure that the autonomous stops running when
     // teleop starts running. If you want the autonomous to
