@@ -9,6 +9,7 @@ package frc.robot.subsystems.drive;
 
 import java.util.Optional;
 
+import org.ejml.simple.SimpleMatrix;
 import org.photonvision.EstimatedRobotPose;
 
 import com.pathplanner.lib.PathConstraints;
@@ -17,6 +18,7 @@ import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.PathPoint;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -27,6 +29,8 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -283,9 +287,28 @@ public class SwerveDrive extends SubsystemBase {
     poseEstimator.updateWithTime(Timer.getFPGATimestamp(), getAngle(), getSwerveModulePositions());
 
     Optional<EstimatedRobotPose> estimatedPose = photonCamera.getEstimatedGlobalPose(poseEstimator.getEstimatedPosition());
-    if (estimatedPose.isPresent() && poseEstimator.getEstimatedPosition().getTranslation().minus(getPose().getTranslation()).getNorm() < 1) {
+    if (estimatedPose.isPresent()) {
       EstimatedRobotPose camPose = estimatedPose.get();
-      poseEstimator.addVisionMeasurement(camPose.estimatedPose.toPose2d(), camPose.timestampSeconds);
+      double minimum = 1;
+      for(var target : camPose.targetsUsed) {
+        double ambiguity = target.getPoseAmbiguity();
+        if(ambiguity < minimum) {
+          minimum = ambiguity;
+        }
+      }
+
+      if(minimum < 0.2 && poseEstimator.getEstimatedPosition().getTranslation().minus(getPose().getTranslation()).getNorm() < 1) {
+        double stdDev = minimum + 0.05;
+
+        var stdDevMatrix = new Matrix<N3, N1>(new SimpleMatrix(new double[][] {
+          { stdDev },
+          { stdDev },
+          { stdDev }
+        }));
+      
+        poseEstimator.setVisionMeasurementStdDevs(stdDevMatrix);
+        poseEstimator.addVisionMeasurement(camPose.estimatedPose.toPose2d(), camPose.timestampSeconds);
+      }
     }
   }
 
