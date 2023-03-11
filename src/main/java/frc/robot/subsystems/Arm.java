@@ -130,7 +130,7 @@ public class Arm extends SubsystemBase {
 
   public double calcLengthV(double vLength) {
     var voltage = MathUtil.clamp(extendFeedFoward.calculate(vLength) + extendPID.calculate(getLengthV(), vLength)
-        + Constants.EXTEND_KG * Math.sin(this.getAngle().getRadians()), -3, 6);
+        + Constants.EXTEND_KG * Math.sin(this.getAngle().getRadians()) + Constants.EXTEND_KSPRING, -3, 6);
     // extendMotor.setVoltage(voltage);
     SmartDashboard.putNumber("ExtendVoltage", voltage);
     return voltage;
