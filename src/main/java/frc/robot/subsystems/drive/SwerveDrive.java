@@ -305,7 +305,7 @@ public class SwerveDrive extends SubsystemBase {
           { stdDev },
           { stdDev }
         }));
-      
+        SmartDashboard.putNumber("LastUsedStdDev", stdDev);
         poseEstimator.setVisionMeasurementStdDevs(stdDevMatrix);
         poseEstimator.addVisionMeasurement(camPose.estimatedPose.toPose2d(), camPose.timestampSeconds);
       }
