@@ -282,9 +282,8 @@ public class SwerveDrive extends SubsystemBase {
   public void updateOdometry() {
     poseEstimator.updateWithTime(Timer.getFPGATimestamp(), getAngle(), getSwerveModulePositions());
 
-    Optional<EstimatedRobotPose> estimatedPose = photonCamera
-        .getEstimatedGlobalPose(poseEstimator.getEstimatedPosition());
-    if (estimatedPose.isPresent()) {
+    Optional<EstimatedRobotPose> estimatedPose = photonCamera.getEstimatedGlobalPose(poseEstimator.getEstimatedPosition());
+    if (estimatedPose.isPresent() && poseEstimator.getEstimatedPosition().getTranslation().minus(getPose().getTranslation()).getNorm() < 1) {
       EstimatedRobotPose camPose = estimatedPose.get();
       poseEstimator.addVisionMeasurement(camPose.estimatedPose.toPose2d(), camPose.timestampSeconds);
     }
