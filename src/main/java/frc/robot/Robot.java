@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.commands.drive.CenterSwerveModules;
 
 /**
  * The VM is configured to automatically run this class, and to call the methods
@@ -80,7 +81,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousInit() {
-    this.autonmousRoutine = robotContainer.getAutonomousRoutine();
+    this.autonmousRoutine = new CenterSwerveModules(false).andThen(robotContainer.getAutonomousRoutine());
     this.autonmousRoutine.schedule();
   }
 

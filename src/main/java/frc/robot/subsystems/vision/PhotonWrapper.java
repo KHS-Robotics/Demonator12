@@ -7,6 +7,7 @@ import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
+import org.photonvision.targeting.PhotonPipelineResult;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
@@ -16,12 +17,13 @@ import frc.robot.Constants;
 public class PhotonWrapper {
   private PhotonCamera camera;
   private PhotonPoseEstimator photonPoseEstimator;
+  public AprilTagFieldLayout fieldLayout;
 
   public PhotonWrapper(String cameraName) {
     camera = new PhotonCamera(cameraName);
 
     try {
-      AprilTagFieldLayout fieldLayout = AprilTagFieldLayout
+      fieldLayout = AprilTagFieldLayout
           .loadFromResource(AprilTagFields.k2023ChargedUp.m_resourceFile);
       photonPoseEstimator = new PhotonPoseEstimator(fieldLayout, PoseStrategy.AVERAGE_BEST_TARGETS, camera,
           Constants.CAMERA_1_POS);
@@ -33,5 +35,9 @@ public class PhotonWrapper {
   public Optional<EstimatedRobotPose> getEstimatedGlobalPose(Pose2d previousEstimatedPose) {
     photonPoseEstimator.setReferencePose(previousEstimatedPose);
     return photonPoseEstimator.update();
+  }
+
+  public PhotonPipelineResult getResult() {
+    return camera.getLatestResult();
   }
 }

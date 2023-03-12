@@ -1,6 +1,7 @@
 package frc.robot.commands.drive.balance;
 
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.RobotContainer;
 
@@ -33,11 +34,18 @@ public class AutoBalance extends CommandBase {
   public void execute() {
     currentPitch = RobotContainer.getRobotPitch();
     slope = (currentPitch - previousPitch) / dt;
+    SmartDashboard.putNumber("AutoBalanceSlope", slope);
 
     var isStable = Math.abs(slope) < slopeTolerance;
     var isTilted = Math.abs(currentPitch) > levelPitch;
 
+    SmartDashboard.putBoolean("AutoBalanceIsStable", isStable);
+    SmartDashboard.putBoolean("isTilted", isTilted);
+
+
     var isAscending = isStable && isTilted;
+
+    SmartDashboard.putBoolean("AutoBalanceIsAscending", isAscending);
     if (isAscending) {
       var xSpeed = (reverse ? -1 : 1) * Math.signum(currentPitch) * balanceSpeedMetersPerSecond;
       RobotContainer.swerveDrive.holdAngleWhileDriving(xSpeed, 0, yaw, true);

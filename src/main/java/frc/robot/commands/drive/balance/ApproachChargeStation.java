@@ -58,6 +58,6 @@ public class ApproachChargeStation extends CommandBase {
       timer.reset();
     }
 
-    return done && timer.hasElapsed(0.5);
+    return done && timer.hasElapsed(1);
   }
 }
