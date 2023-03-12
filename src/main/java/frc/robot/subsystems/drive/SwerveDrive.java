@@ -58,6 +58,7 @@ public class SwerveDrive extends SubsystemBase {
   private final Translation2d frontRightLocation = new Translation2d(0.327025, -0.2693162);
   private final Translation2d rearLeftLocation = new Translation2d(-0.327025, 0.2693162);
   private final Translation2d rearRightLocation = new Translation2d(-0.327025, -0.2693162);
+  private Matrix<N3, N1> stdDevMatrix;
 
   public PhotonWrapper photonCamera;
 
@@ -155,6 +156,13 @@ public class SwerveDrive extends SubsystemBase {
     targetPid = new PIDController(Constants.TARGET_P, Constants.TARGET_I, Constants.TARGET_D);
     targetPid.enableContinuousInput(-180.0, 180.0);
     targetPid.setTolerance(1);
+
+    var stdDevMatrix = new Matrix<N3, N1>(new SimpleMatrix(new double[][] {
+      { 0.015 },
+      { 0.015 },
+      { 3 }
+    }));
+    poseEstimator.setVisionMeasurementStdDevs(stdDevMatrix);
   }
 
   /**
@@ -298,15 +306,6 @@ public class SwerveDrive extends SubsystemBase {
       }
 
       if(minimum < 0.2 && poseEstimator.getEstimatedPosition().getTranslation().getDistance(getPose().getTranslation()) < 1) {
-        double stdDev = minimum + 0.05;
-
-        var stdDevMatrix = new Matrix<N3, N1>(new SimpleMatrix(new double[][] {
-          { stdDev },
-          { stdDev },
-          { stdDev }
-        }));
-        SmartDashboard.putNumber("LastUsedStdDev", stdDev);
-        poseEstimator.setVisionMeasurementStdDevs(stdDevMatrix);
         poseEstimator.addVisionMeasurement(camPose.estimatedPose.toPose2d(), camPose.timestampSeconds);
       }
     }
