@@ -275,7 +275,7 @@ public class Arm extends SubsystemBase {
   }
 
   public SequentialCommandGroup goToPivotLength(double pivot, double length) {
-    var target = new Translation3d(length, new Rotation3d(0, pivot, 0));
+    var target = new Translation3d(length, new Rotation3d(0, -pivot, 0)).plus(Constants.ARMOFFSET);
 
     var command = new SequentialCommandGroup();
     if (isFurther(target)) {
