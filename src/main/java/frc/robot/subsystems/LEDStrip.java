@@ -22,6 +22,7 @@ public class LEDStrip extends SubsystemBase {
       long lastTime = System.nanoTime();
       double delta = 0;
 
+      // very accurate loop, is this bad for performance?
       while (true) {
         try {
           if (Thread.interrupted()) {
@@ -104,18 +105,11 @@ public class LEDStrip extends SubsystemBase {
   }
 
   public void update() {
-    if (!DriverStation.isFMSAttached() || DriverStation.getAlliance().equals(Alliance.Invalid)) {
-      setYellow();
-    }
-    else if (DriverStation.getAlliance().equals(Alliance.Red)) {
-      runRed();
-    }
-    else if (DriverStation.getAlliance().equals(Alliance.Blue)) {
-      runBlue();
-    }
-
-    if (counter % 50 < 25 && RobotContainer.operatorBox.coneMode()) { setYellow(); }
-    if (counter % 50 < 25 && RobotContainer.operatorBox.cubeMode()) { setPurple(); }
+    if (!DriverStation.isFMSAttached() || DriverStation.getAlliance().equals(Alliance.Invalid)) { setYellow(); }
+    else if (counter % 50 > 25 && DriverStation.getAlliance().equals(Alliance.Red)) { runRed(); }
+    else if (counter % 50 > 25 && DriverStation.getAlliance().equals(Alliance.Blue)) { runBlue(); }
+    else if (counter % 50 <= 25 && RobotContainer.operatorBox.coneMode()) { setYellow(); }
+    else if (counter % 50 <= 25 && RobotContainer.operatorBox.cubeMode()) { setPurple(); }
 
     strip.setData(buffer);
     counter++;
@@ -123,20 +117,6 @@ public class LEDStrip extends SubsystemBase {
 
   @Override
   public void periodic() {
-    if (!DriverStation.isFMSAttached() || DriverStation.getAlliance().equals(Alliance.Invalid)) {
-      setYellow();
-      return;
-    }
-    if (DriverStation.getAlliance().equals(Alliance.Red)) {
-      runRed();
-      return;
-    }
-    if (DriverStation.getAlliance().equals(Alliance.Blue)) {
-      runBlue();
-      return;
-    }
-    if (RobotContainer.operatorBox.coneMode()) {
-
-    }
+    // this runs off thread so it doesn't stutter
   }
 }
