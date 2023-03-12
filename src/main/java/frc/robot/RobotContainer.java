@@ -257,10 +257,10 @@ public class RobotContainer {
     Trigger moveArm = new Trigger(() -> Math.abs(operatorStick.getX()) > 0.05 || Math.abs(operatorStick.getY()) > 0.05);
     moveArm.onTrue(new ArmControlJoystick());
 
-    Trigger grip = new Trigger(operatorStick::closeClaw);
+    Trigger grip = new Trigger(() -> (operatorBox.coneMode() && operatorStick.closeClaw()));
     grip.onTrue(new SetGrabber(true));
 
-    Trigger release = new Trigger(operatorStick::openClaw);
+    Trigger release = new Trigger(() -> (operatorBox.cubeMode() || operatorStick.openClaw()));
     release.onTrue(new SetGrabber(false));
 
     Trigger outtake = new Trigger(operatorStick::outtake);
