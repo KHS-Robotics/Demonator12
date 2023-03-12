@@ -18,7 +18,7 @@ import edu.wpi.first.math.util.Units;
 public class Constants {
   public static final Transform3d CAMERA_1_POS = new Transform3d(
       new Translation3d(Units.inchesToMeters(14), Units.inchesToMeters(6.5), Units.inchesToMeters(9)),
-      new Rotation3d(0, 0, 0));
+      new Rotation3d(0, Math.toRadians(-15), 0));
   public static final Translation3d ARMOFFSET = new Translation3d(0.0, 0.0, Units.inchesToMeters(20));
   public static final double MIN_LENGTH = Units.inchesToMeters(24.0);
   public static final double GRIPPERLENGTH = Units.inchesToMeters(16);
