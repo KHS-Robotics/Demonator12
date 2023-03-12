@@ -11,17 +11,23 @@ import java.util.Optional;
 
 import org.ejml.simple.SimpleMatrix;
 import org.photonvision.EstimatedRobotPose;
+import org.photonvision.PhotonPoseEstimator;
+import org.photonvision.PhotonUtils;
+import org.photonvision.targeting.PhotonPipelineResult;
+import org.photonvision.targeting.PhotonTrackedTarget;
 
 import com.pathplanner.lib.PathConstraints;
 import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.PathPoint;
 
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
@@ -297,22 +303,19 @@ public class SwerveDrive extends SubsystemBase {
   public void updateOdometry() {
     poseEstimator.updateWithTime(Timer.getFPGATimestamp(), getAngle(), getSwerveModulePositions());
 
-    Optional<EstimatedRobotPose> estimatedPose = photonCamera.getEstimatedGlobalPose(poseEstimator.getEstimatedPosition());
-    if (estimatedPose.isPresent()) {
-      EstimatedRobotPose camPose = estimatedPose.get();
-      double minimum = 1;
-      for(var target : camPose.targetsUsed) {
-        double ambiguity = target.getPoseAmbiguity();
-        if(ambiguity < minimum) {
-          minimum = ambiguity;
-        }
-      }
-
-      if(minimum < 0.2 && poseEstimator.getEstimatedPosition().getTranslation().getDistance(getPose().getTranslation()) < 1) {
-        poseEstimator.addVisionMeasurement(camPose.estimatedPose.toPose2d(), camPose.timestampSeconds);
+    //Optional<EstimatedRobotPose> estimatedPose = photonCamera.getEstimatedGlobalPose(poseEstimator.getEstimatedPosition());
+    //if (estimatedPose.isPresent()) {
+    PhotonPipelineResult result = photonCamera.getResult();
+    if(result.hasTargets()) {
+    var target = result.getBestTarget();
+    double ambiguity = target.getPoseAmbiguity();
+    Pose3d robotPose = PhotonUtils.estimateFieldToRobotAprilTag(target.getBestCameraToTarget(), photonCamera.fieldLayout.getTagPose(target.getFiducialId()).get(), Constants.CAMERA_1_POS.inverse());
+      if(ambiguity < 0.2 && poseEstimator.getEstimatedPosition().getTranslation().getDistance(getPose().getTranslation()) < 1) {
+        poseEstimator.addVisionMeasurement(robotPose.toPose2d(), result.getTimestampSeconds());
       }
     }
   }
+  
 
   public void resetOdometry() {
     RobotContainer.navx.reset();
