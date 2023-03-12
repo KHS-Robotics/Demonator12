@@ -255,15 +255,13 @@ public class Arm extends SubsystemBase {
     if (isFurther(target)) {
       command = new SequentialCommandGroup(
           new WristGoToSetpoint(wristAngle),
-          new ArmControlPivot(rotToPoint(target).getRadians()).raceWith(new WristHoldSetpoint()),
-          new ArmControlLength(lengthToPoint(target)).raceWith(new WristHoldSetpoint()),
-          new WristHoldSetpoint());
+          (new ArmControlPivot(rotToPoint(target).getRadians()).andThen(
+          new ArmControlLength(lengthToPoint(target)))).deadlineWith(new WristHoldSetpoint()));
     } else {
       command = new SequentialCommandGroup(
           new WristGoToSetpoint(wristAngle),
-          new ArmControlLength(lengthToPoint(target)).raceWith(new WristHoldSetpoint()),
-          new ArmControlPivot(rotToPoint(target).getRadians()).raceWith(new WristHoldSetpoint()),
-          new WristHoldSetpoint());
+          (new ArmControlLength(lengthToPoint(target))),
+          new ArmControlPivot(rotToPoint(target).getRadians()).deadlineWith(new WristHoldSetpoint()));
     }
     return command;
   }

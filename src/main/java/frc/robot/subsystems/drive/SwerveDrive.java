@@ -297,7 +297,7 @@ public class SwerveDrive extends SubsystemBase {
         }
       }
 
-      if(minimum < 0.2 && poseEstimator.getEstimatedPosition().getTranslation().minus(getPose().getTranslation()).getNorm() < 1) {
+      if(minimum < 0.2 && poseEstimator.getEstimatedPosition().getTranslation().getDistance(getPose().getTranslation()) < 1) {
         double stdDev = minimum + 0.05;
 
         var stdDevMatrix = new Matrix<N3, N1>(new SimpleMatrix(new double[][] {
