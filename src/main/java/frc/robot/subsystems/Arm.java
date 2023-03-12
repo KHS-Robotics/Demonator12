@@ -26,6 +26,7 @@ import frc.robot.RobotMap;
 import frc.robot.commands.arm.ArmControlLength;
 import frc.robot.commands.arm.ArmControlPivot;
 import frc.robot.commands.wrist.WristGoToSetpoint;
+import frc.robot.commands.wrist.WristHoldSetpoint;
 
 public class Arm extends SubsystemBase {
   public Translation3d armTranslaton = new Translation3d();
@@ -242,21 +243,27 @@ public class Arm extends SubsystemBase {
   }
 
   public SequentialCommandGroup goToSetpoint(Translation3d target, Rotation2d wristAngle) {
-    target = target.minus(new Translation3d(Constants.GRIPPERHOLDDISTANCE,
-        new Rotation3d(0, wristAngle.getRadians(), 0)));
+    var wristTranslation = new Translation3d(Constants.GRIPPERHOLDDISTANCE,
+    new Rotation3d(0, -wristAngle.getRadians(), 0));
+    target = target.minus(wristTranslation);
+    SmartDashboard.putNumber("WristTranslationX", wristTranslation.getX());
+    SmartDashboard.putNumber("WristTranslationZ", wristTranslation.getZ());
+      
     armTranslaton = target;
 
     var command = new SequentialCommandGroup();
     if (isFurther(target)) {
       command = new SequentialCommandGroup(
           new WristGoToSetpoint(wristAngle),
-          new ArmControlPivot(rotToPoint(target).getRadians()),
-          new ArmControlLength(lengthToPoint(target)));
+          new ArmControlPivot(rotToPoint(target).getRadians()).raceWith(new WristHoldSetpoint()),
+          new ArmControlLength(lengthToPoint(target)).raceWith(new WristHoldSetpoint()),
+          new WristHoldSetpoint());
     } else {
       command = new SequentialCommandGroup(
           new WristGoToSetpoint(wristAngle),
-          new ArmControlLength(lengthToPoint(target)),
-          new ArmControlPivot(rotToPoint(target).getRadians()));
+          new ArmControlLength(lengthToPoint(target)).raceWith(new WristHoldSetpoint()),
+          new ArmControlPivot(rotToPoint(target).getRadians()).raceWith(new WristHoldSetpoint()),
+          new WristHoldSetpoint());
     }
     return command;
   }

@@ -313,6 +313,8 @@ public class SwerveDrive extends SubsystemBase {
   }
 
   public void resetOdometry() {
+    RobotContainer.navx.reset();
+    offset = Math.toDegrees(Math.PI);
     poseEstimator.resetPosition(getAngle(), getSwerveModulePositions(), new Pose2d(2, 4, new Rotation2d(Math.PI)));
   }
 

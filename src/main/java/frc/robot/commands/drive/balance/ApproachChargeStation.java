@@ -7,12 +7,14 @@
 
 package frc.robot.commands.drive.balance;
 
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.RobotContainer;
 
 public class ApproachChargeStation extends CommandBase {
+  private Timer timer = new Timer();
   private static final double AbsoluteTargetPitchToEndCommand = 10;
-  private static final double ApporachSpeedMetersPerSecond = 0.5;
+  private static final double ApporachSpeedMetersPerSecond = 1.2;
   private double yaw;
   private boolean reverse;
 
@@ -47,6 +49,15 @@ public class ApproachChargeStation extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return Math.abs(RobotContainer.getRobotPitch()) > AbsoluteTargetPitchToEndCommand;
+    var done = Math.abs(RobotContainer.getRobotPitch()) > AbsoluteTargetPitchToEndCommand;
+    if (done) {
+      timer.start();
+    }
+    else {
+      timer.stop();
+      timer.reset();
+    }
+
+    return done && timer.hasElapsed(0.5);
   }
 }

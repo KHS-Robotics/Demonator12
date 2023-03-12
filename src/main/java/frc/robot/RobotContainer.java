@@ -152,8 +152,8 @@ public class RobotContainer {
     Trigger resetNavx = driverController.start();
     resetNavx.onTrue(new InstantCommand(() -> swerveDrive.resetNavx()));
 
-    Trigger test = driverController.y();
-    test.onTrue(swerveDrive.followTrajectoryCommand(AutoRoutineBuilder.Place3LoadingStation, true));
+    //Trigger test = driverController.y();
+    //test.onTrue(swerveDrive.followTrajectoryCommand(AutoRoutineBuilder.Place3LoadingStation, true));
 
     Trigger resetOdometry = driverController.a();
     resetOdometry.onTrue(new InstantCommand(() -> swerveDrive.resetOdometry()));
@@ -168,11 +168,11 @@ public class RobotContainer {
     // Trigger outtake = driverController.leftBumper();
     // outtake.onTrue(new InstantCommand(() -> grabber.outtake(0.2)));
 
-    Trigger wristUp = driverController.x();
-    wristUp.onTrue(new WristGoToAngle(() -> new Rotation2d()));
+    //Trigger wristUp = driverController.x();
+    //wristUp.onTrue(new WristGoToAngle(() -> new Rotation2d()));
 
-    Trigger wristDown = driverController.b();
-    wristDown.onTrue(new WristGoToAngle(() -> new Rotation2d(-Math.PI / 4)));
+    //Trigger wristDown = driverController.b();
+    //wristDown.onTrue(new WristGoToAngle(() -> new Rotation2d(-Math.PI / 4)));
 
     Trigger setBalanceAngleZero = driverController.pov(0);
     setBalanceAngleZero.onTrue(new BalanceSequence(0));

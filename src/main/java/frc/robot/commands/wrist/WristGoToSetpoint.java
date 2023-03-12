@@ -32,6 +32,6 @@ public class WristGoToSetpoint extends CommandBase {
 
   @Override
   public void end(boolean interrupted) {
-    RobotContainer.wrist.stop();
+    // new WristHoldSetpoint().schedule();
   }
 }

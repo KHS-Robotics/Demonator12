@@ -25,7 +25,7 @@ public class Constants {
   public static final double GRIPPERHOLDDISTANCE = Units.inchesToMeters(11);
 
   public static final Translation3d MID_POS = new Translation3d(Units.inchesToMeters(41.7), Units.inchesToMeters(0),
-      Units.inchesToMeters(43));
+      Units.inchesToMeters(46));
   public static final Translation3d HIGH_POS = new Translation3d(Units.inchesToMeters(58.73), Units.inchesToMeters(0),
       Units.inchesToMeters(52));
 
@@ -33,19 +33,19 @@ public class Constants {
 
   public static final double FRONT_LEFT_P = 0.01;
   public static final double FRONT_LEFT_I = 0.0;
-  public static final double FRONT_LEFT_D = 0.0;
+  public static final double FRONT_LEFT_D = 0.0001;
 
   public static final double FRONT_RIGHT_P = 0.01;
   public static final double FRONT_RIGHT_I = 0.0;
-  public static final double FRONT_RIGHT_D = 0.0;
+  public static final double FRONT_RIGHT_D = 0.0001;
 
   public static final double REAR_LEFT_P = 0.01;
   public static final double REAR_LEFT_I = 0.0;
-  public static final double REAR_LEFT_D = 0.0;
+  public static final double REAR_LEFT_D = 0.0001;
 
   public static final double REAR_RIGHT_P = 0.01;
   public static final double REAR_RIGHT_I = 0.0;
-  public static final double REAR_RIGHT_D = 0.0;
+  public static final double REAR_RIGHT_D = 0.0001;
 
   public static final double FRONT_LEFT_KS = 2.2064E-06;
   public static final double FRONT_LEFT_KV = 0.0;
@@ -70,29 +70,29 @@ public class Constants {
   public static final double FRONT_RIGHT_DRIVE_I = 0;
   public static final double FRONT_RIGHT_DRIVE_D = 0;
   public static final double FRONT_RIGHT_DRIVE_KS = 0.11408;
-  public static final double FRONT_RIGHT_DRIVE_KV = 3.4035;
-  public static final double FRONT_RIGHT_DRIVE_KA = 0.093048;
+  public static final double FRONT_RIGHT_DRIVE_KV = 3.2717;
+  public static final double FRONT_RIGHT_DRIVE_KA = 0.17904;
 
   public static final double FRONT_LEFT_DRIVE_P = 0.01;
   public static final double FRONT_LEFT_DRIVE_I = 0;
   public static final double FRONT_LEFT_DRIVE_D = 0;
   public static final double FRONT_LEFT_DRIVE_KS = 0.11408;
-  public static final double FRONT_LEFT_DRIVE_KV = 3.4035;
-  public static final double FRONT_LEFT_DRIVE_KA = 0.093048;
+  public static final double FRONT_LEFT_DRIVE_KV = 3.2717;
+  public static final double FRONT_LEFT_DRIVE_KA = 0.17904;
 
   public static final double REAR_RIGHT_DRIVE_P = 0.01;
   public static final double REAR_RIGHT_DRIVE_I = 0;
   public static final double REAR_RIGHT_DRIVE_D = 0;
   public static final double REAR_RIGHT_DRIVE_KS = 0.11408;
-  public static final double REAR_RIGHT_DRIVE_KV = 3.4035;
-  public static final double REAR_RIGHT_DRIVE_KA = 0.093048;
+  public static final double REAR_RIGHT_DRIVE_KV = 3.2717;
+  public static final double REAR_RIGHT_DRIVE_KA = 0.17904;
 
   public static final double REAR_LEFT_DRIVE_P = 0.01;
   public static final double REAR_LEFT_DRIVE_I = 0;
   public static final double REAR_LEFT_DRIVE_D = 0;
   public static final double REAR_LEFT_DRIVE_KS = 0.11408;
-  public static final double REAR_LEFT_DRIVE_KV = 3.4035;
-  public static final double REAR_LEFT_DRIVE_KA = 0.093048;
+  public static final double REAR_LEFT_DRIVE_KV = 3.2717;
+  public static final double REAR_LEFT_DRIVE_KA = 0.17904;
 
   public static final double ARM_P = 0.5;
   public static final double ARM_I = 0.0;
@@ -124,9 +124,9 @@ public class Constants {
   public static final double WRIST_GEARING = 100;
   public static final double ARM_GEARING = 48;
 
-  public static final double TARGET_P = 0.03;
+  public static final double TARGET_P = 0.008;
   public static final double TARGET_I = 0.0;
-  public static final double TARGET_D = 0.0025;
+  public static final double TARGET_D = 0.0001;
 
   public static final int LED_LENGTH = 88;
 }

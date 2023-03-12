@@ -52,10 +52,10 @@ public class Wrist extends SubsystemBase {
      */
     wristPID = new PIDController(Constants.WRIST_P, Constants.WRIST_I, Constants.WRIST_D);
 
-    forwardLimitSwitch = pivotMotor.getForwardLimitSwitch(Type.kNormallyOpen);
+    forwardLimitSwitch = pivotMotor.getForwardLimitSwitch(Type.kNormallyClosed);
     forwardLimitSwitch.enableLimitSwitch(true);
 
-    reverseLimitSwitch = pivotMotor.getReverseLimitSwitch(Type.kNormallyOpen);
+    reverseLimitSwitch = pivotMotor.getReverseLimitSwitch(Type.kNormallyClosed);
     reverseLimitSwitch.enableLimitSwitch(true);
 
     wristFeedForward = new ArmFeedforward(Constants.WRIST_KS, Constants.WRIST_KG, Constants.WRIST_KV,
@@ -117,7 +117,6 @@ public class Wrist extends SubsystemBase {
   }
 
   public void setAngleSetpoint(Rotation2d angleSetpoint) {
-    System.out.println("Setting wrist angle to " + angleSetpoint.getRadians());
     this.angleSetpoint = angleSetpoint;
   }
 
@@ -125,6 +124,6 @@ public class Wrist extends SubsystemBase {
   public void periodic() {
     SmartDashboard.putNumber("wristPos", pivotEncoder.getPosition());
     SmartDashboard.putNumber("wristVel", pivotEncoder.getVelocity());
-    SmartDashboard.putNumber("wristSetpoint", angleSetpoint.getRadians());
+    SmartDashboard.putNumber("wristSetpoint", angleSetpoint.getRadians()); 
   }
 }

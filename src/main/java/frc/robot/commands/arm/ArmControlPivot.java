@@ -24,12 +24,12 @@ public class ArmControlPivot extends CommandBase {
   @Override
   public void initialize() {
     RobotContainer.arm.armLengthSetpoint = RobotContainer.arm.getLength();
+    System.out.println("\n\nrunning armcontrolpivot\n\n");
   }
 
   // Called repeatedly when this Command is scheduled to run
   @Override
   public void execute() {
-    System.out.println("ArmControlPivot with angle " + angle);
     SmartDashboard.putNumber("ArmControlPivotCmdSetpoint", angle);
     RobotContainer.arm.setAngle(angle);
     RobotContainer.arm.setLength(RobotContainer.arm.armLengthSetpoint);

@@ -31,6 +31,5 @@ public class WristHoldSetpoint extends CommandBase {
 
   @Override
   public void end(boolean interrupted) {
-    RobotContainer.wrist.stop();
   }
 }

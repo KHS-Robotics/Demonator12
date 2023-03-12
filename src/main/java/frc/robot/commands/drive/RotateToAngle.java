@@ -7,10 +7,14 @@
 
 package frc.robot.commands.drive;
 
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.RobotContainer;
 
 public class RotateToAngle extends CommandBase {
+  private Timer timer = new Timer();
+  private static final double DEBOUNCE_SECONDS = 0.3;
+
   private double angle, error;
 
   /**
@@ -46,6 +50,14 @@ public class RotateToAngle extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return RobotContainer.swerveDrive.atSetpoint(error);
+    var atSetpoint = RobotContainer.swerveDrive.atSetpoint(error);
+    if (atSetpoint) {
+      timer.start();
+    } else {
+      timer.stop();
+      timer.reset();
+    }
+
+    return timer.hasElapsed(DEBOUNCE_SECONDS) && atSetpoint;
   }
 }
