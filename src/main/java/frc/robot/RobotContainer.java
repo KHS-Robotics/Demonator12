@@ -27,6 +27,7 @@ import frc.robot.commands.arm.ArmControlJoystick;
 import frc.robot.commands.arm.ArmHoldSetpoint;
 import frc.robot.commands.drive.CenterSwerveModules;
 import frc.robot.commands.drive.DriveSwerveWithXbox;
+import frc.robot.commands.drive.HoldAngleWithXbox;
 import frc.robot.commands.drive.balance.BalanceSequence;
 import frc.robot.commands.grabber.SetGrabber;
 import frc.robot.commands.wrist.WristDeltaSetpoint;
@@ -152,9 +153,6 @@ public class RobotContainer {
     Trigger resetNavx = driverController.start();
     resetNavx.onTrue(new InstantCommand(() -> swerveDrive.resetNavx()));
 
-    //Trigger test = driverController.y();
-    //test.onTrue(swerveDrive.followTrajectoryCommand(AutoRoutineBuilder.Place3LoadingStation, true));
-
     Trigger resetOdometry = driverController.a();
     resetOdometry.onTrue(new InstantCommand(() -> swerveDrive.resetOdometry()));
 
@@ -179,6 +177,9 @@ public class RobotContainer {
 
     Trigger setBalanceAngle180 = driverController.pov(180);
     setBalanceAngle180.onTrue(new BalanceSequence(180));
+
+    Trigger holdAngleWhileDriving = driverController.rightBumper();
+    holdAngleWhileDriving.whileTrue(new HoldAngleWithXbox());
   }
 
   /** Binds commands to the operator box. */
