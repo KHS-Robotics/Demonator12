@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.RobotContainer;
 import frc.robot.RobotMap;
 
 public class LEDStrip extends SubsystemBase {
@@ -103,7 +104,19 @@ public class LEDStrip extends SubsystemBase {
   }
 
   public void update() {
-    runRed();
+    if (!DriverStation.isFMSAttached() || DriverStation.getAlliance().equals(Alliance.Invalid)) {
+      setYellow();
+    }
+    else if (DriverStation.getAlliance().equals(Alliance.Red)) {
+      runRed();
+    }
+    else if (DriverStation.getAlliance().equals(Alliance.Blue)) {
+      runBlue();
+    }
+
+    if (counter % 50 < 25 && RobotContainer.operatorBox.coneMode()) { setYellow(); }
+    if (counter % 50 < 25 && RobotContainer.operatorBox.cubeMode()) { setPurple(); }
+
     strip.setData(buffer);
     counter++;
   }
@@ -121,6 +134,9 @@ public class LEDStrip extends SubsystemBase {
     if (DriverStation.getAlliance().equals(Alliance.Blue)) {
       runBlue();
       return;
+    }
+    if (RobotContainer.operatorBox.coneMode()) {
+
     }
   }
 }
