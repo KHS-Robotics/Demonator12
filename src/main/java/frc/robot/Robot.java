@@ -10,6 +10,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.commands.drive.CenterSwerveModules;
+import frc.robot.subsystems.vision.Limelight;
+import frc.robot.subsystems.vision.Limelight.LightMode;
 
 /**
  * The VM is configured to automatically run this class, and to call the methods
@@ -35,6 +37,8 @@ public class Robot extends TimedRobot {
     // and put our
     // autonomous chooser on the dashboard.
     robotContainer = RobotContainer.getInstance();
+
+    Limelight.setLedMode(LightMode.eOff);
   }
 
   /**
