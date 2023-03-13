@@ -43,7 +43,7 @@ public class AutoRoutineBuilder {
             AutonomousEventMap.put("ScoreAngle",
                     RobotContainer.arm.goToPivotLength(0.75, Constants.MIN_LENGTH));
             AutonomousEventMap.put("Release", new SetGrabber(false));
-            AutonomousEventMap.put("Release", new SetGrabber(true));
+            AutonomousEventMap.put("Grab", new SetGrabber(true));
             AutonomousEventMap.put("Outtake", new InstantCommand(() -> RobotContainer.grabber.set(0.6)));
             AutonomousEventMap.put("Intake", new InstantCommand(() -> RobotContainer.grabber.set(-0.45)));
 
