@@ -36,6 +36,8 @@ public class Wrist extends SubsystemBase {
 
   private Rotation2d angleSetpoint = new Rotation2d();
 
+  
+
   public Wrist() {
     pivotMotor = new CANSparkMax(RobotMap.WRIST_PIVOT, MotorType.kBrushless);
 
@@ -108,6 +110,10 @@ public class Wrist extends SubsystemBase {
     pivotEncoder.setPosition(-1.56); // radians
   }
 
+  public void zeroWrist(double position) {
+    pivotEncoder.setPosition(position);
+  }
+
   public void stop() {
     pivotMotor.stopMotor();
   }
@@ -125,5 +131,13 @@ public class Wrist extends SubsystemBase {
     SmartDashboard.putNumber("wristPos", pivotEncoder.getPosition());
     SmartDashboard.putNumber("wristVel", pivotEncoder.getVelocity());
     SmartDashboard.putNumber("wristSetpoint", angleSetpoint.getRadians()); 
+  }
+
+  public boolean getTopTalonTach() {
+    return forwardLimitSwitch.isPressed();
+  }
+
+  public boolean getBottomTalonTach() {
+    return reverseLimitSwitch.isPressed();
   }
 }

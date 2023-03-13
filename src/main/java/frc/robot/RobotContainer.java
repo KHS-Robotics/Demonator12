@@ -145,6 +145,12 @@ public class RobotContainer {
     Trigger autoCalibrateTeleop = new Trigger(
         () -> (!swerveDrive.isCalibrated && RobotState.isTeleop() && RobotState.isEnabled()));
     autoCalibrateTeleop.onTrue(new CenterSwerveModules(true));
+
+    Trigger resetWristEncoderTop = new Trigger(() -> (wrist.getTopTalonTach()));
+    resetWristEncoderTop.onTrue(new InstantCommand(() -> wrist.zeroWrist(Math.PI/2.0)));
+
+    Trigger resetWristEncoderBottom = new Trigger(() -> (wrist.getTopTalonTach()));
+    resetWristEncoderBottom.onTrue(new InstantCommand(() -> wrist.zeroWrist(-Math.PI/2.0)));
   }
 
   /** Binds commands to xbox controller buttons. */
