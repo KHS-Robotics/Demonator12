@@ -1,7 +1,5 @@
 package frc.robot.commands.drive;
 
-import java.util.function.Supplier;
-
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.RobotContainer;
@@ -9,21 +7,16 @@ import frc.robot.subsystems.drive.SwerveDrive;
 
 public class HoldAngleWithXbox extends CommandBase {
     private boolean fieldRelative = false;
-    private Supplier<Rotation2d> angleSetpoint;
-
-  public HoldAngleWithXbox(Supplier<Rotation2d> angleSetpoint) {
-    this.addRequirements(RobotContainer.swerveDrive);
-    this.angleSetpoint = angleSetpoint;
-    
-  }
+    private Rotation2d angleSetpoint;
 
   public HoldAngleWithXbox() {
-    this(() -> RobotContainer.swerveDrive.getAngle());
+    this.addRequirements(RobotContainer.swerveDrive);
   }
 
   // Called just before this Command runs the first time
   @Override
   public void initialize() {
+    this.angleSetpoint = RobotContainer.swerveDrive.getAngle();
   }
 
   // Called repeatedly when this Command is scheduled to run
@@ -39,7 +32,7 @@ public class HoldAngleWithXbox extends CommandBase {
     // return positive values when you pull to the right by default.
     var ySpeed = RobotContainer.swerveDrive.sensControl(-RobotContainer.driverController.getLeftX()) * SwerveDrive.kMaxSpeed;
     fieldRelative = (RobotContainer.driverController.getRightTriggerAxis() < 0.3);
-    RobotContainer.swerveDrive.holdAngleWhileDriving(xSpeed, ySpeed, angleSetpoint.get(), fieldRelative);
+    RobotContainer.swerveDrive.holdAngleWhileDriving(xSpeed, ySpeed, angleSetpoint, fieldRelative);
   }
 
   // Make this return true when this Command no longer needs to run execute()
