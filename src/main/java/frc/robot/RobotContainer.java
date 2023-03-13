@@ -36,6 +36,7 @@ import frc.robot.commands.wrist.WristHoldSetpoint;
 import frc.robot.pathing.AutoRoutineBuilder;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Grabber;
+import frc.robot.subsystems.LEDStrip;
 import frc.robot.subsystems.Wrist;
 import frc.robot.subsystems.drive.SwerveDrive;
 
@@ -100,6 +101,7 @@ public class RobotContainer {
   public static final Arm arm = new Arm();
   public static final Wrist wrist = new Wrist();
   public static final Grabber grabber = new Grabber();
+  public static final LEDStrip leds = new LEDStrip();
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -257,10 +259,10 @@ public class RobotContainer {
     Trigger moveArm = new Trigger(() -> Math.abs(operatorStick.getX()) > 0.05 || Math.abs(operatorStick.getY()) > 0.05);
     moveArm.onTrue(new ArmControlJoystick());
 
-    Trigger grip = new Trigger(() -> (operatorBox.coneMode() && operatorStick.closeClaw()));
+    Trigger grip = new Trigger(() -> (/*operatorBox.coneMode() &&*/ operatorStick.closeClaw()));
     grip.onTrue(new SetGrabber(true));
 
-    Trigger release = new Trigger(() -> (operatorBox.cubeMode() || operatorStick.openClaw()));
+    Trigger release = new Trigger(() -> (/*operatorBox.cubeMode() ||*/ operatorStick.openClaw()));
     release.onTrue(new SetGrabber(false));
 
     Trigger outtake = new Trigger(operatorStick::outtake);

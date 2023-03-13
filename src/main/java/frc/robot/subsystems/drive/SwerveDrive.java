@@ -158,9 +158,9 @@ public class SwerveDrive extends SubsystemBase {
     targetPid.enableContinuousInput(-180.0, 180.0);
     targetPid.setTolerance(1);
 
-    var stdDevMatrix = new Matrix<N3, N1>(new SimpleMatrix(new double[][] {
-      { 0.015 },
-      { 0.015 },
+    stdDevMatrix = new Matrix<N3, N1>(new SimpleMatrix(new double[][] {
+      { 0.03 },
+      { 0.03 },
       { 3 }
     }));
     poseEstimator.setVisionMeasurementStdDevs(stdDevMatrix);
@@ -305,7 +305,7 @@ public class SwerveDrive extends SubsystemBase {
     var target = result.getBestTarget();
     double ambiguity = target.getPoseAmbiguity();
     Pose3d robotPose = PhotonUtils.estimateFieldToRobotAprilTag(target.getBestCameraToTarget(), photonCamera.fieldLayout.getTagPose(target.getFiducialId()).get(), Constants.CAMERA_1_POS.inverse());
-      if(ambiguity < 0.2 && poseEstimator.getEstimatedPosition().getTranslation().getDistance(getPose().getTranslation()) < 1) {
+      if(ambiguity < 0.2 /*&& poseEstimator.getEstimatedPosition().getTranslation().getDistance(getPose().getTranslation()) < 1*/) {
         poseEstimator.addVisionMeasurement(robotPose.toPose2d(), result.getTimestampSeconds());
       }
     }
@@ -353,6 +353,14 @@ public class SwerveDrive extends SubsystemBase {
     rearRight.stop();
     rearLeft.stop();
   }
+
+  public void lock() {
+    frontRight.setDesiredState(0, 45);
+    frontLeft.setDesiredState(0, -45);
+    rearRight.setDesiredState(0, -45);
+    rearLeft.setDesiredState(0, 45);
+  }
+
 
   public void resetNavx() {
     resetNavx(getPose());

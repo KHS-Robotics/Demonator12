@@ -3,6 +3,7 @@ package frc.robot.subsystems;
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -17,20 +18,13 @@ public class LEDStrip extends SubsystemBase {
   int counter;
   int ticksPerSecond = 50;
 
-  public LEDStrip(int numberSections) {
+  public LEDStrip() {
     t = new Thread(() -> {
       long lastTime = System.nanoTime();
       double delta = 0;
 
       // very accurate loop, is this bad for performance?
-      while (true) {
-        try {
-          if (Thread.interrupted()) {
-            throw new InterruptedException();
-          }
-        } catch (Exception e) {
-          return;
-        }
+      while (!Thread.interrupted()) {
         double ns = 1000000000 / (double) ticksPerSecond;
         long now = System.nanoTime();
         delta += (now - lastTime) / ns;
@@ -44,12 +38,13 @@ public class LEDStrip extends SubsystemBase {
     });
     strip = new AddressableLED(RobotMap.LED_PORT);
     strip.setLength(Constants.LED_LENGTH);
-    buffer = new AddressableLEDBuffer(88);
+    buffer = new AddressableLEDBuffer(Constants.LED_LENGTH);
     for (int i = 0; i < Constants.LED_LENGTH; i++) {
       buffer.setRGB(i, 255, 255, 255);
     }
+    strip.setData(buffer);
     strip.start();
-    this.numberSections = numberSections;
+    this.numberSections = Constants.LED_LENGTH;
     t.start();
   }
 
@@ -98,20 +93,32 @@ public class LEDStrip extends SubsystemBase {
   }
 
   public void runRainbow() {
-    ticksPerSecond = 50;
+    ticksPerSecond = 20;
     for (int i = 0; i < Constants.LED_LENGTH; i++) {
       buffer.setHSV((i + counter) % Constants.LED_LENGTH, (int) (((double) i / Constants.LED_LENGTH) * 180), 255, 255);
     }
   }
 
   public void update() {
-    if (!DriverStation.isFMSAttached() || DriverStation.getAlliance().equals(Alliance.Invalid)) { setYellow(); }
-    else if (counter % 50 > 25 && DriverStation.getAlliance().equals(Alliance.Red)) { runRed(); }
-    else if (counter % 50 > 25 && DriverStation.getAlliance().equals(Alliance.Blue)) { runBlue(); }
-    else if (counter % 50 <= 25 && RobotContainer.operatorBox.coneMode()) { setYellow(); }
-    else if (counter % 50 <= 25 && RobotContainer.operatorBox.cubeMode()) { setPurple(); }
+    if (RobotState.isDisabled() || RobotState.isAutonomous()) {
+      if(DriverStation.getAlliance().equals(Alliance.Red)) {
+        runRed();
+      } else {
+        runBlue();
+      }
+    }
+    else if (RobotContainer.operatorBox.coneMode()) {
+      setYellow();
+    }
+    else if (RobotContainer.operatorBox.cubeMode()) {
+      setPurple();
+    }
+    else {
+      runRainbow();
+    }
 
     strip.setData(buffer);
+
     counter++;
   }
 

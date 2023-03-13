@@ -18,7 +18,7 @@ public class RobotMap {
   public static final int SWITCHBOX_PORT = 1;
   public static final int JOYSTICK_PORT = 2;
 
-  public static final int LED_PORT = 0;
+  public static final int LED_PORT = 9;
 
   public static final int GRABBER_INTAKE = 8;
   public static final int GRABBER_PNEUMATIC_HUB = 31;

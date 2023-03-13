@@ -2,6 +2,7 @@ package frc.robot.commands.wrist;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.RobotContainer;
 
@@ -22,6 +23,8 @@ public class WristGoToSetpoint extends CommandBase {
 
   @Override
   public void execute() {
+    System.out.println("WRIST GO TO SETPOINT! Setpoint=" + setpoint.getRadians() + "  ::  Error=" + Math.abs(RobotContainer.wrist.getAbsoluteAngle().getRadians() - setpoint.getRadians()));
+
     RobotContainer.wrist.goToAbsoluteAngle(setpoint);
   }
 

@@ -7,12 +7,18 @@
 
 package frc.robot.commands.drive.balance;
 
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.commands.drive.RotateToAngle;
 
 public class BalanceSequence extends SequentialCommandGroup {
   public BalanceSequence(double yaw, boolean reversed) {
-    this.addCommands(new RotateToAngle(yaw), new ApproachChargeStation(yaw, reversed), new AutoBalance(yaw, reversed));
+    this.addCommands(
+      new RotateToAngle(yaw),
+      new ApproachChargeStation(yaw, reversed),
+      new DriveForward(yaw, reversed, 0.5).withTimeout(1),
+      new AutoBalance(yaw, reversed)
+      );
   }
 
   public BalanceSequence(double yaw) {

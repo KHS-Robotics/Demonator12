@@ -10,8 +10,8 @@ public class AutoBalance extends CommandBase {
   private boolean isTimerRunning;
 
   private boolean reverse;
-  private double slopeTolerance = 12.5;
-  private final double balanceSpeedMetersPerSecond = 0.3, levelPitch = 2, elapsedTimeToConsiderLevelInSeconds = 1;
+  private double slopeTolerance = 7;
+  private final double balanceSpeedMetersPerSecond = 0.3, levelPitch = 5, elapsedTimeToConsiderLevelInSeconds = 1;
   private double yaw, slope, currentPitch, previousPitch;
   private static final double dt = 0.02;
 
@@ -48,9 +48,9 @@ public class AutoBalance extends CommandBase {
     SmartDashboard.putBoolean("AutoBalanceIsAscending", isAscending);
     if (isAscending) {
       var xSpeed = (reverse ? -1 : 1) * Math.signum(currentPitch) * balanceSpeedMetersPerSecond;
-      RobotContainer.swerveDrive.holdAngleWhileDriving(xSpeed, 0, yaw, true);
+      RobotContainer.swerveDrive.holdAngleWhileDriving(xSpeed, 0, yaw, false);
     } else {
-      RobotContainer.swerveDrive.stop();
+      RobotContainer.swerveDrive.lock();
     }
 
     previousPitch = currentPitch;
@@ -81,6 +81,7 @@ public class AutoBalance extends CommandBase {
   @Override
   public void end(boolean interrupted) {
     stopTimer();
+    RobotContainer.swerveDrive.lock();
   }
 
   private void stopTimer() {

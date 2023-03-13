@@ -250,6 +250,8 @@ public class Arm extends SubsystemBase {
       
     armTranslaton = target;
 
+    SmartDashboard.putBoolean("isFurther", isFurther(target));
+
     var command = new SequentialCommandGroup();
     if (isFurther(target)) {
       command = new SequentialCommandGroup(

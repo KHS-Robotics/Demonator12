@@ -24,12 +24,13 @@ public class ArmControlPivot extends CommandBase {
   @Override
   public void initialize() {
     RobotContainer.arm.armLengthSetpoint = RobotContainer.arm.getLength();
-    System.out.println("\n\nrunning armcontrolpivot\n\n");
+    System.out.println("\n\nSTART running armcontrolpivot\n\n");
   }
 
   // Called repeatedly when this Command is scheduled to run
   @Override
   public void execute() {
+    System.out.println("\n\nrunning armcontrolpivot\n\n");
     SmartDashboard.putNumber("ArmControlPivotCmdSetpoint", angle);
     RobotContainer.arm.setAngle(angle);
     RobotContainer.arm.setLength(RobotContainer.arm.armLengthSetpoint);
@@ -38,8 +39,8 @@ public class ArmControlPivot extends CommandBase {
   // Make this return true when this Command no longer needs to run execute()
   @Override
   public boolean isFinished() {
-    return (Math.abs(RobotContainer.arm.getAngle().getRadians() - angle) < Math.toRadians(3))
-        || !RobotContainer.arm.isLegalHeight(RobotContainer.arm.getTranslation());
+    return (Math.abs(RobotContainer.arm.getAngle().getRadians() - angle) < Math.toRadians(3));
+        //|| !RobotContainer.arm.isLegalHeight(RobotContainer.arm.getTranslation());
   }
 
   // Called once after isFinished returns true

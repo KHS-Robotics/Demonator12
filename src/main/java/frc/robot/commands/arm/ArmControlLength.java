@@ -33,6 +33,7 @@ public class ArmControlLength extends CommandBase {
   // Called repeatedly when this Command is scheduled to run
   @Override
   public void execute() {
+    System.out.println("ARM CONTROL LENGTH!");
     RobotContainer.arm.setLength(length);
     RobotContainer.arm.setAngle(RobotContainer.arm.armPivotSetpointRadians);
   }
