@@ -50,8 +50,8 @@ public class ArmControlJoystick extends CommandBase {
   public void end(boolean interrupted) {
     RobotContainer.arm.armLengthSetpoint = RobotContainer.arm.getLength();
     RobotContainer.arm.armPivotSetpointRadians = RobotContainer.arm.getAngle().getRadians();
-    SmartDashboard.putNumber("ArmLength", RobotContainer.arm.getLength());
-    SmartDashboard.putNumber("ArmAngle", RobotContainer.arm.getAngle().getRadians());
+    //SmartDashboard.putNumber("ArmLength", RobotContainer.arm.getLength());
+    //SmartDashboard.putNumber("ArmAngle", RobotContainer.arm.getAngle().getRadians());
 
   }
 }

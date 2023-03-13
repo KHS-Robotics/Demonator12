@@ -80,6 +80,7 @@ public class Arm extends SubsystemBase {
     var translation = getTranslation();
     SmartDashboard.putNumber("ArmPivotSetpoint", this.armPivotSetpointRadians);
     SmartDashboard.putNumber("ArmPivot", this.getAngle().getRadians());
+    SmartDashboard.putNumber("ArmLength", getLength());
     SmartDashboard.putNumber("PivotJoystick", RobotContainer.operatorStick.getPitchSpeed());
     SmartDashboard.putBoolean("isLegalH", isLegalHeight(translation));
     SmartDashboard.putBoolean("isLegalE", isLegalExtension(translation));
@@ -295,7 +296,7 @@ public class Arm extends SubsystemBase {
     Translation2d targetXZ = new Translation2d(target.getX(), target.getZ());
     Translation2d gripper = new Translation2d(Constants.GRIPPERLENGTH,
         targetXZ.getAngle().plus(RobotContainer.wrist.getRelativeAngle()));
-    return targetXZ.plus(gripper).plus(new Translation2d(Constants.ARMOFFSET.getX(), Constants.ARMOFFSET.getZ()));
+    return targetXZ.plus(gripper);
   }
 
   public void zeroArmLength() {

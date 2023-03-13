@@ -7,6 +7,7 @@
 
 package frc.robot.commands.arm;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
 import frc.robot.RobotContainer;
@@ -28,6 +29,7 @@ public class ArmControlLength extends CommandBase {
     }
 
     RobotContainer.arm.armPivotSetpointRadians = RobotContainer.arm.getAngle().getRadians();
+    SmartDashboard.putNumber("ArmControlLengthCmdSetpoint", length);
   }
 
   // Called repeatedly when this Command is scheduled to run

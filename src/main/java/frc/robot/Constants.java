@@ -26,7 +26,7 @@ public class Constants {
 
   public static final Translation3d MID_POS = new Translation3d(Units.inchesToMeters(41.7), Units.inchesToMeters(0),
       Units.inchesToMeters(46));
-  public static final Translation3d HIGH_POS = new Translation3d(Units.inchesToMeters(58.73), Units.inchesToMeters(0),
+  public static final Translation3d HIGH_POS = new Translation3d(Units.inchesToMeters(58.23), Units.inchesToMeters(0),
       Units.inchesToMeters(58));
 
   public static final double SENS = 0.5;
@@ -48,7 +48,7 @@ public class Constants {
   public static final double DRIVE_KV = 3.2717;
   public static final double DRIVE_KA = 0.17904;
 
-  public static final double ARM_P = 0.5;
+  public static final double ARM_P = 2;
   public static final double ARM_I = 0.0;
   public static final double ARM_D = 0.01;
   public static final double ARM_KS = 0.26602;
@@ -58,7 +58,7 @@ public class Constants {
 
   public static final double ARM_START_ANGLE = Math.toRadians(35);
 
-  public static final double EXTEND_P = 0.5;
+  public static final double EXTEND_P = 1;
   public static final double EXTEND_I = 0;
   public static final double EXTEND_D = 0.0;
   public static final double EXTEND_KS = 0.22841;
