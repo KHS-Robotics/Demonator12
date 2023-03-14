@@ -34,6 +34,7 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -266,7 +267,8 @@ public class SwerveDrive extends SubsystemBase {
         initialPoint,
         new PathPoint(goal, Rotation2d.fromDegrees(180), Rotation2d.fromDegrees(180), 0)); // position, heading(direction of
                                                                                       // travel), holonomic rotation
-    return followTrajectoryCommand(trajToGoal, false);
+    //return followTrajectoryCommand(trajToGoal, false);
+    return RobotContainer.swerveAutoBuilder.followPath(trajToGoal);
   }
 
   public void setPose(Pose2d pose) {
@@ -278,7 +280,7 @@ public class SwerveDrive extends SubsystemBase {
         new InstantCommand(() -> {
           if (isAutoPath) {
             this.poseEstimator.resetPosition(getAngle(), getSwerveModulePositions(),
-                trajectory.getInitialHolonomicPose());
+                PathPlannerTrajectory.transformStateForAlliance(trajectory.getInitialState(), DriverStation.getAlliance()).poseMeters);
           }
         }),
         new PPSwerveControllerCommandReversed(

@@ -71,7 +71,7 @@ public class RobotContainer {
   }
 
   private static final SendableChooser<List<PathPlannerTrajectory>> autoChooser = new SendableChooser<>();
-  public SwerveAutoBuilder swerveAutoBuilder;
+  public static SwerveAutoBuilder swerveAutoBuilder;
 
   /** Gets the selected autonomous command. */
   public List<PathPlannerTrajectory> getAutoTrajectory() {
@@ -303,8 +303,8 @@ public class RobotContainer {
       swerveDrive::getPose,
       swerveDrive::setPose,
       swerveDrive.kinematics,
-      new PIDConstants(0, 0, 0), // translation
-      new PIDConstants(0, 0, 0), // rotation
+      new PIDConstants(4, 0, 0), // translation
+      new PIDConstants(0.4, 0, 0), // rotation
       swerveDrive::setModuleStates,
       getAutonomousEventMap(),
       true,
