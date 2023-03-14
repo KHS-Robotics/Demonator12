@@ -16,7 +16,7 @@ import frc.robot.Constants;
 
 public class PhotonWrapper {
   private PhotonCamera camera;
-  private PhotonPoseEstimator photonPoseEstimator;
+  //private PhotonPoseEstimator photonPoseEstimator;
   public AprilTagFieldLayout fieldLayout;
 
   public PhotonWrapper(String cameraName) {
@@ -25,17 +25,17 @@ public class PhotonWrapper {
     try {
       fieldLayout = AprilTagFieldLayout
           .loadFromResource(AprilTagFields.k2023ChargedUp.m_resourceFile);
-      photonPoseEstimator = new PhotonPoseEstimator(fieldLayout, PoseStrategy.AVERAGE_BEST_TARGETS, camera,
-          Constants.CAMERA_1_POS);
+      //photonPoseEstimator = new PhotonPoseEstimator(fieldLayout, PoseStrategy.AVERAGE_BEST_TARGETS, camera,
+      //    Constants.CAMERA_1_POS);
     } catch (IOException e) {
       e.printStackTrace();
     }
   }
 
-  public Optional<EstimatedRobotPose> getEstimatedGlobalPose(Pose2d previousEstimatedPose) {
+  /*public Optional<EstimatedRobotPose> getEstimatedGlobalPose(Pose2d previousEstimatedPose) {
     photonPoseEstimator.setReferencePose(previousEstimatedPose);
     return photonPoseEstimator.update();
-  }
+  }*/
 
   public PhotonPipelineResult getResult() {
     return camera.getLatestResult();

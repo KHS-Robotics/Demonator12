@@ -161,9 +161,9 @@ public class SwerveDrive extends SubsystemBase {
     targetPid.setTolerance(1);
 
     stdDevMatrix = new Matrix<N3, N1>(new SimpleMatrix(new double[][] {
-      { 0.1 },
-      { 0.1 },
-      { 10 }
+      { 0.3 },
+      { 0.3 },
+      { 45 }
     }));
     poseEstimator.setVisionMeasurementStdDevs(stdDevMatrix);
   }
@@ -335,9 +335,10 @@ public class SwerveDrive extends SubsystemBase {
     if(result.hasTargets()) {
     var target = result.getBestTarget();
     double ambiguity = target.getPoseAmbiguity();
-    Pose3d robotPose = PhotonUtils.estimateFieldToRobotAprilTag(target.getBestCameraToTarget(), photonCamera.fieldLayout.getTagPose(target.getFiducialId()).get(), new Transform3d()/*Constants.CAMERA_1_POS.inverse()*/);
-      if(ambiguity < 0.1 /*&& poseEstimator.getEstimatedPosition().getTranslation().getDistance(getPose().getTranslation()) < 1*/) {
-        poseEstimator.addVisionMeasurement(robotPose.toPose2d(), result.getTimestampSeconds());
+    int fiducialID = target.getFiducialId();
+    Pose2d robotPose = PhotonUtils.estimateFieldToRobotAprilTag(target.getBestCameraToTarget(), photonCamera.fieldLayout.getTagPose(fiducialID).get(), Constants.CAMERA_1_POS.inverse()).toPose2d();
+      if(ambiguity < 0.1 && robotPose.getTranslation().getDistance(photonCamera.fieldLayout.getTagPose(fiducialID).get().getTranslation().toTranslation2d()) < 2.5/*&& poseEstimator.getEstimatedPosition().getTranslation().getDistance(getPose().getTranslation()) < 1*/) {
+        poseEstimator.addVisionMeasurement(robotPose, result.getTimestampSeconds());
       }
     }
   }

@@ -37,7 +37,7 @@ public class SwerveModule extends SubsystemBase {
   private final CANSparkMax pivotMotor;
   private final RelativeEncoder pivotEncoder;
   private final SparkMaxPIDController drivePID;
-  private final SimpleMotorFeedforward driveFeedFoward;
+  private final SimpleMotorFeedforward driveFeedForward;
   // private final SimpleMotorFeedforward pivotFeedForward;
 
   private final PIDController pivotPID;
@@ -85,7 +85,7 @@ public class SwerveModule extends SubsystemBase {
     drivePID.setI(driveI);
     drivePID.setD(driveD);
 
-    driveFeedFoward = new SimpleMotorFeedforward(drivekS, drivekV, drivekA);
+    driveFeedForward = new SimpleMotorFeedforward(drivekS, drivekV, drivekA);
 
     pivotPID = new PIDController(pivotP, pivotI, pivotD);
 
@@ -158,7 +158,7 @@ public class SwerveModule extends SubsystemBase {
   public void setDesiredState(SwerveModuleState state, boolean useShortestPath) {
     drivePID.setReference(state.speedMetersPerSecond * (isFlipped && useShortestPath ? -1 : 1),
         CANSparkMax.ControlType.kVoltage, 1,
-        driveFeedFoward.calculate(state.speedMetersPerSecond * (isFlipped && useShortestPath ? -1 : 1)));
+        driveFeedForward.calculate(state.speedMetersPerSecond * (isFlipped && useShortestPath ? -1 : 1)));
     pivotMotor.set(MathUtil.clamp(pivotPID.calculate(getAngle(),
         useShortestPath ? calculateShortestPath(state.angle.getDegrees()) : state.angle.getDegrees()), -1, 1));
   }

@@ -36,13 +36,13 @@ public class Arm extends SubsystemBase {
   private final CANSparkMax extendMotor;
   private final RelativeEncoder extendEncoder;
 
-  private final ArmFeedforward armFeedFoward;
+  private final ArmFeedforward armFeedForward;
   private final PIDController armPID;
   public double armPivotSetpointRadians = 0.5, armLengthSetpoint = Constants.MIN_LENGTH;
   public TrapezoidProfile.State pivotSetpoint = new TrapezoidProfile.State();
   public TrapezoidProfile.State lengthSetpoint = new TrapezoidProfile.State();
 
-  private final SimpleMotorFeedforward extendFeedFoward;
+  private final SimpleMotorFeedforward extendFeedForward;
   private final PIDController extendPID;
   private double kAL, kDt = 0.02, kSpring;
 
@@ -62,10 +62,10 @@ public class Arm extends SubsystemBase {
                                                                                     // ratio
     extendEncoder.setVelocityConversionFactor(Units.inchesToMeters(Math.PI) / (3.2 * 60));
 
-    armFeedFoward = new ArmFeedforward(Constants.ARM_KS, Constants.ARM_KG, Constants.ARM_KV, Constants.ARM_KA);
+    armFeedForward = new ArmFeedforward(Constants.ARM_KS, Constants.ARM_KG, Constants.ARM_KV, Constants.ARM_KA);
     armPID = new PIDController(Constants.ARM_P, Constants.ARM_I, Constants.ARM_D);
 
-    extendFeedFoward = new SimpleMotorFeedforward(Constants.EXTEND_KS, Constants.EXTEND_KV, Constants.EXTEND_KA);
+    extendFeedForward = new SimpleMotorFeedforward(Constants.EXTEND_KS, Constants.EXTEND_KV, Constants.EXTEND_KA);
     extendPID = new PIDController(Constants.EXTEND_P, Constants.EXTEND_I, Constants.EXTEND_D);
 
     armConstraints = new TrapezoidProfile.Constraints(1, 1);
@@ -123,14 +123,14 @@ public class Arm extends SubsystemBase {
   }
 
   public void setLengthV(double vLength) {
-    var voltage = MathUtil.clamp(extendFeedFoward.calculate(vLength) + extendPID.calculate(getLengthV(), vLength)
+    var voltage = MathUtil.clamp(extendFeedForward.calculate(vLength) + extendPID.calculate(getLengthV(), vLength)
         + Constants.EXTEND_KG * Math.sin(this.getAngle().getRadians()), -3, 6);
     extendMotor.setVoltage(voltage);
     SmartDashboard.putNumber("ExtendVoltage", voltage);
   }
 
   public double calcLengthV(double vLength) {
-    var voltage = MathUtil.clamp(extendFeedFoward.calculate(vLength) + extendPID.calculate(getLengthV(), vLength)
+    var voltage = MathUtil.clamp(extendFeedForward.calculate(vLength) + extendPID.calculate(getLengthV(), vLength)
         + Constants.EXTEND_KG * Math.sin(this.getAngle().getRadians()) + Constants.EXTEND_KSPRING, -3, 6);
     // extendMotor.setVoltage(voltage);
     SmartDashboard.putNumber("ExtendVoltage", voltage);
