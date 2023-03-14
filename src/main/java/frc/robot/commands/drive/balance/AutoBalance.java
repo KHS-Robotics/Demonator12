@@ -10,7 +10,7 @@ public class AutoBalance extends CommandBase {
   private boolean isTimerRunning;
 
   private boolean reverse;
-  private double slopeTolerance = 7;
+  private double slopeTolerance = 5.8;
   private final double balanceSpeedMetersPerSecond = 0.3, levelPitch = 5, elapsedTimeToConsiderLevelInSeconds = 1;
   private double yaw, slope, currentPitch, previousPitch;
   private static final double dt = 0.02;

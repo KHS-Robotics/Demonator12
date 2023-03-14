@@ -18,10 +18,11 @@
       "stopEvent": {
         "names": [
           "PlaceHigh",
+          "Wait",
           "ScoreAngle"
         ],
         "executionBehavior": "sequential",
-        "waitBehavior": "none",
+        "waitBehavior": "before",
         "waitTime": 0
       }
     },

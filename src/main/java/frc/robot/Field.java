@@ -81,11 +81,11 @@ public class Field {
   public static int aprilTagFromInput(GridPosition position) {
     var isBlueAlliance = DriverStation.getAlliance() == Alliance.Blue;
     switch (position) {
-      case LEFT:
+      case RIGHT:
         return isBlueAlliance ? 8 : 3;
       case MID:
         return isBlueAlliance ? 7 : 2;
-      case RIGHT:
+      case LEFT:
         return isBlueAlliance ? 6 : 1;
       default:
         DriverStation.reportError("Invalid grid apriltag", false);

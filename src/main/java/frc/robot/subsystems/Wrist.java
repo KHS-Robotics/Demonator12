@@ -131,6 +131,15 @@ public class Wrist extends SubsystemBase {
     SmartDashboard.putNumber("wristPos", pivotEncoder.getPosition());
     SmartDashboard.putNumber("wristVel", pivotEncoder.getVelocity());
     SmartDashboard.putNumber("wristSetpoint", angleSetpoint.getRadians()); 
+    SmartDashboard.putBoolean("wristTopTalon", getTopTalonTach());
+    SmartDashboard.putBoolean("wristBotTalon", getBottomTalonTach());
+
+    /*if (getTopTalonTach()) {
+      zeroWrist(1.56);
+    }
+    else if(getBottomTalonTach()) {
+     zeroWrist(-1.56); 
+    }*/
   }
 
   public boolean getTopTalonTach() {

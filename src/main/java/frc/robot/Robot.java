@@ -5,11 +5,11 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.commands.drive.CenterSwerveModules;
 import frc.robot.subsystems.vision.Limelight;
 import frc.robot.subsystems.vision.Limelight.LightMode;
 
@@ -85,13 +85,16 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousInit() {
-    this.autonmousRoutine = new CenterSwerveModules(false).andThen(robotContainer.getAutonomousRoutine());
+    this.autonmousRoutine = robotContainer.swerveAutoBuilder.fullAuto(robotContainer.getAutoTrajectory());
     this.autonmousRoutine.schedule();
   }
 
   /** This method is called periodically during autonomous. */
   @Override
   public void autonomousPeriodic() {
+    if (!RobotContainer.swerveDrive.isCalibrated) {
+      DriverStation.reportError("SWERVE DRIVE NOT CALIBRATED!!!!!", false);
+    }
   }
 
   @Override

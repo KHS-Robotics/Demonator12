@@ -8,6 +8,7 @@
 package frc.robot.subsystems.drive;
 
 
+import org.ejml.dense.row.mult.SubmatrixOps_FDRM;
 import org.ejml.simple.SimpleMatrix;
 import org.photonvision.PhotonUtils;
 import org.photonvision.targeting.PhotonPipelineResult;
@@ -24,6 +25,7 @@ import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -159,9 +161,9 @@ public class SwerveDrive extends SubsystemBase {
     targetPid.setTolerance(1);
 
     stdDevMatrix = new Matrix<N3, N1>(new SimpleMatrix(new double[][] {
-      { 0.03 },
-      { 0.03 },
-      { 3 }
+      { 0.1 },
+      { 0.1 },
+      { 10 }
     }));
     poseEstimator.setVisionMeasurementStdDevs(stdDevMatrix);
   }
@@ -229,17 +231,46 @@ public class SwerveDrive extends SubsystemBase {
   }
 
   public Command goToNode(int apriltag, int node) {
+    SmartDashboard.putNumber("GoToNodeTag", apriltag);
+    SmartDashboard.putNumber("GoToNodeNode", node);
+    Rotation2d heading;
+
 
     Translation3d nodeTrans = Field.getNodeCoordinatesFieldRelative(apriltag, node);
+
+    SmartDashboard.putNumber("GoToNodeTransX", nodeTrans.getX());
+    SmartDashboard.putNumber("GoToNodeTransY", nodeTrans.getY());
+    ChassisSpeeds currentSpeeds = getChassisSpeeds();
+
+    double linearVel =
+        Math.sqrt(
+            (currentSpeeds.vxMetersPerSecond * currentSpeeds.vxMetersPerSecond)
+                + (currentSpeeds.vyMetersPerSecond * currentSpeeds.vyMetersPerSecond));
+
+
     Translation2d goal = new Translation2d(
         Field.fieldLayout.getTagPose(apriltag).get().getTranslation().getX() + Field.DIST_FROM_NODE_X_METERS,
-        nodeTrans.getY());
+        
+    nodeTrans.getY());
+    if(getPose().getY() > goal.getY()) {
+      heading = Rotation2d.fromDegrees(-90);
+     } else {
+      heading = Rotation2d.fromDegrees(90);
+     }
+
+    PathPoint initialPoint = new PathPoint(
+      getPose().getTranslation(), heading, getPose().getRotation(), linearVel);
     PathPlannerTrajectory trajToGoal = PathPlanner.generatePath(
-        new PathConstraints(2, 3),
-        PathPoint.fromCurrentHolonomicState(getPose(), getChassisSpeeds()),
-        new PathPoint(goal, Rotation2d.fromDegrees(0), Rotation2d.fromDegrees(180))); // position, heading(direction of
+        new PathConstraints(1, 1.5),
+        //PathPoint.fromCurrentHolonomicState(getPose(), getChassisSpeeds()),
+        initialPoint,
+        new PathPoint(goal, Rotation2d.fromDegrees(180), Rotation2d.fromDegrees(180), 0)); // position, heading(direction of
                                                                                       // travel), holonomic rotation
     return followTrajectoryCommand(trajToGoal, false);
+  }
+
+  public void setPose(Pose2d pose) {
+    poseEstimator.resetPosition(getAngle(), getSwerveModulePositions(), pose);
   }
 
   public Command followTrajectoryCommand(PathPlannerTrajectory trajectory, boolean isAutoPath) {
@@ -253,8 +284,8 @@ public class SwerveDrive extends SubsystemBase {
         new PPSwerveControllerCommandReversed(
             trajectory,
             this::getPose,
-            new PIDController(0, 0, 0),
-            new PIDController(0, 0, 0),
+            new PIDController(0, 0, 0.1),
+            new PIDController(0, 0, 0.1),
             new PIDController(0, 0, 0),
             this::setModuleStates,
             true,
@@ -304,8 +335,8 @@ public class SwerveDrive extends SubsystemBase {
     if(result.hasTargets()) {
     var target = result.getBestTarget();
     double ambiguity = target.getPoseAmbiguity();
-    Pose3d robotPose = PhotonUtils.estimateFieldToRobotAprilTag(target.getBestCameraToTarget(), photonCamera.fieldLayout.getTagPose(target.getFiducialId()).get(), Constants.CAMERA_1_POS.inverse());
-      if(ambiguity < 0.2 /*&& poseEstimator.getEstimatedPosition().getTranslation().getDistance(getPose().getTranslation()) < 1*/) {
+    Pose3d robotPose = PhotonUtils.estimateFieldToRobotAprilTag(target.getBestCameraToTarget(), photonCamera.fieldLayout.getTagPose(target.getFiducialId()).get(), new Transform3d()/*Constants.CAMERA_1_POS.inverse()*/);
+      if(ambiguity < 0.1 /*&& poseEstimator.getEstimatedPosition().getTranslation().getDistance(getPose().getTranslation()) < 1*/) {
         poseEstimator.addVisionMeasurement(robotPose.toPose2d(), result.getTimestampSeconds());
       }
     }

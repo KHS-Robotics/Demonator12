@@ -232,7 +232,7 @@ public class SwerveModule extends SubsystemBase {
    */
   public boolean resetEncoder() {
     if (setDetection.get()) { // sensor inverted
-      pivotMotor.set(-0.04);
+      pivotMotor.set(-0.065);
       return false;
     } else {
       pivotMotor.set(0);

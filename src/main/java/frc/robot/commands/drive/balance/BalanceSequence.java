@@ -16,7 +16,7 @@ public class BalanceSequence extends SequentialCommandGroup {
     this.addCommands(
       new RotateToAngle(yaw),
       new ApproachChargeStation(yaw, reversed),
-      new DriveForward(yaw, reversed, 0.5).withTimeout(1),
+      new DriveForward(yaw, reversed, 0.5).withTimeout(1.6),
       new AutoBalance(yaw, reversed)
       );
   }
