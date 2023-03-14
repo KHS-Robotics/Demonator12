@@ -205,7 +205,8 @@ replay_pid*
 .LSOverride
 
 # Icon must end with two \r
-Icon
+Icon
+
 
 # Thumbnails
 ._*
@@ -331,3 +332,8 @@ bin/
 
 # End entries from WPI Lib team
 
+
+# more simulation stuff
+simgui.json
+simgui-ds.json
+networktables.json

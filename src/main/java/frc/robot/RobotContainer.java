@@ -5,10 +5,14 @@
 
 package frc.robot;
 
+import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
 import com.kauailabs.navx.frc.AHRS;
+import com.pathplanner.lib.PathConstraints;
+import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.auto.PIDConstants;
 import com.pathplanner.lib.auto.SwerveAutoBuilder;
@@ -16,7 +20,7 @@ import com.pathplanner.lib.commands.PPSwerveControllerCommand;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation3d;
-import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.SerialPort.Port;
@@ -28,7 +32,6 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.ProxyCommand;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.arm.ArmControlJoystick;
@@ -42,7 +45,6 @@ import frc.robot.commands.grabber.SetGrabber;
 import frc.robot.commands.wrist.WristDeltaSetpoint;
 import frc.robot.commands.wrist.WristGoToAngle;
 import frc.robot.commands.wrist.WristHoldSetpoint;
-import frc.robot.pathing.AutoRoutines;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Grabber;
 import frc.robot.subsystems.LEDStrip;
@@ -301,44 +303,27 @@ public class RobotContainer {
       swerveDrive::getPose,
       swerveDrive::setPose,
       swerveDrive.kinematics,
-      new PIDConstants(0, 0, 0),
-      new PIDConstants(0, 0, 0),
+      new PIDConstants(0, 0, 0), // translation
+      new PIDConstants(0, 0, 0), // rotation
       swerveDrive::setModuleStates,
       getAutonomousEventMap(),
       true,
       swerveDrive
     );
 
-    // autoChooser.setDefaultOption("nothing", new PrintCommand("No auto :("));
-    // autoChooser.addOption("one piece", new PrintCommand("placeholder for single placement command"));
-    autoChooser.addOption("one piece + mobility cable protector", AutoRoutines.PlaceMobilityCableProtector);
-    // autoChooser.addOption("one piece + engage",
-    //     AutoRoutineBuilder.getAutonomousCommand(AutoRoutineBuilder.PlaceEngage));
-    // autoChooser.addOption("one piece + engage + leave",
-    //     AutoRoutineBuilder.getAutonomousCommand(AutoRoutineBuilder.PlaceEngageLeave));
+    autoChooser.setDefaultOption("Nothing", new ArrayList<PathPlannerTrajectory>());
+    // dynamically create the options using the PathPlanner paths under "src/main/deploy/pathplanner"
+    File ppDirectory = Filesystem.getDeployDirectory().toPath().resolve("pathplanner").toFile();
+    for (File file : ppDirectory.listFiles()) {
+      if (!file.isDirectory() && file.getName().endsWith(".path")) {
+        // remove ".path" from the name for PathPlanner
+        var pathName = file.getName().replace(".path", "");
+        autoChooser.addOption(pathName, PathPlanner.loadPathGroup(pathName, new PathConstraints(2, 3)));
+      }
+    }
 
-    autoChooser.addOption("TESTING", AutoRoutines.TestPath);
-    //autoChooser.addOption("two piece (cable protector)",
-    //    AutoRoutineBuilder.getAutonomousCommand(AutoRoutineBuilder.Place2CableProtector));
-    //autoChooser.addOption("two piece (loading station)",
-    //    AutoRoutineBuilder.getAutonomousCommand(AutoRoutineBuilder.Place2LoadingStation));
-    //autoChooser.addOption("two piece (cable protector) (engage)",
-    //    AutoRoutineBuilder.getAutonomousCommand(AutoRoutineBuilder.Place2CableProtectorEngage));
-    //autoChooser.addOption("two piece (loading station) (engage)",
-    //    AutoRoutineBuilder.getAutonomousCommand(AutoRoutineBuilder.Place2LoadingStation));
-    //autoChooser.addOption("three piece (cable protector)",
-    //    AutoRoutineBuilder.getAutonomousCommand(AutoRoutineBuilder.Place3CableProtector));
-    //autoChooser.addOption("three piece (loading station)",
-    //    AutoRoutineBuilder.getAutonomousCommand(AutoRoutineBuilder.Place3LoadingStation));
     SmartDashboard.putData(autoChooser);
-
     SmartDashboard.putData("field", field);
-    // SmartDashboard.putNumber("xFF", AutoRoutineBuilder.PlaceEngage.sample(0).velocityMetersPerSecond
-    //     * AutoRoutineBuilder.PlaceEngage.sample(0).poseMeters.getRotation().getCos());
-    // SmartDashboard.putNumber("yFF", AutoRoutineBuilder.PlaceEngage.sample(0).velocityMetersPerSecond
-    //     * AutoRoutineBuilder.PlaceEngage.sample(0).poseMeters.getRotation().getSin());
-    // SmartDashboard.putNumber("desiredX", AutoRoutineBuilder.PlaceEngage.sample(0).poseMeters.getX());
-    SmartDashboard.putNumber("curX", swerveDrive.getPose().getX());
 
     PPSwerveControllerCommand.setLoggingCallbacks(null, RobotContainer.field::setRobotPose,
         swerveDrive::logTargetChassisSpeeds, null);
@@ -348,15 +333,12 @@ public class RobotContainer {
   /** Gets the event map for PathPlanner's FollowPathWithEvents. */
   private static HashMap<String, Command> getAutonomousEventMap() {
     if (AutonomousEventMap.isEmpty()) {
-        AutonomousEventMap.put("PlaceHigh", new PrintCommand("\n\n\n!!!!!!PLACE HIGH!!!!!!") /*new ProxyCommand(() -> RobotContainer.arm.goToSetpointScore(Constants.HIGH_POS))*/);
+        AutonomousEventMap.put("PlaceHigh", new PrintCommand("\n\n\n!!!!!!PLACE HIGH!!!!!!\n\n\n")/*new ProxyCommand(() -> RobotContainer.arm.goToSetpointScore(Constants.HIGH_POS))*/);
         AutonomousEventMap.put("PlaceMid", new PrintCommand("placeholder for place mid"));
         AutonomousEventMap.put("PlaceHybrid", new PrintCommand("placeholder for place hybrid"));
         AutonomousEventMap.put("BalanceFacingAway", new BalanceSequence(0));
-        AutonomousEventMap.put("BalanceFacingAwayReverse", new BalanceSequence(0, true));
         AutonomousEventMap.put("BalanceFacingDriver", new BalanceSequence(180));
-        AutonomousEventMap.put("BalanceFacingDriverReverse", new BalanceSequence(180, true));
-        AutonomousEventMap.put("ScoreAngle",
-                RobotContainer.arm.goToPivotLength(0.75, Constants.MIN_LENGTH));
+        AutonomousEventMap.put("ScoreAngle", RobotContainer.arm.goToPivotLength(0.75, Constants.MIN_LENGTH));
         AutonomousEventMap.put("Release", new SetGrabber(false));
         AutonomousEventMap.put("Grab", new SetGrabber(true));
         AutonomousEventMap.put("Outtake", new InstantCommand(() -> RobotContainer.grabber.set(0.6)));

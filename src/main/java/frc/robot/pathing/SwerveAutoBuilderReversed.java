@@ -1,4 +1,4 @@
-package frc.robot;
+package frc.robot.pathing;
 
 import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.auto.BaseAutoBuilder;
@@ -10,7 +10,6 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.Subsystem;
-import frc.robot.pathing.PPSwerveControllerCommandReversed;
 
 import java.util.Map;
 import java.util.function.Consumer;
