@@ -1,7 +1,14 @@
 package frc.robot.subsystems.vision;
 
+import edu.wpi.first.hal.simulation.RoboRioDataJNI;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import frc.robot.Constants;
+import frc.robot.RobotContainer;
+import frc.robot.subsystems.drive.SwerveDrive;
 
 /**
  * Wrapper class for getting and setting Limelight NetworkTable values.
@@ -129,4 +136,36 @@ public class Limelight {
 
     return table.getTable("limelight").getEntry(key);
   }
+
+  public static double getPitch() {
+    return Math.toRadians(getTy() + Constants.LIMELIGHT_POS.getRotation().getY());
+  }
+
+  public static double getYaw() {
+    return Math.toRadians(getTx() + Constants.LIMELIGHT_POS.getRotation().getZ());
+  }
+  
+  public static double getLength(double height) {
+    return (height - Constants.LIMELIGHT_POS.getY()) / Math.sin(getPitch());
+  }
+
+  public static double getDist(double height) {
+    return (height - Constants.LIMELIGHT_POS.getY()) / Math.tan(getPitch());
+  }
+
+  public static Translation2d getTranslationRobotRelative(double height) {
+    double dist = getDist(height);
+
+    double x = dist * Math.cos(getYaw());
+    double y = dist * Math.sin(getYaw());
+    
+    return new Translation2d(x, y).plus(Constants.LIMELIGHT_POS.getTranslation().toTranslation2d());
+  }
+
+  public static Pose2d getPoseTapeRelative(double height) {
+    Rotation2d rotation = RobotContainer.swerveDrive.getPose().getRotation();
+    Translation2d translation = getTranslationRobotRelative(height).rotateBy(rotation);
+    return new Pose2d(translation, rotation);
+  }
+
 }
