@@ -68,6 +68,9 @@ public class Robot extends TimedRobot {
   /** This method is called once each time the robot enters Disabled mode. */
   @Override
   public void disabledInit() {
+    if (RobotContainer.grabber != null) {
+      RobotContainer.grabber.turnOffGrabSolenoid();
+    }
   }
 
   @Override

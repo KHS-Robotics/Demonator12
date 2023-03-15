@@ -18,6 +18,7 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -279,6 +280,37 @@ public class Arm extends SubsystemBase {
     return command;
   }
 
+  //goes to a setpoint while avoiding collision. It does this by first turning the wrist, then if going further it pivots then extend. If retracting it first retracts then pivots.
+  public SequentialCommandGroup goToSetpointAuto(Translation3d target, Rotation2d wristAngle) {
+    var wristTranslation = new Translation3d(Constants.GRIPPERHOLDDISTANCE,
+    new Rotation3d(0, -wristAngle.getRadians(), 0));
+    target = target.minus(wristTranslation);
+    SmartDashboard.putNumber("WristTranslationX", wristTranslation.getX());
+    SmartDashboard.putNumber("WristTranslationZ", wristTranslation.getZ());
+    double rotToPoint = rotToPoint(target).getRadians();
+    double lengthToPoint = lengthToPoint(target);
+      
+    armTranslaton = target;
+
+    SmartDashboard.putBoolean("isFurther", isFurther(target));
+
+    var command = new SequentialCommandGroup();
+    if (isFurther(target)) {
+      //wrist, then pivot, then length
+      command = new SequentialCommandGroup(
+          new InstantCommand(() -> RobotContainer.wrist.setAngleSetpoint(wristAngle)),
+          (new ArmControlPivot(rotToPoint).andThen(
+          new ArmControlLength(lengthToPoint))));
+    } else {
+      //wrist, then length, then pivot
+      command = new SequentialCommandGroup(
+          new InstantCommand(() -> RobotContainer.wrist.setAngleSetpoint(wristAngle)),
+          (new ArmControlLength(lengthToPoint)).andThen(
+          new ArmControlPivot(rotToPoint)));
+    }
+    return command;
+  }
+
   /*goes to a setpoint while still trying to avoid collision (might be a bit risky). 
   If extending and the arm is pivoted higher than it needs to be, it should perform all 3 commands in parrallel
   If retracting and the arm is pivoted lower than it needs to be it should perform all 3 commands in parrallel 
@@ -306,10 +338,7 @@ public class Arm extends SubsystemBase {
           new WristHoldSetpoint(),
           new ArmControlPivotLength(rotToPoint, lengthToPoint));
       } else {
-      //wrist, then pivot, then length
-      command = new SequentialCommandGroup(
-          new ArmControlPivot(rotToPoint).alongWith(new WristGoToSetpoint(wristAngle)),
-          new ArmControlLength(lengthToPoint)).deadlineWith(new WristHoldSetpoint());
+      return goToSetpoint(target, wristAngle);
       }
     } else {
       if(!isPivotedHigher) {
@@ -318,10 +347,7 @@ public class Arm extends SubsystemBase {
           new WristHoldSetpoint(),
           new ArmControlPivotLength(rotToPoint, lengthToPoint));
       } else {
-      //wrist, then length, then pivot
-      command = new SequentialCommandGroup(
-          new ArmControlLength(lengthToPoint),
-          new ArmControlPivot(rotToPoint)).deadlineWith(new WristHoldSetpoint());
+      return goToSetpoint(target, wristAngle);
       }
     }
     return command;

@@ -7,11 +7,12 @@ import frc.robot.RobotContainer;
 
 public class AutoBalance extends CommandBase {
   private Timer timer = new Timer();
-  private boolean isTimerRunning;
+  private Timer backUpTimer = new Timer();
+  private boolean isTimerRunning, isBackUpTimerRunning;
 
   private boolean reverse;
-  private double slopeTolerance = 5.8;
-  private final double balanceSpeedMetersPerSecond = 0.3, levelPitch = 5, elapsedTimeToConsiderLevelInSeconds = 1;
+  private double slopeTolerance = 6.7;
+  private final double balanceSpeedMetersPerSecond = 0.2, levelPitch = 5, elapsedTimeToConsiderLevelInSeconds = 1;
   private double yaw, slope, currentPitch, previousPitch;
   private static final double dt = 0.02;
 
@@ -27,7 +28,7 @@ public class AutoBalance extends CommandBase {
 
   @Override
   public void initialize() {
-    
+    backUpTimer.start();
   }
 
   @Override
@@ -49,6 +50,10 @@ public class AutoBalance extends CommandBase {
     if (isAscending) {
       var xSpeed = (reverse ? -1 : 1) * Math.signum(currentPitch) * balanceSpeedMetersPerSecond;
       RobotContainer.swerveDrive.holdAngleWhileDriving(xSpeed, 0, yaw, false);
+      backUpTimer.reset();
+    } else if(!backUpTimer.hasElapsed(0.1)) {
+      var xSpeed = (reverse ? -1 : 1) * Math.signum(currentPitch) * balanceSpeedMetersPerSecond;
+      RobotContainer.swerveDrive.holdAngleWhileDriving(- xSpeed / 2.0, 0, yaw, false);
     } else {
       RobotContainer.swerveDrive.lock();
     }
@@ -87,5 +92,10 @@ public class AutoBalance extends CommandBase {
   private void stopTimer() {
     timer.stop();
     timer.reset();
+  }
+
+  private void backUpTimer() {
+    backUpTimer.stop();
+    backUpTimer.reset();
   }
 }

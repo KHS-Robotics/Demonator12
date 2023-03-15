@@ -32,8 +32,8 @@ public class Constants {
       Units.inchesToMeters(46));
   public static final Translation3d HIGH_POS = new Translation3d(Units.inchesToMeters(56.73), Units.inchesToMeters(0),
       Units.inchesToMeters(58));
-  public static final Translation3d SHELF_POS = new Translation3d(Units.inchesToMeters(25), 0, Units.inchesToMeters(40.81));
-  public static final Translation3d FLOOR_POS = new Translation3d(Units.inchesToMeters(25), 0, Units.inchesToMeters(5));
+  public static final Translation3d SHELF_POS = new Translation3d(Units.inchesToMeters(40), 0, Units.inchesToMeters(44.81));
+  public static final Translation3d FLOOR_POS = new Translation3d(Units.inchesToMeters(30), 0, Units.inchesToMeters(10));
 
   public static final double SENS = 0.5;
 
@@ -73,7 +73,7 @@ public class Constants {
   public static final double EXTEND_KG = 0.88663;
   public static final double EXTEND_KSPRING = 0;
 
-  public static final double WRIST_P = 2;
+  public static final double WRIST_P = 4;
   public static final double WRIST_I = 0.001;
   public static final double WRIST_D = 0.005;
   public static final double WRIST_KS = 0.15463;

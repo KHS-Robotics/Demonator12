@@ -230,10 +230,10 @@ public class RobotContainer {
   /** Binds commands to the operator stick. */
   private void configureOperatorStickBindings() {
     Trigger highPos = new Trigger(operatorStick::highPos);
-    highPos.onTrue(new ProxyCommand(() -> RobotContainer.arm.goToSetpointScore(Constants.HIGH_POS)));
+    highPos.onTrue(new ProxyCommand(() -> RobotContainer.arm.goToSetpointScoreFast(Constants.HIGH_POS)));
 
     Trigger midPos = new Trigger(operatorStick::midPos);
-    midPos.onTrue(new ProxyCommand(() -> RobotContainer.arm.goToSetpointScore(Constants.MID_POS)));
+    midPos.onTrue(new ProxyCommand(() -> RobotContainer.arm.goToSetpointScoreFast(Constants.MID_POS)));
 
     Trigger lowPos = new Trigger(operatorStick::lowPos);
     lowPos.onTrue(new ProxyCommand(() -> RobotContainer.arm.goToSetpoint(Constants.FLOOR_POS, new Rotation2d())));
@@ -250,7 +250,7 @@ public class RobotContainer {
     scoreAngle.onTrue(RobotContainer.arm.goToPivotLength(Math.toRadians(45), Constants.MIN_LENGTH));
 
     Trigger shelfPos = new Trigger(operatorStick::shelfPos);
-    shelfPos.onTrue(RobotContainer.arm.goToSetpoint(Constants.SHELF_POS, new Rotation2d()));
+    shelfPos.onTrue(RobotContainer.arm.goToSetpointFast(Constants.SHELF_POS, new Rotation2d()));
 
     Trigger wristFlat = new Trigger(operatorStick::wristFlat);
     wristFlat.onTrue(new InstantCommand(() -> wrist.setAngleSetpoint(Rotation2d.fromDegrees(0))));
@@ -280,7 +280,7 @@ public class RobotContainer {
     release.onTrue(new SetGrabber(false));
 
     Trigger outtake = new Trigger(operatorStick::outtake);
-    outtake.onTrue(new InstantCommand(() -> grabber.set(1)));
+    outtake.onTrue(new InstantCommand(() -> grabber.set(0.5)));
     outtake.onFalse(new InstantCommand(() -> grabber.set(0)));
 
     Trigger intake = new Trigger(operatorStick::intake);
@@ -330,13 +330,13 @@ public class RobotContainer {
   /** Gets the event map for PathPlanner's FollowPathWithEvents. */
   private static HashMap<String, Command> getAutonomousEventMap() {
     if (AutonomousEventMap.isEmpty()) {
-        AutonomousEventMap.put("PlaceHigh", new ProxyCommand(() -> RobotContainer.arm.goToSetpointScore(Constants.HIGH_POS)));
+        AutonomousEventMap.put("PlaceHigh", new PrintCommand("test")/*new ProxyCommand(() -> RobotContainer.arm.goToSetpointAuto(Constants.HIGH_POS, Rotation2d.fromDegrees(45)))*/); 
         AutonomousEventMap.put("PlaceMid", new PrintCommand("placeholder for place mid"));
         AutonomousEventMap.put("PlaceHybrid", new PrintCommand("placeholder for place hybrid"));
         AutonomousEventMap.put("BalanceFacingAway", new BalanceSequence(0));
         AutonomousEventMap.put("BalanceFacingDriver", new BalanceSequence(180));
         AutonomousEventMap.put("ScoreAngle", RobotContainer.arm.goToPivotLength(0.75, Constants.MIN_LENGTH));
-        AutonomousEventMap.put("Release", new SetGrabber(false));
+        AutonomousEventMap.put("Release", new PrintCommand("\n\n\n\n\n\n\n\nRELEASE\n\n\n\n\n"));
         AutonomousEventMap.put("Grab", new SetGrabber(true));
         AutonomousEventMap.put("Flat", RobotContainer.arm.goToPivotLength(Math.toRadians(0), Constants.MIN_LENGTH).andThen(
           new InstantCommand(() -> wrist.setAngleSetpoint(Rotation2d.fromDegrees(60)))));
