@@ -112,7 +112,7 @@ public class RobotContainer {
   public static final SwerveDrive swerveDrive = new SwerveDrive();
   public static final Arm arm = new Arm();
   public static final Wrist wrist = new Wrist();
-  public static final Grabber grabber = new Grabber();
+  // public static final Grabber grabber = new Grabber();
   public static final LEDStrip leds = new LEDStrip();
 
   /**
@@ -219,9 +219,6 @@ public class RobotContainer {
     Trigger abort = new Trigger(operatorBox::abort);
     abort.onTrue(new InstantCommand(() -> CommandScheduler.getInstance().cancelAll()));
 
-    Trigger zeroWrist = new Trigger(operatorBox::zeroWristPivot);
-    zeroWrist.onTrue(new InstantCommand(() -> wrist.zeroWrist()));
-
     // Trigger zeroArmPivot = new Trigger(operatorBox::zeroArmPivot);
     // zeroArmPivot.onTrue(new InstantCommand(() -> arm.zeroArmPivot()));
 
@@ -284,12 +281,12 @@ public class RobotContainer {
     release.onTrue(new SetGrabber(false));
 
     Trigger outtake = new Trigger(operatorStick::outtake);
-    outtake.onTrue(new InstantCommand(() -> grabber.set(1)));
-    outtake.onFalse(new InstantCommand(() -> grabber.set(0)));
+    // outtake.onTrue(new InstantCommand(() -> grabber.set(1)));
+    // outtake.onFalse(new InstantCommand(() -> grabber.set(0)));
 
     Trigger intake = new Trigger(operatorStick::intake);
-    intake.onTrue(new InstantCommand(() -> grabber.set(-0.35)));
-    intake.onFalse(new InstantCommand(() -> grabber.set(0)));
+    // intake.onTrue(new InstantCommand(() -> grabber.set(-0.35)));
+    // intake.onFalse(new InstantCommand(() -> grabber.set(0)));
 
     // Trigger zeroWrist = new Trigger(operatorStick::zeroWrist);
     // zeroWrist.onTrue(new InstantCommand(() -> RobotContainer.wrist.zeroWrist()));
@@ -341,8 +338,8 @@ public class RobotContainer {
         AutonomousEventMap.put("ScoreAngle", RobotContainer.arm.goToPivotLength(0.75, Constants.MIN_LENGTH));
         AutonomousEventMap.put("Release", new SetGrabber(false));
         AutonomousEventMap.put("Grab", new SetGrabber(true));
-        AutonomousEventMap.put("Outtake", new InstantCommand(() -> RobotContainer.grabber.set(0.6)));
-        AutonomousEventMap.put("Intake", new InstantCommand(() -> RobotContainer.grabber.set(-0.45)));
+        // AutonomousEventMap.put("Outtake", new InstantCommand(() -> RobotContainer.grabber.set(0.6)));
+        // AutonomousEventMap.put("Intake", new InstantCommand(() -> RobotContainer.grabber.set(-0.45)));
     }
 
     return AutonomousEventMap;

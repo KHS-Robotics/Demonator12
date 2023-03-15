@@ -6,8 +6,10 @@ import frc.robot.RobotMap;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
+import com.revrobotics.SparkMaxAnalogSensor;
 import com.revrobotics.SparkMaxLimitSwitch;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import com.revrobotics.SparkMaxAnalogSensor.Mode;
 import com.revrobotics.SparkMaxLimitSwitch.Type;
 
 import edu.wpi.first.math.controller.ArmFeedforward;
@@ -21,7 +23,9 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class Wrist extends SubsystemBase {
   private final CANSparkMax pivotMotor;
   // private final SparkMaxPIDController wristPidCtrl;
-  private final RelativeEncoder pivotEncoder;
+  private final SparkMaxAnalogSensor pivotEncoder;
+  private static final double MIN_VOLTAGE = 0.312, MAX_VOLTAGE = 3.25, DELTA_VOLTAGE = MAX_VOLTAGE - MIN_VOLTAGE;
+  private static final double WRIST_CONVERSION_FACTOR = -Math.toRadians(175) / DELTA_VOLTAGE;
 
   private final SparkMaxLimitSwitch forwardLimitSwitch;
   private final SparkMaxLimitSwitch reverseLimitSwitch;
@@ -33,17 +37,16 @@ public class Wrist extends SubsystemBase {
   private final Constraints wristConstraints = new TrapezoidProfile.Constraints(1, 1);
   public TrapezoidProfile.State wristSetpoint = new TrapezoidProfile.State();
   private static final double kDt = 0.02;
+  private static final double OFFSET = 1.81;
 
-  private Rotation2d angleSetpoint = new Rotation2d();
-
-  
+  private Rotation2d angleSetpoint = new Rotation2d(); 
 
   public Wrist() {
     pivotMotor = new CANSparkMax(RobotMap.WRIST_PIVOT, MotorType.kBrushless);
 
-    pivotEncoder = pivotMotor.getEncoder();
-    pivotEncoder.setPositionConversionFactor(2 * Math.PI / Constants.WRIST_GEARING);
-    pivotEncoder.setVelocityConversionFactor(2 * Math.PI / (Constants.WRIST_GEARING * 60)); // encoder in radians
+    pivotEncoder = pivotMotor.getAnalog(Mode.kAbsolute);
+    pivotEncoder.setPositionConversionFactor(1);
+    pivotEncoder.setVelocityConversionFactor(1); // encoder in radians
 
     /*
      * wristPidCtrl = pivotMotor.getPIDController();
@@ -86,12 +89,16 @@ public class Wrist extends SubsystemBase {
         + wristPID.calculate(getRelativeAngle().getRadians(), toRelativeAngle(absoluteAngle).getRadians()));
   }
 
+  public double getAngle() {
+    return (pivotEncoder.getVoltage() * WRIST_CONVERSION_FACTOR) + OFFSET;
+  }
+
   public Rotation2d getRelativeAngle() {
-    return new Rotation2d(pivotEncoder.getPosition());
+    return new Rotation2d(getAngle());
   }
 
   public double getVelocity() {
-    return pivotEncoder.getVelocity();
+    return (pivotEncoder.getVelocity() * WRIST_CONVERSION_FACTOR);
   }
 
   public Rotation2d getAbsoluteAngle() {
@@ -104,14 +111,6 @@ public class Wrist extends SubsystemBase {
 
   public Rotation2d toRelativeAngle(Rotation2d absoluteAngle) {
     return absoluteAngle.minus(RobotContainer.arm.getAngle());
-  }
-
-  public void zeroWrist() {
-    pivotEncoder.setPosition(-1.56); // radians
-  }
-
-  public void zeroWrist(double position) {
-    pivotEncoder.setPosition(position);
   }
 
   public void stop() {
@@ -128,8 +127,9 @@ public class Wrist extends SubsystemBase {
 
   @Override
   public void periodic() {
-    SmartDashboard.putNumber("wristPos", pivotEncoder.getPosition());
-    SmartDashboard.putNumber("wristVel", pivotEncoder.getVelocity());
+    SmartDashboard.putNumber("wristVoltage", pivotEncoder.getVoltage());
+    SmartDashboard.putNumber("wristPos", getAngle());
+    SmartDashboard.putNumber("wristVel", getVelocity());
     SmartDashboard.putNumber("wristSetpoint", angleSetpoint.getRadians()); 
     SmartDashboard.putBoolean("wristTopTalon", getTopTalonTach());
     SmartDashboard.putBoolean("wristBotTalon", getBottomTalonTach());

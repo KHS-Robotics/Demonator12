@@ -331,16 +331,17 @@ public class SwerveDrive extends SubsystemBase {
   public void updateOdometry() {
     poseEstimator.updateWithTime(Timer.getFPGATimestamp(), getAngle(), getSwerveModulePositions());
 
-    //Optional<EstimatedRobotPose> estimatedPose = photonCamera.getEstimatedGlobalPose(poseEstimator.getEstimatedPosition());
-    //if (estimatedPose.isPresent()) {
     PhotonPipelineResult result = photonCamera.getResult();
     if(result.hasTargets()) {
-    var target = result.getBestTarget();
-    double ambiguity = target.getPoseAmbiguity();
-    int fiducialID = target.getFiducialId();
-    Pose2d robotPose = PhotonUtils.estimateFieldToRobotAprilTag(target.getBestCameraToTarget(), photonCamera.fieldLayout.getTagPose(fiducialID).get(), Constants.CAMERA_1_POS.inverse()).toPose2d();
-      if(ambiguity < 0.1 && robotPose.getTranslation().getDistance(photonCamera.fieldLayout.getTagPose(fiducialID).get().getTranslation().toTranslation2d()) < 2.5/*&& poseEstimator.getEstimatedPosition().getTranslation().getDistance(getPose().getTranslation()) < 1*/) {
-        poseEstimator.addVisionMeasurement(robotPose, result.getTimestampSeconds());
+      var target = result.getBestTarget();
+      double ambiguity = target.getPoseAmbiguity();
+      int fiducialID = target.getFiducialId();
+      
+      if (photonCamera.fieldLayout.getTagPose(fiducialID).isPresent()) {
+        Pose2d robotPose = PhotonUtils.estimateFieldToRobotAprilTag(target.getBestCameraToTarget(), photonCamera.fieldLayout.getTagPose(fiducialID).get(), Constants.CAMERA_1_POS.inverse()).toPose2d();
+        if(ambiguity < 0.1 && robotPose.getTranslation().getDistance(photonCamera.fieldLayout.getTagPose(fiducialID).get().getTranslation().toTranslation2d()) < 2.5/*&& poseEstimator.getEstimatedPosition().getTranslation().getDistance(getPose().getTranslation()) < 1*/) {
+          poseEstimator.addVisionMeasurement(robotPose, result.getTimestampSeconds());
+        }
       }
     }
   }
