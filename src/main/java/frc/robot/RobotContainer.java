@@ -71,7 +71,7 @@ public class RobotContainer {
   }
 
   private static final SendableChooser<List<PathPlannerTrajectory>> autoChooser = new SendableChooser<>();
-  public static SwerveAutoBuilder swerveAutoBuilder;
+  public SwerveAutoBuilder swerveAutoBuilder;
 
   /** Gets the selected autonomous command. */
   public List<PathPlannerTrajectory> getAutoTrajectory() {
@@ -112,7 +112,7 @@ public class RobotContainer {
   public static final SwerveDrive swerveDrive = new SwerveDrive();
   public static final Arm arm = new Arm();
   public static final Wrist wrist = new Wrist();
-  // public static final Grabber grabber = new Grabber();
+  public static final Grabber grabber = new Grabber();
   public static final LEDStrip leds = new LEDStrip();
 
   /**
@@ -187,10 +187,10 @@ public class RobotContainer {
     //wristDown.onTrue(new WristGoToAngle(() -> new Rotation2d(-Math.PI / 4)));
 
     Trigger setBalanceAngleZero = driverController.pov(0);
-    setBalanceAngleZero.onTrue(new BalanceSequence(0));
+    setBalanceAngleZero.onTrue(new ProxyCommand(() -> new BalanceSequence(swerveDrive.getPose().getRotation().getDegrees())));
 
     Trigger setBalanceAngle180 = driverController.pov(180);
-    setBalanceAngle180.onTrue(new BalanceSequence(180));
+    setBalanceAngle180.onTrue(new ProxyCommand(() -> new BalanceSequence(swerveDrive.getPose().getRotation().getDegrees())));
 
     Trigger testGoingOverChargeStation = driverController.pov(90);
     testGoingOverChargeStation.onTrue(new DriveOverThenBalanceSequence());
@@ -242,8 +242,8 @@ public class RobotContainer {
     home.onTrue(RobotContainer.arm.goToPivotLength(Math.toRadians(60), Constants.MIN_LENGTH).andThen(
       new InstantCommand(() -> wrist.setAngleSetpoint(Rotation2d.fromDegrees(135)))));
 
-    Trigger stow = new Trigger(operatorStick::stow);
-    stow.onTrue(RobotContainer.arm.goToPivotLength(Math.toRadians(0), Constants.MIN_LENGTH).andThen(
+    Trigger armFlat = new Trigger(operatorStick::stow);
+    armFlat.onTrue(RobotContainer.arm.goToPivotLength(Math.toRadians(0), Constants.MIN_LENGTH).andThen(
         new InstantCommand(() -> wrist.setAngleSetpoint(Rotation2d.fromDegrees(80)))));
 
     Trigger scoreAngle = new Trigger(operatorStick::scoreAngle);
@@ -254,7 +254,7 @@ public class RobotContainer {
     // Translation3d(Units.inchesToMeters(20), 0, Units.inchesToMeters(40.81))));
 
     Trigger wristFlat = new Trigger(operatorStick::wristFlat);
-    wristFlat.onTrue(new InstantCommand(() -> wrist.setAngleSetpoint(Rotation2d.fromDegrees(5))));
+    wristFlat.onTrue(new InstantCommand(() -> wrist.setAngleSetpoint(Rotation2d.fromDegrees(0))));
 
     Trigger wristStepUp = new Trigger(operatorStick::wristStepUp);
     wristStepUp.onTrue(new WristDeltaSetpoint(Rotation2d.fromDegrees(10)));
@@ -281,12 +281,12 @@ public class RobotContainer {
     release.onTrue(new SetGrabber(false));
 
     Trigger outtake = new Trigger(operatorStick::outtake);
-    // outtake.onTrue(new InstantCommand(() -> grabber.set(1)));
-    // outtake.onFalse(new InstantCommand(() -> grabber.set(0)));
+    outtake.onTrue(new InstantCommand(() -> grabber.set(1)));
+    outtake.onFalse(new InstantCommand(() -> grabber.set(0)));
 
     Trigger intake = new Trigger(operatorStick::intake);
-    // intake.onTrue(new InstantCommand(() -> grabber.set(-0.35)));
-    // intake.onFalse(new InstantCommand(() -> grabber.set(0)));
+    intake.onTrue(new InstantCommand(() -> grabber.set(-0.35)));
+    intake.onFalse(new InstantCommand(() -> grabber.set(0)));
 
     // Trigger zeroWrist = new Trigger(operatorStick::zeroWrist);
     // zeroWrist.onTrue(new InstantCommand(() -> RobotContainer.wrist.zeroWrist()));
@@ -309,6 +309,7 @@ public class RobotContainer {
     );
 
     autoChooser.setDefaultOption("Nothing", new ArrayList<PathPlannerTrajectory>());
+
     // dynamically create the options using the PathPlanner paths under "src/main/deploy/pathplanner"
     File ppDirectory = Filesystem.getDeployDirectory().toPath().resolve("pathplanner").toFile();
     for (File file : ppDirectory.listFiles()) {
@@ -338,6 +339,8 @@ public class RobotContainer {
         AutonomousEventMap.put("ScoreAngle", RobotContainer.arm.goToPivotLength(0.75, Constants.MIN_LENGTH));
         AutonomousEventMap.put("Release", new SetGrabber(false));
         AutonomousEventMap.put("Grab", new SetGrabber(true));
+        AutonomousEventMap.put("Flat", RobotContainer.arm.goToPivotLength(Math.toRadians(0), Constants.MIN_LENGTH).andThen(
+          new InstantCommand(() -> wrist.setAngleSetpoint(Rotation2d.fromDegrees(60)))));
         // AutonomousEventMap.put("Outtake", new InstantCommand(() -> RobotContainer.grabber.set(0.6)));
         // AutonomousEventMap.put("Intake", new InstantCommand(() -> RobotContainer.grabber.set(-0.45)));
     }

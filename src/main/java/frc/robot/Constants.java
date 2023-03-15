@@ -30,7 +30,7 @@ public class Constants {
 
   public static final Translation3d MID_POS = new Translation3d(Units.inchesToMeters(41.7), Units.inchesToMeters(0),
       Units.inchesToMeters(46));
-  public static final Translation3d HIGH_POS = new Translation3d(Units.inchesToMeters(58.23), Units.inchesToMeters(0),
+  public static final Translation3d HIGH_POS = new Translation3d(Units.inchesToMeters(56.73), Units.inchesToMeters(0),
       Units.inchesToMeters(58));
 
   public static final double SENS = 0.5;

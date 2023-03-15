@@ -18,6 +18,7 @@
       "stopEvent": {
         "names": [
           "PlaceHigh",
+          "Release",
           "ScoreAngle"
         ],
         "executionBehavior": "sequential",

@@ -39,6 +39,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotMap;
@@ -232,7 +233,7 @@ public class SwerveDrive extends SubsystemBase {
   }
 
   public Command goToNode(int apriltag, int node) {
-    SmartDashboard.putNumber("GoToNodeTag", apriltag);
+    /*SmartDashboard.putNumber("GoToNodeTag", apriltag);
     SmartDashboard.putNumber("GoToNodeNode", node);
     Rotation2d heading;
 
@@ -268,7 +269,8 @@ public class SwerveDrive extends SubsystemBase {
         new PathPoint(goal, Rotation2d.fromDegrees(180), Rotation2d.fromDegrees(180), 0)); // position, heading(direction of
                                                                                       // travel), holonomic rotation
     //return followTrajectoryCommand(trajToGoal, false);
-    return RobotContainer.swerveAutoBuilder.followPath(trajToGoal);
+    return RobotContainer.swerveAutoBuilder.followPath(trajToGoal);*/
+    return new PrintCommand("gotonode");
   }
 
   public void setPose(Pose2d pose) {

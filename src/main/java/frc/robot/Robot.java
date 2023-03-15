@@ -86,7 +86,9 @@ public class Robot extends TimedRobot {
     // get the auto from the chooser
     var trajectory = robotContainer.getAutoTrajectory();
     // only run autos that actually have a trajectory to avoid a runtime exception
-    this.autonmousRoutine = !trajectory.isEmpty() ? robotContainer.swerveAutoBuilder.fullAuto(trajectory) : new InstantCommand();
+    this.autonmousRoutine = trajectory != null && !trajectory.isEmpty() ? 
+      robotContainer.swerveAutoBuilder.fullAuto(trajectory) : 
+      new InstantCommand(() -> DriverStation.reportError("Coudld not get autonomous from the chooser!", false));
 
     // start the auto, if there is one
     if (this.autonmousRoutine != null) {
