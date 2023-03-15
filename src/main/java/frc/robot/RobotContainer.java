@@ -331,7 +331,7 @@ public class RobotContainer {
   /** Gets the event map for PathPlanner's FollowPathWithEvents. */
   private static HashMap<String, Command> getAutonomousEventMap() {
     if (AutonomousEventMap.isEmpty()) {
-        AutonomousEventMap.put("PlaceHigh", new PrintCommand("\n\n\n!!!!!!PLACE HIGH!!!!!!\n\n\n")/*new ProxyCommand(() -> RobotContainer.arm.goToSetpointScore(Constants.HIGH_POS))*/);
+        AutonomousEventMap.put("PlaceHigh", new ProxyCommand(() -> RobotContainer.arm.goToSetpointScore(Constants.HIGH_POS)));
         AutonomousEventMap.put("PlaceMid", new PrintCommand("placeholder for place mid"));
         AutonomousEventMap.put("PlaceHybrid", new PrintCommand("placeholder for place hybrid"));
         AutonomousEventMap.put("BalanceFacingAway", new BalanceSequence(0));
