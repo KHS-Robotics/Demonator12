@@ -250,7 +250,7 @@ public class Arm extends SubsystemBase {
   }
 
   //goes to a setpoint while avoiding collision. It does this by first turning the wrist, then if going further it pivots then extend. If retracting it first retracts then pivots.
-  public SequentialCommandGroup goToSetpoint(Translation3d target, Rotation2d wristAngle) {
+  public Command goToSetpoint(Translation3d target, Rotation2d wristAngle) {
     var wristTranslation = new Translation3d(Constants.GRIPPERHOLDDISTANCE,
     new Rotation3d(0, -wristAngle.getRadians(), 0));
     target = target.minus(wristTranslation);
@@ -281,7 +281,7 @@ public class Arm extends SubsystemBase {
   }
 
   //goes to a setpoint while avoiding collision. It does this by first turning the wrist, then if going further it pivots then extend. If retracting it first retracts then pivots.
-  public SequentialCommandGroup goToSetpointAuto(Translation3d target, Rotation2d wristAngle) {
+  public Command goToSetpointAuto(Translation3d target, Rotation2d wristAngle) {
     var wristTranslation = new Translation3d(Constants.GRIPPERHOLDDISTANCE,
     new Rotation3d(0, -wristAngle.getRadians(), 0));
     target = target.minus(wristTranslation);
@@ -353,7 +353,7 @@ public class Arm extends SubsystemBase {
     return command;
   }
 
-  public SequentialCommandGroup goToSetpointScore(Translation3d target) {
+  public Command goToSetpointScore(Translation3d target) {
     return goToSetpoint(target, Rotation2d.fromDegrees(40));
   }
 
@@ -361,11 +361,11 @@ public class Arm extends SubsystemBase {
     return goToSetpointFast(target, Rotation2d.fromDegrees(40));
   }
 
-  public SequentialCommandGroup goToSetpoint(Translation3d target) {
+  public Command goToSetpoint(Translation3d target) {
     return goToSetpoint(target, RobotContainer.wrist.getAbsoluteAngle());
   }
 
-  public SequentialCommandGroup goToPivotLength(double pivot, double length) {
+  public Command goToPivotLength(double pivot, double length) {
     var target = new Translation3d(length, new Rotation3d(0, -pivot, 0)).plus(Constants.ARMOFFSET);
 
     var command = new SequentialCommandGroup();

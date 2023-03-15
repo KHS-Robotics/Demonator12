@@ -17,17 +17,14 @@ import frc.robot.commands.drive.balance.BalanceSequence;
 import frc.robot.commands.grabber.SetGrabber;
 
 public class AutoRoutines {
-    private static Command ScoreAngle = RobotContainer.arm.goToPivotLength(0.75, Constants.MIN_LENGTH);
-
     public static Command getPlace1MobilityCableProtector() {
         var traj = PathPlanner.loadPath("Place + Mobility (Cable Protector)", new PathConstraints(3, 2));
 
         return new SequentialCommandGroup(
-            new CenterSwerveModules(false),
             new InstantCommand(() -> RobotContainer.swerveDrive.setPose(traj.getInitialPose())),
             new ProxyCommand(() -> RobotContainer.arm.goToSetpointScore(Constants.HIGH_POS)),
             new SetGrabber(false),
-            ScoreAngle,
+            RobotContainer.arm.goToPivotLength(0.75, Constants.MIN_LENGTH),
             getTrajectoryCommand(traj)
         );
     }
@@ -36,11 +33,10 @@ public class AutoRoutines {
         var traj = PathPlanner.loadPath("Place + Mobility (Loading Station)", new PathConstraints(3, 2));
         
         return new SequentialCommandGroup(
-            new CenterSwerveModules(false),
             new InstantCommand(() -> RobotContainer.swerveDrive.setPose(traj.getInitialPose())),
             new ProxyCommand(() -> RobotContainer.arm.goToSetpointScore(Constants.HIGH_POS)),
             new SetGrabber(false),
-            ScoreAngle,
+            RobotContainer.arm.goToPivotLength(0.75, Constants.MIN_LENGTH),
             getTrajectoryCommand(traj)
         );
     }
@@ -49,11 +45,10 @@ public class AutoRoutines {
         var traj = PathPlanner.loadPath("Place + Engage", new PathConstraints(3, 2));
 
         return new SequentialCommandGroup(
-            new CenterSwerveModules(false),
             new InstantCommand(() -> RobotContainer.swerveDrive.setPose(traj.getInitialPose())),
             new ProxyCommand(() -> RobotContainer.arm.goToSetpointScore(Constants.HIGH_POS)),
             new SetGrabber(false),
-            ScoreAngle,
+            RobotContainer.arm.goToPivotLength(0.75, Constants.MIN_LENGTH),
             getTrajectoryCommand(traj),
             new BalanceSequence(0)
         );
