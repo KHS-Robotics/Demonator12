@@ -26,6 +26,7 @@ import frc.robot.RobotContainer;
 import frc.robot.RobotMap;
 import frc.robot.commands.arm.ArmControlLength;
 import frc.robot.commands.arm.ArmControlPivot;
+import frc.robot.commands.arm.ArmControlPivotLength;
 import frc.robot.commands.wrist.WristGoToSetpoint;
 import frc.robot.commands.wrist.WristHoldSetpoint;
 
@@ -303,8 +304,7 @@ public class Arm extends SubsystemBase {
         //all in parrallel
         command = new ParallelCommandGroup(
           new WristHoldSetpoint(),
-          new ArmControlPivot(rotToPoint),
-          new ArmControlLength(lengthToPoint));
+          new ArmControlPivotLength(rotToPoint, lengthToPoint));
       } else {
       //wrist, then pivot, then length
       command = new SequentialCommandGroup(
@@ -316,8 +316,7 @@ public class Arm extends SubsystemBase {
         //all in parrallel
         command = new ParallelCommandGroup(
           new WristHoldSetpoint(),
-          new ArmControlPivot(rotToPoint),
-          new ArmControlLength(lengthToPoint));
+          new ArmControlPivotLength(rotToPoint, lengthToPoint));
       } else {
       //wrist, then length, then pivot
       command = new SequentialCommandGroup(
