@@ -38,7 +38,7 @@ public class OperatorStick extends Joystick {
     return this.getRawButton(5);
   }
 
-  public boolean wristUpOverride() {
+  public boolean shelfPos() {
     return this.getRawButton(6);
   }
 

@@ -236,7 +236,7 @@ public class RobotContainer {
     midPos.onTrue(new ProxyCommand(() -> RobotContainer.arm.goToSetpointScore(Constants.MID_POS)));
 
     Trigger lowPos = new Trigger(operatorStick::lowPos);
-    lowPos.onTrue(new ProxyCommand(() -> RobotContainer.arm.goToSetpointScore(new Translation3d())));
+    lowPos.onTrue(new ProxyCommand(() -> RobotContainer.arm.goToSetpoint(Constants.FLOOR_POS, new Rotation2d())));
 
     Trigger home = new Trigger(operatorStick::home);
     home.onTrue(RobotContainer.arm.goToPivotLength(Math.toRadians(60), Constants.MIN_LENGTH).andThen(
@@ -247,11 +247,10 @@ public class RobotContainer {
         new InstantCommand(() -> wrist.setAngleSetpoint(Rotation2d.fromDegrees(80)))));
 
     Trigger scoreAngle = new Trigger(operatorStick::scoreAngle);
-    scoreAngle.onTrue(RobotContainer.arm.goToPivotLength(Math.toRadians(35), Constants.MIN_LENGTH));
+    scoreAngle.onTrue(RobotContainer.arm.goToPivotLength(Math.toRadians(45), Constants.MIN_LENGTH));
 
-    // Trigger shelfPos = new Trigger(operatorStick::shelfPos);
-    // shelfPos.onTrue(RobotContainer.arm.goToSetpoint(new
-    // Translation3d(Units.inchesToMeters(20), 0, Units.inchesToMeters(40.81))));
+    Trigger shelfPos = new Trigger(operatorStick::shelfPos);
+    shelfPos.onTrue(RobotContainer.arm.goToSetpoint(Constants.SHELF_POS, new Rotation2d()));
 
     Trigger wristFlat = new Trigger(operatorStick::wristFlat);
     wristFlat.onTrue(new InstantCommand(() -> wrist.setAngleSetpoint(Rotation2d.fromDegrees(0))));
@@ -265,11 +264,11 @@ public class RobotContainer {
     Trigger wristScoreAngle = new Trigger(operatorStick::wristScoreAngle);
     wristScoreAngle.onTrue(new InstantCommand(() -> wrist.setAngleSetpoint(Rotation2d.fromDegrees(45))));
 
-    Trigger wristDownOverride = new Trigger(operatorStick::wristDownOverride);
-    wristDownOverride.onTrue(new WristGoToAngle(() -> wrist.getRelativeAngle().minus(Rotation2d.fromDegrees(10))));
+    //Trigger wristDownOverride = new Trigger(operatorStick::wristDownOverride);
+    //wristDownOverride.onTrue(new WristGoToAngle(() -> wrist.getRelativeAngle().minus(Rotation2d.fromDegrees(10))));
 
-    Trigger wristUpOverride = new Trigger(operatorStick::wristUpOverride);
-    wristUpOverride.onTrue(new WristGoToAngle(() -> wrist.getRelativeAngle().plus(Rotation2d.fromDegrees(10))));
+    //Trigger wristUpOverride = new Trigger(operatorStick::wristUpOverride);
+    //wristUpOverride.onTrue(new WristGoToAngle(() -> wrist.getRelativeAngle().plus(Rotation2d.fromDegrees(10))));
 
     Trigger moveArm = new Trigger(() -> Math.abs(operatorStick.getX()) > 0.05 || Math.abs(operatorStick.getY()) > 0.05);
     moveArm.onTrue(new ArmControlJoystick());

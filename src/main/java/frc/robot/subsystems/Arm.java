@@ -331,6 +331,10 @@ public class Arm extends SubsystemBase {
     return goToSetpoint(target, Rotation2d.fromDegrees(40));
   }
 
+  public Command goToSetpointScoreFast(Translation3d target) {
+    return goToSetpointFast(target, Rotation2d.fromDegrees(40));
+  }
+
   public SequentialCommandGroup goToSetpoint(Translation3d target) {
     return goToSetpoint(target, RobotContainer.wrist.getAbsoluteAngle());
   }
