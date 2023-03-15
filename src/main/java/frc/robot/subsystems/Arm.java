@@ -17,6 +17,8 @@ import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -123,15 +125,15 @@ public class Arm extends SubsystemBase {
   }
 
   public void setLengthV(double vLength) {
-    var voltage = MathUtil.clamp(extendFeedForward.calculate(vLength) + extendPID.calculate(getLengthV(), vLength)
-        + Constants.EXTEND_KG * Math.sin(this.getAngle().getRadians()), -3, 6);
+    var voltage = extendFeedForward.calculate(vLength) + extendPID.calculate(getLengthV(), vLength)
+        + Constants.EXTEND_KG * Math.sin(this.getAngle().getRadians());
     extendMotor.setVoltage(voltage);
     SmartDashboard.putNumber("ExtendVoltage", voltage);
   }
 
   public double calcLengthV(double vLength) {
-    var voltage = MathUtil.clamp(extendFeedForward.calculate(vLength) + extendPID.calculate(getLengthV(), vLength)
-        + Constants.EXTEND_KG * Math.sin(this.getAngle().getRadians()) + Constants.EXTEND_KSPRING, -3, 6);
+    var voltage = extendFeedForward.calculate(vLength) + extendPID.calculate(getLengthV(), vLength)
+        + Constants.EXTEND_KG * Math.sin(this.getAngle().getRadians()) + Constants.EXTEND_KSPRING;
     // extendMotor.setVoltage(voltage);
     SmartDashboard.putNumber("ExtendVoltage", voltage);
     return voltage;
@@ -147,7 +149,7 @@ public class Arm extends SubsystemBase {
   }
 
   public void setAngleV(double vAngle) {
-    var voltage = MathUtil.clamp(calcVoltagePivot(vAngle), -5, 8);
+    var voltage = calcVoltagePivot(vAngle);
     pivotMotor.setVoltage(voltage);
     SmartDashboard.putNumber("PivotVoltage", voltage);
   }
@@ -191,7 +193,7 @@ public class Arm extends SubsystemBase {
   }
 
   public double calcAngleV(double vAngle) {
-    var voltage = MathUtil.clamp(calcVoltagePivot(vAngle), -5, 8);
+    var voltage = calcVoltagePivot(vAngle);
     return voltage;
   }
 
@@ -242,12 +244,15 @@ public class Arm extends SubsystemBase {
     return getTranslation().getNorm() < target.getNorm();
   }
 
+  //goes to a setpoint while avoiding collision. It does this by first turning the wrist, then if going further it pivots then extend. If retracting it first retracts then pivots.
   public SequentialCommandGroup goToSetpoint(Translation3d target, Rotation2d wristAngle) {
     var wristTranslation = new Translation3d(Constants.GRIPPERHOLDDISTANCE,
     new Rotation3d(0, -wristAngle.getRadians(), 0));
     target = target.minus(wristTranslation);
     SmartDashboard.putNumber("WristTranslationX", wristTranslation.getX());
     SmartDashboard.putNumber("WristTranslationZ", wristTranslation.getZ());
+    double rotToPoint = rotToPoint(target).getRadians();
+    double lengthToPoint = lengthToPoint(target);
       
     armTranslaton = target;
 
@@ -255,15 +260,67 @@ public class Arm extends SubsystemBase {
 
     var command = new SequentialCommandGroup();
     if (isFurther(target)) {
+      //wrist, then pivot, then length
       command = new SequentialCommandGroup(
           new WristGoToSetpoint(wristAngle),
-          (new ArmControlPivot(rotToPoint(target).getRadians()).andThen(
-          new ArmControlLength(lengthToPoint(target)))).deadlineWith(new WristHoldSetpoint()));
+          (new ArmControlPivot(rotToPoint).andThen(
+          new ArmControlLength(lengthToPoint))).deadlineWith(new WristHoldSetpoint()));
     } else {
+      //wrist, then length, then pivot
       command = new SequentialCommandGroup(
           new WristGoToSetpoint(wristAngle),
-          (new ArmControlLength(lengthToPoint(target))).andThen(
-          new ArmControlPivot(rotToPoint(target).getRadians())).deadlineWith(new WristHoldSetpoint()));
+          (new ArmControlLength(lengthToPoint)).andThen(
+          new ArmControlPivot(rotToPoint)).deadlineWith(new WristHoldSetpoint()));
+    }
+    return command;
+  }
+
+  /*goes to a setpoint while still trying to avoid collision (might be a bit risky). 
+  If extending and the arm is pivoted higher than it needs to be, it should perform all 3 commands in parrallel
+  If retracting and the arm is pivoted lower than it needs to be it should perform all 3 commands in parrallel 
+  Otherwise it should return a command similar to the normal go to setpoint (i did change this a little by making the wrist
+  move in parrallel with the arm*/
+  public Command goToSetpointFast(Translation3d target, Rotation2d wristAngle) {
+    RobotContainer.wrist.setAngleSetpoint(wristAngle);
+
+    var wristTranslation = new Translation3d(Constants.GRIPPERHOLDDISTANCE,
+    new Rotation3d(0, -wristAngle.getRadians(), 0));
+
+    target = target.minus(wristTranslation);
+    armTranslaton = target;
+
+    double rotToPoint = rotToPoint(target).getRadians();
+    double lengthToPoint = lengthToPoint(target);
+      
+    boolean isPivotedHigher = getAngle().getRadians() > rotToPoint;
+
+    Command command;
+    if (isFurther(target)) {
+      if(isPivotedHigher) {
+        //all in parrallel
+        command = new ParallelCommandGroup(
+          new WristHoldSetpoint(),
+          new ArmControlPivot(rotToPoint),
+          new ArmControlLength(lengthToPoint));
+      } else {
+      //wrist, then pivot, then length
+      command = new SequentialCommandGroup(
+          new ArmControlPivot(rotToPoint).alongWith(new WristGoToSetpoint(wristAngle)),
+          new ArmControlLength(lengthToPoint)).deadlineWith(new WristHoldSetpoint());
+      }
+    } else {
+      if(!isPivotedHigher) {
+        //all in parrallel
+        command = new ParallelCommandGroup(
+          new WristHoldSetpoint(),
+          new ArmControlPivot(rotToPoint),
+          new ArmControlLength(lengthToPoint));
+      } else {
+      //wrist, then length, then pivot
+      command = new SequentialCommandGroup(
+          new ArmControlLength(lengthToPoint),
+          new ArmControlPivot(rotToPoint)).deadlineWith(new WristHoldSetpoint());
+      }
     }
     return command;
   }
