@@ -48,7 +48,8 @@ public class Arm extends SubsystemBase {
   private final PIDController extendPID;
   private double kAL, kDt = 0.02, kSpring;
 
-  TrapezoidProfile.Constraints armConstraints;
+  TrapezoidProfile.Constraints pivotConstraints;
+  TrapezoidProfile.Constraints extendConstraints;
 
   public Arm() {
     pivotMotor = new CANSparkMax(RobotMap.ARM_PIVOT, MotorType.kBrushless);
@@ -70,7 +71,9 @@ public class Arm extends SubsystemBase {
     extendFeedForward = new SimpleMotorFeedforward(Constants.EXTEND_KS, Constants.EXTEND_KV, Constants.EXTEND_KA);
     extendPID = new PIDController(Constants.EXTEND_P, Constants.EXTEND_I, Constants.EXTEND_D);
 
-    armConstraints = new TrapezoidProfile.Constraints(1, 1);
+    pivotConstraints = new TrapezoidProfile.Constraints(1, 1);
+    extendConstraints = new TrapezoidProfile.Constraints(1, 1);
+
 
     this.kAL = 1.22566276313;
     this.kDt = 0.02; // 20 ms assumed for control loops
@@ -111,7 +114,7 @@ public class Arm extends SubsystemBase {
 
   // extends the arm
   public void setLength(double length) {
-    TrapezoidProfile profile = new TrapezoidProfile(armConstraints, new TrapezoidProfile.State(length, 0),
+    TrapezoidProfile profile = new TrapezoidProfile(extendConstraints, new TrapezoidProfile.State(length, 0),
         lengthSetpoint);
     lengthSetpoint = profile.calculate(kDt);
     // setLengthV(lengthSetpoint.velocity);
@@ -181,7 +184,7 @@ public class Arm extends SubsystemBase {
   }
 
   public void setAngle(double angle) {
-    TrapezoidProfile profile = new TrapezoidProfile(armConstraints, new TrapezoidProfile.State(angle, 0),
+    TrapezoidProfile profile = new TrapezoidProfile(pivotConstraints, new TrapezoidProfile.State(angle, 0),
         pivotSetpoint);
     pivotSetpoint = profile.calculate(kDt);
     SmartDashboard.putNumber("setpointAngleError", angle - getAngle().getRadians());
