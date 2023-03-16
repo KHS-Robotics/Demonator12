@@ -23,6 +23,9 @@ public class ArmHoldSetpoint extends CommandBase {
         RobotContainer.arm.getAngleV());
     RobotContainer.arm.lengthSetpoint = new TrapezoidProfile.State(RobotContainer.arm.getLength(),
         RobotContainer.arm.getLengthV());
+
+    RobotContainer.arm.resetPivotPID();
+    RobotContainer.arm.resetExtendPID();
   }
 
   // Called repeatedly when this Command is scheduled to run

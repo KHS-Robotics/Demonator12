@@ -21,12 +21,15 @@ public class ArmControlJoystick extends CommandBase {
   // Called just before this Command runs the first time
   @Override
   public void initialize() {
-
+    
   }
 
   // Called repeatedly when this Command is scheduled to run
   @Override
   public void execute() {
+    RobotContainer.arm.resetPivotPID();
+    RobotContainer.arm.resetExtendPID();
+    
     var isLegalExtension = RobotContainer.arm.isLegalExtension(RobotContainer.arm.getTranslation());
     var isLegalHeight = RobotContainer.arm.isLegalHeight(RobotContainer.arm.getTranslation());
 
@@ -52,6 +55,5 @@ public class ArmControlJoystick extends CommandBase {
     RobotContainer.arm.armPivotSetpointRadians = RobotContainer.arm.getAngle().getRadians();
     //SmartDashboard.putNumber("ArmLength", RobotContainer.arm.getLength());
     //SmartDashboard.putNumber("ArmAngle", RobotContainer.arm.getAngle().getRadians());
-
   }
 }

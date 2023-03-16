@@ -54,8 +54,8 @@ public class Constants {
   public static final double DRIVE_KV = 3.2717;
   public static final double DRIVE_KA = 0.17904;
 
-  public static final double ARM_P = 2;
-  public static final double ARM_I = 0.0;
+  public static final double ARM_P = 3;
+  public static final double ARM_I = 0.01;
   public static final double ARM_D = 0.01;
   public static final double ARM_KS = 0.26602;
   public static final double ARM_KG = 0.75656966792;
@@ -64,8 +64,8 @@ public class Constants {
 
   public static final double ARM_START_ANGLE = Math.toRadians(35);
 
-  public static final double EXTEND_P = 1.5;
-  public static final double EXTEND_I = 0.0;
+  public static final double EXTEND_P = 2;
+  public static final double EXTEND_I = 0.4;
   public static final double EXTEND_D = 0.0;
   public static final double EXTEND_KS = 0.22841;
   public static final double EXTEND_KV = 5.3504;

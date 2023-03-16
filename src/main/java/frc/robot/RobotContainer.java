@@ -20,6 +20,7 @@ import com.pathplanner.lib.commands.PPSwerveControllerCommand;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.RobotState;
@@ -28,6 +29,7 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
@@ -35,6 +37,8 @@ import edu.wpi.first.wpilibj2.command.ProxyCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.arm.ArmControlJoystick;
+import frc.robot.commands.arm.ArmControlLength;
+import frc.robot.commands.arm.ArmControlPivot;
 import frc.robot.commands.arm.ArmHoldSetpoint;
 import frc.robot.commands.drive.CenterSwerveModules;
 import frc.robot.commands.drive.DriveSwerveWithXbox;
@@ -231,10 +235,10 @@ public class RobotContainer {
   /** Binds commands to the operator stick. */
   private void configureOperatorStickBindings() {
     Trigger highPos = new Trigger(operatorStick::highPos);
-    highPos.onTrue(new ProxyCommand(() -> RobotContainer.arm.goToSetpointScoreFast(Constants.HIGH_POS)));
+    highPos.onTrue(new ProxyCommand(() -> RobotContainer.arm.goToSetpointScore(Constants.HIGH_POS)));
 
     Trigger midPos = new Trigger(operatorStick::midPos);
-    midPos.onTrue(new ProxyCommand(() -> RobotContainer.arm.goToSetpointScoreFast(Constants.MID_POS)));
+    midPos.onTrue(new ProxyCommand(() -> RobotContainer.arm.goToSetpointScore(Constants.MID_POS)));
 
     Trigger lowPos = new Trigger(operatorStick::lowPos);
     lowPos.onTrue(new ProxyCommand(() -> RobotContainer.arm.goToSetpoint(Constants.FLOOR_POS, new Rotation2d())));
@@ -251,7 +255,7 @@ public class RobotContainer {
     scoreAngle.onTrue(RobotContainer.arm.goToPivotLength(Math.toRadians(45), Constants.MIN_LENGTH));
 
     Trigger shelfPos = new Trigger(operatorStick::shelfPos);
-    shelfPos.onTrue(RobotContainer.arm.goToSetpointFast(Constants.SHELF_POS, new Rotation2d()));
+    shelfPos.onTrue(RobotContainer.arm.goToSetpoint(Constants.SHELF_POS, new Rotation2d()));
 
     Trigger wristFlat = new Trigger(operatorStick::wristFlat);
     wristFlat.onTrue(new InstantCommand(() -> wrist.setAngleSetpoint(Rotation2d.fromDegrees(0))));
@@ -342,8 +346,8 @@ public class RobotContainer {
         AutonomousEventMap.put("BalanceFacingAway", new BalanceSequence(0));
         AutonomousEventMap.put("BalanceFacingDriver", new BalanceSequence(180));
         AutonomousEventMap.put("ScoreAngle", RobotContainer.arm.goToPivotLength(0.75, Constants.MIN_LENGTH));
-        AutonomousEventMap.put("Release", new InstantCommand(() -> RobotContainer.grabber.release()));
-        AutonomousEventMap.put("Grab", new InstantCommand(() -> RobotContainer.grabber.grip()));
+        AutonomousEventMap.put("Release", new SetGrabber(true));
+        AutonomousEventMap.put("Grab", new SetGrabber(false));
         AutonomousEventMap.put("Flat", RobotContainer.arm.goToPivotLength(Math.toRadians(0), Constants.MIN_LENGTH).andThen(
           new InstantCommand(() -> wrist.setAngleSetpoint(Rotation2d.fromDegrees(60)))));
         // AutonomousEventMap.put("Outtake", new InstantCommand(() -> RobotContainer.grabber.set(0.6)));

@@ -82,6 +82,14 @@ public class Arm extends SubsystemBase {
     this.kSpring = 25;
   }
 
+  public void resetPivotPID() {
+    armPID.reset();
+  }
+
+  public void resetExtendPID() {
+    extendPID.reset();
+  }
+
   @Override
   public void periodic() {
     var translation = getTranslation();
@@ -137,7 +145,7 @@ public class Arm extends SubsystemBase {
   }
 
   public double calcLengthV(double vLength) {
-    var voltage = extendFeedForward.calculate(vLength) + extendPID.calculate(getLengthV(), vLength)
+    var voltage = extendFeedForward.calculate(vLength)
         + Constants.EXTEND_KG * Math.sin(this.getAngle().getRadians()) + Constants.EXTEND_KSPRING;
     // extendMotor.setVoltage(voltage);
     SmartDashboard.putNumber("ExtendVoltage", voltage);

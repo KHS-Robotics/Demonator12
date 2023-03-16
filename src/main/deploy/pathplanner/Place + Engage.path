@@ -42,9 +42,12 @@
       "isLocked": false,
       "isStopPoint": false,
       "stopEvent": {
-        "names": [],
+        "names": [
+          "Flat",
+          "BalanceFacingAway"
+        ],
         "executionBehavior": "sequential",
-        "waitBehavior": "none",
+        "waitBehavior": "after",
         "waitTime": 0
       }
     }

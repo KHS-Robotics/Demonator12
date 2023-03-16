@@ -7,22 +7,32 @@
 
 package frc.robot.commands.arm;
 
+import java.util.function.Supplier;
+
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.RobotContainer;
 
 @SuppressWarnings("GrazieInspection")
 public class ArmControlPivot extends CommandBase {
-  double angle;
+  Supplier<Double> angle;
+
+  public ArmControlPivot(Supplier<Double> angle) {
+    addRequirements(RobotContainer.arm);
+    this.angle = angle;
+  }
 
   public ArmControlPivot(double angle) {
     addRequirements(RobotContainer.arm);
-    this.angle = angle;
+    this.angle = () -> angle;
   }
 
   // Called just before this Command runs the first time
   @Override
   public void initialize() {
+    RobotContainer.arm.resetPivotPID();
+    RobotContainer.arm.resetExtendPID();
+    
     RobotContainer.arm.armLengthSetpoint = RobotContainer.arm.getLength();
     System.out.println("\n\nSTART running armcontrolpivot\n\n");
   }
@@ -31,21 +41,21 @@ public class ArmControlPivot extends CommandBase {
   @Override
   public void execute() {
     System.out.println("\n\nrunning armcontrolpivot\n\n");
-    SmartDashboard.putNumber("ArmControlPivotCmdSetpoint", angle);
-    RobotContainer.arm.setAngle(angle);
+    SmartDashboard.putNumber("ArmControlPivotCmdSetpoint", angle.get());
+    RobotContainer.arm.setAngle(angle.get());
     RobotContainer.arm.setLength(RobotContainer.arm.armLengthSetpoint);
   }
 
   // Make this return true when this Command no longer needs to run execute()
   @Override
   public boolean isFinished() {
-    return (Math.abs(RobotContainer.arm.getAngle().getRadians() - angle) < Math.toRadians(3));
+    return (Math.abs(RobotContainer.arm.getAngle().getRadians() - angle.get()) < Math.toRadians(3));
         //|| !RobotContainer.arm.isLegalHeight(RobotContainer.arm.getTranslation());
   }
 
   // Called once after isFinished returns true
   @Override
   public void end(boolean interrupted) {
-    RobotContainer.arm.armPivotSetpointRadians = angle;
+    RobotContainer.arm.armPivotSetpointRadians = angle.get();
   }
 }

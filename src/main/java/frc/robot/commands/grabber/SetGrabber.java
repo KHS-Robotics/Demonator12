@@ -13,9 +13,9 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.RobotContainer;
 
 public class SetGrabber extends SequentialCommandGroup {
-  public SetGrabber(boolean grip) {
+  public SetGrabber(boolean release) {
     this.addCommands(
-        grip ? new InstantCommand(() -> RobotContainer.grabber.grip())
+      release ? new InstantCommand(() -> RobotContainer.grabber.grip())
             : new InstantCommand(() -> RobotContainer.grabber.release()),
         new WaitCommand(1), new InstantCommand(() -> RobotContainer.grabber.turnOffGrabSolenoid()));
   }
