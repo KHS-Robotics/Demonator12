@@ -70,12 +70,12 @@ public class RobotContainer {
     return instance;
   }
 
-  // private static final SendableChooser<List<PathPlannerTrajectory>> autoChooser = new SendableChooser<>();
-  private static final SendableChooser<Command> autoChooser = new SendableChooser<>();
+  private static final SendableChooser<List<PathPlannerTrajectory>> autoChooser = new SendableChooser<>();
+  // private static final SendableChooser<Command> autoChooser = new SendableChooser<>();
   public SwerveAutoBuilder swerveAutoBuilder;
 
   /** Gets the selected autonomous command. */
-  public Command getAutoCommand() {
+  public List<PathPlannerTrajectory> getAutoCommand() {
     return autoChooser.getSelected();
   }
 
@@ -308,22 +308,22 @@ public class RobotContainer {
       swerveDrive
     );
 
-    autoChooser.setDefaultOption("Nothing", new PrintCommand("No auto!"));
-    autoChooser.addOption("Place + Mobility (Cable Protector)", AutoRoutines.getPlace1MobilityCableProtector());
-    autoChooser.addOption("Place + Mobility (Loading Station)", AutoRoutines.getPlace1MobilityLoadingStation());
-    autoChooser.addOption("Place + Dock (Center)", AutoRoutines.getPlace1BalanceSequenceCenter());
+    // autoChooser.setDefaultOption("Nothing", new PrintCommand("No auto!"));
+    // autoChooser.addOption("Place + Mobility (Cable Protector)", AutoRoutines.getPlace1MobilityCableProtector());
+    // autoChooser.addOption("Place + Mobility (Loading Station)", AutoRoutines.getPlace1MobilityLoadingStation());
+    // autoChooser.addOption("Place + Dock (Center)", AutoRoutines.getPlace1BalanceSequenceCenter());
 
-    // autoChooser.setDefaultOption("Nothing", new ArrayList<PathPlannerTrajectory>());
+    autoChooser.setDefaultOption("Nothing", new ArrayList<PathPlannerTrajectory>());
 
-    // // dynamically create the options using the PathPlanner paths under "src/main/deploy/pathplanner"
-    // File ppDirectory = Filesystem.getDeployDirectory().toPath().resolve("pathplanner").toFile();
-    // for (File file : ppDirectory.listFiles()) {
-    //   if (!file.isDirectory() && file.getName().endsWith(".path")) {
-    //     // remove ".path" from the name for PathPlanner
-    //     var pathName = file.getName().replace(".path", "");
-    //     autoChooser.addOption(pathName, PathPlanner.loadPathGroup(pathName, new PathConstraints(2, 3)));
-    //   }
-    // }
+    // dynamically create the options using the PathPlanner paths under "src/main/deploy/pathplanner"
+    File ppDirectory = Filesystem.getDeployDirectory().toPath().resolve("pathplanner").toFile();
+    for (File file : ppDirectory.listFiles()) {
+      if (!file.isDirectory() && file.getName().endsWith(".path")) {
+        // remove ".path" from the name for PathPlanner
+        var pathName = file.getName().replace(".path", "");
+        autoChooser.addOption(pathName, PathPlanner.loadPathGroup(pathName, new PathConstraints(2, 3)));
+      }
+    }
 
     SmartDashboard.putData(autoChooser);
     SmartDashboard.putData("field", field);
@@ -336,14 +336,14 @@ public class RobotContainer {
   /** Gets the event map for PathPlanner's FollowPathWithEvents. */
   private static HashMap<String, Command> getAutonomousEventMap() {
     if (AutonomousEventMap.isEmpty()) {
-        AutonomousEventMap.put("PlaceHigh", new PrintCommand("test")/*new ProxyCommand(() -> RobotContainer.arm.goToSetpointAuto(Constants.HIGH_POS, Rotation2d.fromDegrees(45)))*/); 
+        AutonomousEventMap.put("PlaceHigh", RobotContainer.arm.goToSetpointScore(Constants.HIGH_POS)); 
         AutonomousEventMap.put("PlaceMid", new PrintCommand("placeholder for place mid"));
         AutonomousEventMap.put("PlaceHybrid", new PrintCommand("placeholder for place hybrid"));
         AutonomousEventMap.put("BalanceFacingAway", new BalanceSequence(0));
         AutonomousEventMap.put("BalanceFacingDriver", new BalanceSequence(180));
         AutonomousEventMap.put("ScoreAngle", RobotContainer.arm.goToPivotLength(0.75, Constants.MIN_LENGTH));
-        AutonomousEventMap.put("Release", new PrintCommand("\n\n\n\n\n\n\n\nRELEASE\n\n\n\n\n"));
-        AutonomousEventMap.put("Grab", new SetGrabber(true));
+        AutonomousEventMap.put("Release", new InstantCommand(() -> RobotContainer.grabber.release()));
+        AutonomousEventMap.put("Grab", new InstantCommand(() -> RobotContainer.grabber.grip()));
         AutonomousEventMap.put("Flat", RobotContainer.arm.goToPivotLength(Math.toRadians(0), Constants.MIN_LENGTH).andThen(
           new InstantCommand(() -> wrist.setAngleSetpoint(Rotation2d.fromDegrees(60)))));
         // AutonomousEventMap.put("Outtake", new InstantCommand(() -> RobotContainer.grabber.set(0.6)));
