@@ -305,7 +305,7 @@ public class SwerveDrive extends SubsystemBase {
   }
 
   public void holdAngleWhileDriving(double x, double y, Rotation2d setAngle, boolean fieldOriented) {
-    var rotateOutput = MathUtil.clamp(targetPid.calculate(getYaw(), normalizeAngle(setAngle.getDegrees())), -1, 1) * kMaxAngularSpeed;
+    var rotateOutput = MathUtil.clamp(targetPid.calculate(poseEstimator.getEstimatedPosition().getRotation().getDegrees(), normalizeAngle(setAngle.getDegrees())), -1, 1) * kMaxAngularSpeed;
     this.drive(x, y, rotateOutput, fieldOriented);
   }
 
