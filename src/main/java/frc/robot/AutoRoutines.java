@@ -23,12 +23,12 @@ import frc.robot.commands.grabber.SetGrabber;
 import frc.robot.commands.wrist.WristGoToAngle;
 
 public class AutoRoutines {
-    static PathPlannerTrajectory traj = PathPlanner.loadPath("Place + Mobility (Cable Protector)", new PathConstraints(3, 2));
-    static CommandBase c1 = RobotContainer.getInstance().swerveAutoBuilder.followPath(traj);
+    // static PathPlannerTrajectory traj = PathPlanner.loadPath("Place + Mobility (Cable Protector)", new PathConstraints(3, 2));
+    // static CommandBase c1 = RobotContainer.getInstance().swerveAutoBuilder.followPath(traj);
 
-    public static Command getPlace1MobilityCableProtector() {
-        return new InstantCommand();
-    }
+    // public static Command getPlace1MobilityCableProtector() {
+    //     return new InstantCommand();
+    // }
 
     // public static Command getPlace1MobilityLoadingStation() {
     //     var traj = PathPlanner.loadPath("Place + Mobility (Loading Station)", new PathConstraints(3, 2));
