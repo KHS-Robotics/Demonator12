@@ -269,7 +269,7 @@ public class Arm extends SubsystemBase {
       command = new SequentialCommandGroup(
           new WristGoToSetpoint(wristAngle),
           (new ArmControlPivot(rotToPoint).andThen(
-          new ArmControlLength(lengthToPoint))).deadlineWith(new WristHoldSetpoint()));
+          new ArmControlLength(lengthToPoint))).raceWith(new WristHoldSetpoint()));
     } else {
       //wrist, then length, then pivot
       command = new SequentialCommandGroup(

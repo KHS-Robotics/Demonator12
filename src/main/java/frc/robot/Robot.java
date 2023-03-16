@@ -124,6 +124,10 @@ public class Robot extends TimedRobot {
     if (autonmousRoutine != null) {
       autonmousRoutine.cancel();
     }
+
+    if (RobotContainer.grabber != null) {
+      RobotContainer.grabber.turnOffGrabSolenoid();
+    }
   }
 
   /** This method is called periodically during operator control. */
