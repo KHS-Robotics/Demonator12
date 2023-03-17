@@ -17,13 +17,14 @@
       "isStopPoint": false,
       "stopEvent": {
         "names": [
-          "PlaceHighFast",
+          "CenterSwerveModules",
+          "PlaceHigh",
           "Release",
           "ScoreAngle"
         ],
         "executionBehavior": "sequential",
         "waitBehavior": "after",
-        "waitTime": 0.2
+        "waitTime": 0.1
       }
     },
     {
@@ -46,7 +47,7 @@
           "DriveOverThenBalance"
         ],
         "executionBehavior": "sequential",
-        "waitBehavior": "after",
+        "waitBehavior": "none",
         "waitTime": 0
       }
     }

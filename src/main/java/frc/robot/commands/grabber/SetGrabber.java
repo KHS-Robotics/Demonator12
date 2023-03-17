@@ -15,8 +15,8 @@ import frc.robot.RobotContainer;
 public class SetGrabber extends SequentialCommandGroup {
   public SetGrabber(boolean release) {
     this.addCommands(
-      release ? new InstantCommand(() -> RobotContainer.grabber.grip())
-            : new InstantCommand(() -> RobotContainer.grabber.release()),
-        new WaitCommand(0.5), new InstantCommand(() -> RobotContainer.grabber.turnOffGrabSolenoid()));
+      release ? new InstantCommand(() -> RobotContainer.grabber.grip()).finallyDo((i) -> new WaitCommand(0.5).andThen(() -> RobotContainer.grabber.turnOffGrabSolenoid())) :
+                new InstantCommand(() -> RobotContainer.grabber.release()).finallyDo((i) -> new WaitCommand(0.5).andThen(() -> RobotContainer.grabber.turnOffGrabSolenoid()))
+    );
   }
 }

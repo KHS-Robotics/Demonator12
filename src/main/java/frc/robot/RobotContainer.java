@@ -353,6 +353,7 @@ public class RobotContainer {
   /** Gets the event map for PathPlanner's FollowPathWithEvents. */
   private static HashMap<String, Command> getAutonomousEventMap() {
     if (AutonomousEventMap.isEmpty()) {
+        AutonomousEventMap.put("CenterSwerveModules", new CenterSwerveModules(false)); 
         AutonomousEventMap.put("PlaceHigh", RobotContainer.arm.goToSetpointScore(Constants.HIGH_POS)); 
         AutonomousEventMap.put("PlaceHighFast", RobotContainer.arm.goToSetpointScoreFast(Constants.HIGH_POS)); 
         AutonomousEventMap.put("PlaceMid", new PrintCommand("placeholder for place mid"));
