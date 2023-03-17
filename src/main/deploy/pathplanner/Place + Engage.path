@@ -22,8 +22,8 @@
           "ScoreAngle"
         ],
         "executionBehavior": "sequential",
-        "waitBehavior": "none",
-        "waitTime": 0
+        "waitBehavior": "after",
+        "waitTime": 0.2
       }
     },
     {
@@ -43,7 +43,6 @@
       "isStopPoint": false,
       "stopEvent": {
         "names": [
-          "Flat",
           "BalanceFacingAway"
         ],
         "executionBehavior": "sequential",

@@ -35,7 +35,7 @@ public class ArmControlLength extends CommandBase {
     RobotContainer.arm.resetExtendPID();
 
     if (length.get() < Constants.MIN_LENGTH) {
-      length = () -> Constants.MIN_LENGTH;
+      length = () -> Constants.MIN_LENGTH + 0.03;
     }
 
     RobotContainer.arm.armPivotSetpointRadians = RobotContainer.arm.getAngle().getRadians();
@@ -54,7 +54,7 @@ public class ArmControlLength extends CommandBase {
   // Make this return true when this Command no longer needs to run execute()
   @Override
   public boolean isFinished() {
-    return (Math.abs(RobotContainer.arm.getLength() - length.get()) < 0.06)
+    return (Math.abs(RobotContainer.arm.getLength() - length.get()) < 0.03)
         || !RobotContainer.arm.isLegalExtension(RobotContainer.arm.getTranslation());
   }
 

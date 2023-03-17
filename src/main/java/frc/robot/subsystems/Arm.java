@@ -73,8 +73,8 @@ public class Arm extends SubsystemBase {
     extendFeedForward = new SimpleMotorFeedforward(Constants.EXTEND_KS, Constants.EXTEND_KV, Constants.EXTEND_KA);
     extendPID = new PIDController(Constants.EXTEND_P, Constants.EXTEND_I, Constants.EXTEND_D);
 
-    pivotConstraints = new TrapezoidProfile.Constraints(1, 1);
-    extendConstraints = new TrapezoidProfile.Constraints(1, 1);
+    pivotConstraints = new TrapezoidProfile.Constraints(1.5, 1.5);
+    extendConstraints = new TrapezoidProfile.Constraints(1.5, 1.5);
 
 
     this.kAL = 1.22566276313;
@@ -127,6 +127,7 @@ public class Arm extends SubsystemBase {
     TrapezoidProfile profile = new TrapezoidProfile(extendConstraints, new TrapezoidProfile.State(length, 0),
         lengthSetpoint);
     lengthSetpoint = profile.calculate(kDt);
+    SmartDashboard.putNumber("LengthCommandSetpoint", lengthSetpoint.position);
     // setLengthV(lengthSetpoint.velocity);
     extendMotor.setVoltage(
         calcLengthV(lengthSetpoint.velocity) + extendPID.calculate(getLength(), lengthSetpoint.position));
@@ -209,6 +210,7 @@ public class Arm extends SubsystemBase {
     var voltage = calcVoltagePivot(vAngle);
     return voltage;
   }
+
 
   // returns the required rotation to go to a setpoint in degrees (arm relative)
   public Rotation2d rotToPointAR(Translation3d target) {
@@ -370,7 +372,7 @@ public class Arm extends SubsystemBase {
   }
 
   public Command goToSetpointScoreCube(Translation3d target) {
-    return goToSetpointScore(target).andThen(new InstantCommand(() -> RobotContainer.wrist.setAngleSetpoint(Rotation2d.fromDegrees(-40))));
+    return goToSetpointScore(target).andThen(new InstantCommand(() -> RobotContainer.wrist.setAngleSetpoint(Rotation2d.fromDegrees(-25))));
   }
 
   public Command goToSetpoint(Translation3d target) {

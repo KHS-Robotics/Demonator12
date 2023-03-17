@@ -22,7 +22,7 @@ public class OperatorStick extends Joystick {
   }
 
   public boolean home() {
-    return this.getRawButton(14);
+    return this.getRawButton(6);
   }
 
   public boolean stow() {
@@ -39,7 +39,7 @@ public class OperatorStick extends Joystick {
   }
 
   public boolean shelfPos() {
-    return this.getRawButton(6);
+    return this.getRawButton(14);
   }
 
   public boolean wristFlat() {

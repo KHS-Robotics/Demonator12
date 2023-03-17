@@ -17,6 +17,6 @@ public class SetGrabber extends SequentialCommandGroup {
     this.addCommands(
       release ? new InstantCommand(() -> RobotContainer.grabber.grip())
             : new InstantCommand(() -> RobotContainer.grabber.release()),
-        new WaitCommand(1), new InstantCommand(() -> RobotContainer.grabber.turnOffGrabSolenoid()));
+        new WaitCommand(0.5), new InstantCommand(() -> RobotContainer.grabber.turnOffGrabSolenoid()));
   }
 }

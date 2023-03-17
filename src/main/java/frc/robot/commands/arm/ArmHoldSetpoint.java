@@ -9,6 +9,7 @@ package frc.robot.commands.arm;
 
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.Constants;
 import frc.robot.RobotContainer;
 
 public class ArmHoldSetpoint extends CommandBase {
@@ -33,6 +34,7 @@ public class ArmHoldSetpoint extends CommandBase {
   public void execute() {
     RobotContainer.arm.setAngle(RobotContainer.arm.armPivotSetpointRadians);
     RobotContainer.arm.setLength(RobotContainer.arm.armLengthSetpoint);
+    
   }
 
   // Make this return true when this Command no longer needs to run execute()

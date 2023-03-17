@@ -13,7 +13,6 @@ import frc.robot.RobotContainer;
 
 public class RotateToAngle extends CommandBase {
   private Timer timer = new Timer();
-  private static final double DEBOUNCE_SECONDS = 0.3;
 
   private double angle, error;
 
@@ -58,6 +57,6 @@ public class RotateToAngle extends CommandBase {
       timer.reset();
     }
 
-    return timer.hasElapsed(DEBOUNCE_SECONDS) && atSetpoint;
+    return atSetpoint;
   }
 }

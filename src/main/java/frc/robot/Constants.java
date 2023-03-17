@@ -32,7 +32,7 @@ public class Constants {
       Units.inchesToMeters(46));
   public static final Translation3d HIGH_POS = new Translation3d(Units.inchesToMeters(56.73), Units.inchesToMeters(0),
       Units.inchesToMeters(58));
-  public static final Translation3d SHELF_POS = new Translation3d(Units.inchesToMeters(40), 0, Units.inchesToMeters(44.81));
+  public static final Translation3d SHELF_POS = new Translation3d(Units.inchesToMeters(40), 0, Units.inchesToMeters(41.31));
   public static final Translation3d FLOOR_POS = new Translation3d(Units.inchesToMeters(30), 0, Units.inchesToMeters(10));
 
   public static final double SENS = 0.5;
@@ -54,7 +54,7 @@ public class Constants {
   public static final double DRIVE_KV = 3.2717;
   public static final double DRIVE_KA = 0.17904;
 
-  public static final double ARM_P = 3;
+  public static final double ARM_P = 5;
   public static final double ARM_I = 0.01;
   public static final double ARM_D = 0.01;
   public static final double ARM_KS = 0.26602;
@@ -64,18 +64,18 @@ public class Constants {
 
   public static final double ARM_START_ANGLE = Math.toRadians(35);
 
-  public static final double EXTEND_P = 2;
+  public static final double EXTEND_P = 4;
   public static final double EXTEND_I = 0.4;
-  public static final double EXTEND_D = 0.0;
+  public static final double EXTEND_D = 0.1;
   public static final double EXTEND_KS = 0.22841;
   public static final double EXTEND_KV = 5.3504;
   public static final double EXTEND_KA = 0.33319;
   public static final double EXTEND_KG = 0.88663;
   public static final double EXTEND_KSPRING = 0;
 
-  public static final double WRIST_P = 4;
+  public static final double WRIST_P = 3.5;
   public static final double WRIST_I = 0.001;
-  public static final double WRIST_D = 0.006;
+  public static final double WRIST_D = 0.008;
   public static final double WRIST_KS = 0.15463;
   public static final double WRIST_KG = 0.59328;
   public static final double WRIST_KV = 0.9972;
@@ -86,7 +86,7 @@ public class Constants {
 
   public static final double TARGET_P = 0.008;
   public static final double TARGET_I = 0.0;
-  public static final double TARGET_D = 0.00075;
+  public static final double TARGET_D = 0.001;
 
   public static final int LED_LENGTH = 20;
 }
