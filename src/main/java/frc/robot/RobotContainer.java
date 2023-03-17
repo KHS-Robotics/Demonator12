@@ -360,6 +360,7 @@ public class RobotContainer {
         AutonomousEventMap.put("BalanceFacingAway", new BalanceSequence(0).deadlineWith(new ArmHoldSetpoint()));
         AutonomousEventMap.put("BalanceFacingDriver", new BalanceSequence(180).deadlineWith(new ArmHoldSetpoint()));
         AutonomousEventMap.put("BalanceFacingDriverReversed", new BalanceSequence(180, true).deadlineWith(new ArmHoldSetpoint()));
+        AutonomousEventMap.put("DriveOverThenBalance", new DriveOverThenBalanceSequence());
         AutonomousEventMap.put("ScoreAngle", RobotContainer.arm.goToPivotLength(0.75, Constants.MIN_LENGTH).withTimeout(2));
         AutonomousEventMap.put("Release", new SetGrabber(true));
         AutonomousEventMap.put("Grab", new SetGrabber(false));

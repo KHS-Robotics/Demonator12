@@ -2,47 +2,51 @@
   "waypoints": [
     {
       "anchorPoint": {
-        "x": 1.85,
-        "y": 2.734115896803223
+        "x": 1.8664000808743408,
+        "y": 2.1727370130917154
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.2467421206028857,
-        "y": 2.74001971732757
+        "x": 2.226526119366618,
+        "y": 2.1727370130917154
       },
       "holonomicAngle": -180.0,
       "isReversal": false,
-      "velOverride": 1.5,
-      "isLocked": false,
-      "isStopPoint": false,
-      "stopEvent": {
-        "names": [],
-        "executionBehavior": "parallel",
-        "waitBehavior": "none",
-        "waitTime": 0
-      }
-    },
-    {
-      "anchorPoint": {
-        "x": 6.408932134103584,
-        "y": 2.73
-      },
-      "prevControl": {
-        "x": 5.9627864004632665,
-        "y": 2.7243388022369266
-      },
-      "nextControl": null,
-      "holonomicAngle": 180.0,
-      "isReversal": false,
-      "velOverride": 1.5,
+      "velOverride": null,
       "isLocked": false,
       "isStopPoint": false,
       "stopEvent": {
         "names": [
-          "BalanceFacingDriverReverse"
+          "PlaceHighFast",
+          "Release",
+          "ScoreAngle"
         ],
         "executionBehavior": "sequential",
-        "waitBehavior": "none",
+        "waitBehavior": "after",
+        "waitTime": 0.2
+      }
+    },
+    {
+      "anchorPoint": {
+        "x": 2.1408510720017158,
+        "y": 2.1727370130917154
+      },
+      "prevControl": {
+        "x": 1.749698227654798,
+        "y": 2.1727370130917154
+      },
+      "nextControl": null,
+      "holonomicAngle": 180.0,
+      "isReversal": false,
+      "velOverride": null,
+      "isLocked": false,
+      "isStopPoint": false,
+      "stopEvent": {
+        "names": [
+          "DriveOverThenBalance"
+        ],
+        "executionBehavior": "sequential",
+        "waitBehavior": "after",
         "waitTime": 0
       }
     }
