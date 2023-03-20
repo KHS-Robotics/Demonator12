@@ -293,10 +293,10 @@ public class RobotContainer {
     moveArm.onTrue(new ArmControlJoystick());
 
     Trigger grip = new Trigger(() -> (/*operatorBox.coneMode() &&*/ operatorStick.closeClaw()));
-    grip.onTrue(new SetGrabber(true));
+    grip.onTrue(new SetGrabber(true).alongWith(new InstantCommand(() -> grabber.waitForCone())));
 
     Trigger release = new Trigger(() -> (/*operatorBox.cubeMode() ||*/ operatorStick.openClaw()));
-    release.onTrue(new SetGrabber(false));
+    release.onTrue(new SetGrabber(false).alongWith(new InstantCommand(() -> grabber.waitForCone())));
 
     Trigger outtake = new Trigger(operatorStick::outtake);
     outtake.onTrue(new InstantCommand(() -> grabber.set(0.5)));
@@ -306,8 +306,11 @@ public class RobotContainer {
     intake.onTrue(new InstantCommand(() -> grabber.set(-0.35)));
     intake.onFalse(new InstantCommand(() -> grabber.set(0)));
 
-    // Trigger zeroWrist = new Trigger(operatorStick::zeroWrist);
-    // zeroWrist.onTrue(new InstantCommand(() -> RobotContainer.wrist.zeroWrist()));
+    Trigger waitForCone = new Trigger(operatorStick::waitForCone);
+    waitForCone.onTrue(new InstantCommand(() -> grabber.waitForCone()));
+
+    Trigger coneIn = new Trigger(() -> (grabber.waiting && grabber.getSensor() && operatorBox.coneMode()));
+    coneIn.onTrue(new SetGrabber(true).alongWith(new InstantCommand(() -> grabber.waitForCone())));
   }
 
   /**

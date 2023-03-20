@@ -11,6 +11,8 @@ import java.io.IOException;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -63,6 +65,18 @@ public class Field {
       return translation;
     }
 
+  }
+
+  //flips pose to be correctly aligned with alliance
+  public static Pose2d flipPose(Pose2d pose) {
+    if (DriverStation.getAlliance() == Alliance.Red) {
+      return new Pose2d(Units.inchesToMeters(651.25) - pose.getX(),
+      Units.inchesToMeters(315.5 - pose.getY()), 
+      pose.getRotation().plus(Rotation2d.fromDegrees(180)));
+    }
+    else {
+      return pose;
+    }
   }
 
   // takes apriltag num from 1-8 and node num from 0-8
