@@ -16,6 +16,7 @@ public class Grabber extends SubsystemBase {
   private final CANSparkMax intakeMotor;
   private final SparkMaxLimitSwitch intakeSensor;
   private final DoubleSolenoid grabSolenoid;
+  public boolean waiting;
 
   public Grabber() {
     intakeMotor = new CANSparkMax(RobotMap.GRABBER_INTAKE, MotorType.kBrushless);
@@ -46,5 +47,17 @@ public class Grabber extends SubsystemBase {
 
   public void turnOffGrabSolenoid() {
     grabSolenoid.set(Value.kOff);
+  }
+
+  public void waitForCone() {
+    waiting = true;
+  }
+
+  public void stopWaitingtForCone() {
+    waiting = false;
+  }
+
+  public boolean getSensor() {
+    return intakeSensor.isPressed();
   }
 }

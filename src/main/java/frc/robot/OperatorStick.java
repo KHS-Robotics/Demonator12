@@ -83,7 +83,7 @@ public class OperatorStick extends Joystick {
     return getPOV() == 180;
   }
 
-  public boolean zeroWrist() {
+  public boolean waitForCone() {
     return this.getRawButton(3);
   }
 }
