@@ -8,8 +8,11 @@
 package frc.robot.subsystems.drive;
 
 
+import java.util.Optional;
+
 import org.ejml.dense.row.mult.SubmatrixOps_FDRM;
 import org.ejml.simple.SimpleMatrix;
+import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonUtils;
 import org.photonvision.targeting.PhotonPipelineResult;
 
@@ -277,7 +280,7 @@ public class SwerveDrive extends SubsystemBase {
     poseEstimator.resetPosition(getAngle(), getSwerveModulePositions(), pose);
   }
 
-  public Command followTrajectoryCommand(PathPlannerTrajectory trajectory, boolean isAutoPath) {
+  /*public Command followTrajectoryCommand(PathPlannerTrajectory trajectory, boolean isAutoPath) {
     return new SequentialCommandGroup(
         new InstantCommand(() -> {
           if (isAutoPath) {
@@ -294,7 +297,7 @@ public class SwerveDrive extends SubsystemBase {
             this::setModuleStates,
             true,
             this));
-  }
+  }*/
 
   public void setPID(double p, double i, double d) {
     targetPid.setPID(p, i, d);
@@ -333,17 +336,19 @@ public class SwerveDrive extends SubsystemBase {
   public void updateOdometry() {
     poseEstimator.updateWithTime(Timer.getFPGATimestamp(), getAngle(), getSwerveModulePositions());
 
-    PhotonPipelineResult result = photonCamera.getResult();
-    if(result.hasTargets()) {
-      var target = result.getBestTarget();
-      double ambiguity = target.getPoseAmbiguity();
-      int fiducialID = target.getFiducialId();
-      
-      if (photonCamera.fieldLayout.getTagPose(fiducialID).isPresent()) {
-        Pose2d robotPose = PhotonUtils.estimateFieldToRobotAprilTag(target.getBestCameraToTarget(), photonCamera.fieldLayout.getTagPose(fiducialID).get(), Constants.CAMERA_1_POS.inverse()).toPose2d();
-        if(ambiguity < 0.1 && robotPose.getTranslation().getDistance(photonCamera.fieldLayout.getTagPose(fiducialID).get().getTranslation().toTranslation2d()) < 2.5/*&& poseEstimator.getEstimatedPosition().getTranslation().getDistance(getPose().getTranslation()) < 1*/) {
-          poseEstimator.addVisionMeasurement(robotPose, result.getTimestampSeconds());
+    Optional<EstimatedRobotPose> estimatedPose = photonCamera.getEstimatedGlobalPose();
+    if (estimatedPose.isPresent()) {
+      EstimatedRobotPose robotPose = estimatedPose.get();
+      double minimum = 1;
+      for(var target : robotPose.targetsUsed) {
+        double ambiguity = target.getPoseAmbiguity();
+        if(ambiguity < minimum) {
+          minimum = ambiguity;
         }
+      }
+
+      if(minimum < 0.05 && poseEstimator.getEstimatedPosition().getTranslation().getDistance(getPose().getTranslation()) < 0.3) {
+        poseEstimator.addVisionMeasurement(Field.flipPose(robotPose.estimatedPose.toPose2d()), robotPose.timestampSeconds);
       }
     }
   }
