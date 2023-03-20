@@ -71,7 +71,7 @@ public class Field {
   public static Pose2d flipPose(Pose2d pose) {
     if (DriverStation.getAlliance() == Alliance.Red) {
       return new Pose2d(Units.inchesToMeters(651.25) - pose.getX(),
-      Units.inchesToMeters(315.5 - pose.getY()), 
+      Units.inchesToMeters(315.5) - pose.getY(), 
       pose.getRotation().plus(Rotation2d.fromDegrees(180)));
     }
     else {

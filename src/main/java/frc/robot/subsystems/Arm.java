@@ -96,20 +96,11 @@ public class Arm extends SubsystemBase {
     SmartDashboard.putNumber("ArmPivotSetpoint", this.armPivotSetpointRadians);
     SmartDashboard.putNumber("ArmPivot", this.getAngle().getRadians());
     SmartDashboard.putNumber("ArmLength", getLength());
-    SmartDashboard.putNumber("PivotJoystick", RobotContainer.operatorStick.getPitchSpeed());
     SmartDashboard.putBoolean("isLegalH", isLegalHeight(translation));
     SmartDashboard.putBoolean("isLegalE", isLegalExtension(translation));
 
-    SmartDashboard.putNumber("ArmActualTranslationX", translation.getX());
-    SmartDashboard.putNumber("ArmActualTranslationY", translation.getY());
-    SmartDashboard.putNumber("ArmActualTranslationZ", translation.getZ());
-    SmartDashboard.putNumber("ArmDesiredTranslationX", armTranslaton.getX());
-    SmartDashboard.putNumber("ArmDesiredTranslationY", armTranslaton.getY());
-    SmartDashboard.putNumber("ArmDesiredTranslationZ", armTranslaton.getZ());
-
     SmartDashboard.putNumber("ExtendArmSetpoint", armLengthSetpoint);
     SmartDashboard.putNumber("ExtendArmPosition", getLength());
-    SmartDashboard.putNumber("ExtendJoystick", RobotContainer.operatorStick.getExtendSpeed());
   }
 
   // converts point from robot relative to arm relative
@@ -127,7 +118,6 @@ public class Arm extends SubsystemBase {
     TrapezoidProfile profile = new TrapezoidProfile(extendConstraints, new TrapezoidProfile.State(length, 0),
         lengthSetpoint);
     lengthSetpoint = profile.calculate(kDt);
-    SmartDashboard.putNumber("LengthCommandSetpoint", lengthSetpoint.position);
     // setLengthV(lengthSetpoint.velocity);
     extendMotor.setVoltage(
         calcLengthV(lengthSetpoint.velocity) + extendPID.calculate(getLength(), lengthSetpoint.position));
@@ -198,11 +188,8 @@ public class Arm extends SubsystemBase {
     TrapezoidProfile profile = new TrapezoidProfile(pivotConstraints, new TrapezoidProfile.State(angle, 0),
         pivotSetpoint);
     pivotSetpoint = profile.calculate(kDt);
-    SmartDashboard.putNumber("setpointAngleError", angle - getAngle().getRadians());
-    SmartDashboard.putNumber("setpointAnglePosition", pivotSetpoint.position);
 
     var armPidOutput = armPID.calculate(getAngle().getRadians(), pivotSetpoint.position);
-    SmartDashboard.putNumber("ArmPidOutput", armPidOutput);
     pivotMotor.setVoltage(calcAngleV(pivotSetpoint.velocity) + armPidOutput);
   }
 
