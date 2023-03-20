@@ -34,6 +34,7 @@ public class Constants {
       Units.inchesToMeters(58));
   public static final Translation3d SHELF_POS = new Translation3d(Units.inchesToMeters(40), 0, Units.inchesToMeters(41.31));
   public static final Translation3d FLOOR_POS = new Translation3d(Units.inchesToMeters(30), 0, Units.inchesToMeters(10));
+  public static final Translation3d SINGLE_POS = new Translation3d(Units.inchesToMeters(32), 0, Units.inchesToMeters(32));
 
   public static final double SENS = 0.5;
 
@@ -54,8 +55,8 @@ public class Constants {
   public static final double DRIVE_KV = 3.2717;
   public static final double DRIVE_KA = 0.17904;
 
-  public static final double ARM_P = 7;
-  public static final double ARM_I = 0.2;
+  public static final double ARM_P = 8;
+  public static final double ARM_I = 0.5;
   public static final double ARM_D = 0.01;
   public static final double ARM_KS = 0.26602;
   public static final double ARM_KG = 0.75656966792;

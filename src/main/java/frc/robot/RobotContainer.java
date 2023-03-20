@@ -175,10 +175,11 @@ public class RobotContainer {
     Trigger forceCalibrate = driverController.back();
     forceCalibrate.onTrue(new CenterSwerveModules(true));
 
-    Trigger resetNavx = driverController.start();
-    resetNavx.onTrue(new InstantCommand(() -> swerveDrive.resetNavx()));
+    //Trigger resetNavx = driverController.start();
+    //resetNavx.onTrue(new InstantCommand(() -> swerveDrive.resetNavx()));
 
-    Trigger resetOdometry = driverController.x();
+    
+    Trigger resetOdometry = driverController.start();
     resetOdometry.onTrue(new InstantCommand(() -> swerveDrive.resetOdometry()));
 
     Trigger slowDrive = driverController.leftTrigger(0.3);
@@ -254,7 +255,7 @@ public class RobotContainer {
     midPosCube.onTrue(new ProxyCommand(() -> RobotContainer.arm.goToSetpointScoreCube(Constants.MID_POS)));
 
     Trigger lowPos = new Trigger(operatorStick::lowPos);
-    lowPos.onTrue(new ProxyCommand(() -> RobotContainer.arm.goToSetpoint(Constants.FLOOR_POS, new Rotation2d())));
+    lowPos.onTrue(new ProxyCommand(() -> RobotContainer.arm.goToSetpoint(Constants.FLOOR_POS, Rotation2d.fromDegrees(-10))));
 
     Trigger home = new Trigger(operatorStick::home);
     home.onTrue(RobotContainer.arm.goToPivotLength(Math.toRadians(60), Constants.MIN_LENGTH).andThen(
@@ -274,10 +275,10 @@ public class RobotContainer {
     wristFlat.onTrue(new InstantCommand(() -> wrist.setAngleSetpoint(Rotation2d.fromDegrees(0))));
 
     Trigger wristStepUp = new Trigger(operatorStick::wristStepUp);
-    wristStepUp.onTrue(new WristDeltaSetpoint(Rotation2d.fromDegrees(10)));
+    wristStepUp.onTrue(new WristDeltaSetpoint(Rotation2d.fromDegrees(7)));
 
     Trigger wristStepDown = new Trigger(operatorStick::wristStepDown);
-    wristStepDown.onTrue(new WristDeltaSetpoint(Rotation2d.fromDegrees(-10)));
+    wristStepDown.onTrue(new WristDeltaSetpoint(Rotation2d.fromDegrees(-7)));
 
     Trigger wristScoreAngle = new Trigger(operatorStick::wristScoreAngle);
     wristScoreAngle.onTrue(new InstantCommand(() -> wrist.setAngleSetpoint(Rotation2d.fromDegrees(45))));
@@ -373,5 +374,5 @@ public class RobotContainer {
     }
 
     return AutonomousEventMap;
-}
+  }
 }

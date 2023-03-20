@@ -50,7 +50,7 @@ public class OperatorStick extends Joystick {
     return this.getRawButton(10);
   }
 
-  public boolean wristDownOverride() {
+  public boolean singleSubstation() {
     return this.getRawButton(9);
   }
 

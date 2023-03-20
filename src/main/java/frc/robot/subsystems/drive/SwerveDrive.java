@@ -342,7 +342,7 @@ public class SwerveDrive extends SubsystemBase {
       if (photonCamera.fieldLayout.getTagPose(fiducialID).isPresent()) {
         Pose2d robotPose = PhotonUtils.estimateFieldToRobotAprilTag(target.getBestCameraToTarget(), photonCamera.fieldLayout.getTagPose(fiducialID).get(), Constants.CAMERA_1_POS.inverse()).toPose2d();
         if(ambiguity < 0.1 && robotPose.getTranslation().getDistance(photonCamera.fieldLayout.getTagPose(fiducialID).get().getTranslation().toTranslation2d()) < 2.5/*&& poseEstimator.getEstimatedPosition().getTranslation().getDistance(getPose().getTranslation()) < 1*/) {
-          poseEstimator.addVisionMeasurement(robotPose, result.getTimestampSeconds());
+          //poseEstimator.addVisionMeasurement(robotPose, result.getTimestampSeconds());
         }
       }
     }

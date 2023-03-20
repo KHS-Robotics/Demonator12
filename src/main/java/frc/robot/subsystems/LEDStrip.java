@@ -79,7 +79,7 @@ public class LEDStrip extends SubsystemBase {
   public void runBlue() {
     ticksPerSecond = 20;
     for (int i = 0; i < Constants.LED_LENGTH; i++) {
-      double alternate = (255 / 2) * ((-Math.cos((2 * Math.PI * 4 * i) / Constants.LED_LENGTH)) + 1);
+      double alternate = (255 / 2) * ((-Math.cos((2 * Math.PI * 2 * i) / Constants.LED_LENGTH)) + 1);
       buffer.setRGB((i + counter) % Constants.LED_LENGTH, 0, (int) alternate, 255);
     }
   }
@@ -87,7 +87,7 @@ public class LEDStrip extends SubsystemBase {
   public void runRed() {
     ticksPerSecond = 20;
     for (int i = 0; i < Constants.LED_LENGTH; i++) {
-      double alternate = (40 / 2) * ((-Math.cos((2 * Math.PI * 4 * i) / Constants.LED_LENGTH)) + 1);
+      double alternate = (40 / 2) * ((-Math.cos((2 * Math.PI * 2 * i) / Constants.LED_LENGTH)) + 1);
       buffer.setRGB((i + counter) % Constants.LED_LENGTH, 255, (int) alternate, 0);
     }
   }

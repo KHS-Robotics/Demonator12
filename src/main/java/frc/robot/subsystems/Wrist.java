@@ -25,7 +25,7 @@ public class Wrist extends SubsystemBase {
   // private final SparkMaxPIDController wristPidCtrl;
   private final SparkMaxAnalogSensor pivotEncoder;
   private static final double MIN_VOLTAGE = 0.312, MAX_VOLTAGE = 3.25, DELTA_VOLTAGE = MAX_VOLTAGE - MIN_VOLTAGE;
-  private static final double WRIST_CONVERSION_FACTOR = -Math.toRadians(175) / DELTA_VOLTAGE;
+  private static final double WRIST_CONVERSION_FACTOR = -Math.toRadians(200) / DELTA_VOLTAGE;
 
   private final SparkMaxLimitSwitch forwardLimitSwitch;
   private final SparkMaxLimitSwitch reverseLimitSwitch;
@@ -37,7 +37,7 @@ public class Wrist extends SubsystemBase {
   private final Constraints wristConstraints = new TrapezoidProfile.Constraints(1, 1);
   public TrapezoidProfile.State wristSetpoint = new TrapezoidProfile.State();
   private static final double kDt = 0.02;
-  private static final double OFFSET = 1.81;
+  private static final double OFFSET = 2.15;
 
   private Rotation2d angleSetpoint = new Rotation2d(); 
 

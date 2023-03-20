@@ -246,13 +246,19 @@ public class Arm extends SubsystemBase {
   }
 
   public boolean isLegalExtension(Translation3d target) {
-    return this.getFurthestPoint(target).getX() < Units.inchesToMeters(61); // 45 IN + 16 IN (HALF OF CHASSIS)
+    var x = this.getFurthestPoint(target).getX(); 
+    var limit = Units.inchesToMeters(59.5); // 45 IN + 16 IN (HALF OF CHASSIS);
+    SmartDashboard.putNumber("ArmX-Inches", Units.metersToInches(x));
+    return x < limit;
   }
 
   public boolean isLegalHeight(Translation3d target) {
     // left some inches since we shouldnt go this high ever (limit is 72" instead of
     // legal 78")
-    return this.getFurthestPoint(target).getY() < Units.inchesToMeters(72);
+    var y = this.getFurthestPoint(target).getY();
+    var limit = Units.inchesToMeters(72);
+    SmartDashboard.putNumber("ArmY-Inches", Units.metersToInches(y));
+    return y < limit;
   }
 
   public boolean isFurther(Translation3d target) {
@@ -392,7 +398,7 @@ public class Arm extends SubsystemBase {
   }
 
   public Translation3d getTranslation() {
-    return new Translation3d(getLength(), new Rotation3d(0, -getAngle().getRadians(), 0)).plus(Constants.ARMOFFSET);
+    return new Translation3d(getLength(), new Rotation3d(0, -getAngle().getRadians(), 0)).plus(Constants.ARMOFFSET);//.plus(new Translation3d(Constants.GRIPPERLENGTH, new Rotation3d(0, -RobotContainer.wrist.getAbsoluteAngle().getRadians(), 0)));
   }
 
   private Translation2d getFurthestPoint(Translation3d target) {
