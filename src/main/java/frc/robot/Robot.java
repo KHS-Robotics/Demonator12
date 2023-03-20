@@ -78,10 +78,6 @@ public class Robot extends TimedRobot {
     RobotContainer.arm.armPivotSetpointRadians = RobotContainer.arm.getAngle().getRadians();
     RobotContainer.arm.armLengthSetpoint = RobotContainer.arm.getLength();
     RobotContainer.wrist.setAngleSetpoint(RobotContainer.wrist.getAbsoluteAngle());
-
-    if (RobotContainer.operatorStick.zeroWrist()) {
-      RobotContainer.arm.zeroArmLength();
-    }
   }
 
   /**
