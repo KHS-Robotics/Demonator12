@@ -15,8 +15,11 @@ import frc.robot.commands.drive.RotateToAngle;
 public class DriveOverThenBalanceSequence extends ParallelDeadlineGroup {
     public DriveOverThenBalanceSequence() {
         super(
-          new SequentialCommandGroup(new ApproachChargeStation(180, true), new DriveForward(180, true, 1).withTimeout(2.7), new BalanceSequence(180)),
-          (RobotContainer.arm.goToPivotLength(Math.toRadians(0), Constants.MIN_LENGTH).andThen(new InstantCommand(() -> RobotContainer.wrist.setAngleSetpoint(Rotation2d.fromDegrees(80)))).finallyDo((interrupted) -> new ArmHoldSetpoint().schedule()))
+          new SequentialCommandGroup(new ApproachChargeStation(180, true),
+           new DriveForward(180, true, 1).withTimeout(2.7),
+            new BalanceSequence(180))
+          /*RobotContainer.arm.goToPivotLength(Math.toRadians(0), Constants.MIN_LENGTH).finallyDo((interrupted) -> new ArmHoldSetpoint()).andThen(
+        new InstantCommand(() -> RobotContainer.wrist.setAngleSetpoint(Rotation2d.fromDegrees(80))))*/
         );
       }
 }

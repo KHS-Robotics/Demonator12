@@ -9,6 +9,7 @@ package frc.robot.commands.arm;
 
 import java.util.function.Supplier;
 
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
@@ -34,8 +35,8 @@ public class ArmControlLength extends CommandBase {
     RobotContainer.arm.resetPivotPID();
     RobotContainer.arm.resetExtendPID();
 
-    if (length.get() < Constants.MIN_LENGTH) {
-      length = () -> Constants.MIN_LENGTH + 0.03;
+    if (length.get() < Constants.MIN_LENGTH + 0.05) {
+      length = () -> Constants.MIN_LENGTH + 0.05;
     }
 
     RobotContainer.arm.armPivotSetpointRadians = RobotContainer.arm.getAngle().getRadians();
@@ -54,7 +55,7 @@ public class ArmControlLength extends CommandBase {
   // Make this return true when this Command no longer needs to run execute()
   @Override
   public boolean isFinished() {
-      return (Math.abs(RobotContainer.arm.getLength() - length.get()) < 0.03);
+      return (Math.abs(RobotContainer.arm.getLength() - length.get()) < 0.04);
         //|| !RobotContainer.arm.isLegalExtension(RobotContainer.arm.getTranslation());
   }
 

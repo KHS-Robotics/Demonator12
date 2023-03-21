@@ -207,6 +207,9 @@ public class RobotContainer {
 
     Trigger cancelAll = driverController.leftBumper();
     cancelAll.onTrue(new InstantCommand(() -> CommandScheduler.getInstance().cancelAll()));
+
+    //Trigger testSequence = driverController.pov(90);
+    //testSequence.onTrue(new DriveOverThenBalanceSequence());
   }
 
   /** Binds commands to the operator box. */
@@ -292,11 +295,11 @@ public class RobotContainer {
     release.onTrue(new SetGrabber(false).alongWith(new InstantCommand(() -> grabber.stopWaitingForCone())));
 
     Trigger outtake = new Trigger(operatorStick::outtake);
-    outtake.onTrue(new InstantCommand(() -> grabber.set(0.5)));
+    outtake.onTrue(new InstantCommand(() -> grabber.set(1)));
     outtake.onFalse(new InstantCommand(() -> grabber.set(0)));
 
     Trigger intake = new Trigger(operatorStick::intake);
-    intake.onTrue(new InstantCommand(() -> grabber.set(-0.5)));
+    intake.onTrue(new InstantCommand(() -> grabber.set(-0.2)));
     intake.onFalse(new InstantCommand(() -> grabber.set(0)));
 
     Trigger waitForCone = new Trigger(operatorStick::waitForCone);
@@ -362,8 +365,8 @@ public class RobotContainer {
         AutonomousEventMap.put("ScoreAngle", RobotContainer.arm.goToPivotLength(0.75, Constants.MIN_LENGTH).withTimeout(2));
         AutonomousEventMap.put("Release", new SetGrabber(true));
         AutonomousEventMap.put("Grab", new SetGrabber(false));
-        AutonomousEventMap.put("Flat", RobotContainer.arm.goToPivotLength(Math.toRadians(15), Constants.MIN_LENGTH).andThen(
-          new InstantCommand(() -> wrist.setAngleSetpoint(Rotation2d.fromDegrees(60)))));
+        AutonomousEventMap.put("Flat", RobotContainer.arm.goToPivotLength(Math.toRadians(0), Constants.MIN_LENGTH).andThen(
+          new InstantCommand(() -> wrist.setAngleSetpoint(Rotation2d.fromDegrees(80)))));
         AutonomousEventMap.put("Hold", new ArmHoldSetpoint());
         // AutonomousEventMap.put("Outtake", new InstantCommand(() -> RobotContainer.grabber.set(0.6)));
         // AutonomousEventMap.put("Intake", new InstantCommand(() -> RobotContainer.grabber.set(-0.45)));

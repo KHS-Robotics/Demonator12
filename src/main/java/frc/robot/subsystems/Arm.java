@@ -28,6 +28,7 @@ import frc.robot.RobotMap;
 import frc.robot.commands.arm.ArmControlLength;
 import frc.robot.commands.arm.ArmControlPivot;
 import frc.robot.commands.arm.ArmControlPivotLength;
+import frc.robot.commands.arm.ArmHoldSetpoint;
 import frc.robot.commands.wrist.WristGoToSetpoint;
 import frc.robot.commands.wrist.WristHoldSetpoint;
 
@@ -73,8 +74,8 @@ public class Arm extends SubsystemBase {
     extendFeedForward = new SimpleMotorFeedforward(Constants.EXTEND_KS, Constants.EXTEND_KV, Constants.EXTEND_KA);
     extendPID = new PIDController(Constants.EXTEND_P, Constants.EXTEND_I, Constants.EXTEND_D);
 
-    pivotConstraints = new TrapezoidProfile.Constraints(1.5, 1.5);
-    extendConstraints = new TrapezoidProfile.Constraints(1.5, 1.5);
+    pivotConstraints = new TrapezoidProfile.Constraints(2, 2);
+    extendConstraints = new TrapezoidProfile.Constraints(2.25, 2.25);
 
 
     this.kAL = 1.22566276313;
@@ -249,6 +250,13 @@ public class Arm extends SubsystemBase {
   }
 
   public boolean isFurther(Translation3d target) {
+    SmartDashboard.putNumber("isFurtherCurrentX", getTranslation().getX());
+    SmartDashboard.putNumber("isFurtherCurrentY", getTranslation().getY());
+    SmartDashboard.putNumber("isFurtherCurrentZ", getTranslation().getZ());
+    
+    SmartDashboard.putNumber("isFurtherTargetX", target.getX());
+    SmartDashboard.putNumber("isFurtherTargetY", target.getY());
+    SmartDashboard.putNumber("isFurtherTargetZ", target.getZ());
     return getTranslation().getNorm() < target.getNorm();
   }
 
@@ -376,7 +384,8 @@ public class Arm extends SubsystemBase {
     var target = new Translation3d(length, new Rotation3d(0, -pivot, 0)).plus(Constants.ARMOFFSET);
 
     var command = new SequentialCommandGroup();
-    if (isFurther(target)) {
+    SmartDashboard.putBoolean("isFurtherTest", isFurther(target));
+    if (!isFurther(target)) {
       command = new SequentialCommandGroup(new ArmControlLength(length), new ArmControlPivot(pivot));
     } else {
       command = new SequentialCommandGroup(new ArmControlPivot(pivot), new ArmControlLength(length));

@@ -457,6 +457,7 @@ public class SwerveDrive extends SubsystemBase {
     RobotContainer.field.setRobotPose(Field.flipPose(poseEstimator.getEstimatedPosition()));
     SmartDashboard.putNumber("Pose angle", getPose().getRotation().getDegrees());
     SmartDashboard.putBoolean("Calibrated", isCalibrated);
+    logTargetChassisSpeeds(getChassisSpeeds());
   }
 
 }
