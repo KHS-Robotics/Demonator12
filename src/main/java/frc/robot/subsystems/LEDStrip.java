@@ -100,7 +100,10 @@ public class LEDStrip extends SubsystemBase {
   }
 
   public void update() {
-    if (RobotState.isDisabled() || RobotState.isAutonomous()) {
+    if (RobotContainer.swerveDrive != null && !RobotContainer.swerveDrive.isCalibrated) {
+      runRainbow();
+    }
+    else if (RobotState.isDisabled() || RobotState.isAutonomous()) {
       if(DriverStation.getAlliance().equals(Alliance.Red)) {
         runRed();
       } else {
@@ -112,9 +115,6 @@ public class LEDStrip extends SubsystemBase {
     }
     else if (RobotContainer.operatorBox.cubeMode()) {
       setPurple();
-    }
-    else {
-      runRainbow();
     }
 
     strip.setData(buffer);

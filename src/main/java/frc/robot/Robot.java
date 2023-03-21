@@ -11,8 +11,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import frc.robot.subsystems.vision.Limelight;
-import frc.robot.subsystems.vision.Limelight.LightMode;
 
 /**
  * The VM is configured to automatically run this class, and to call the methods
@@ -34,12 +32,16 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotInit() {
+    DriverStation.silenceJoystickConnectionWarning(true);
+
     // Instantiate our RobotContainer. This will perform all our button bindings,
-    // and put our
-    // autonomous chooser on the dashboard.
+    // and put our autonomous chooser on the dashboard.
     robotContainer = RobotContainer.getInstance();
 
-    Limelight.setLedMode(LightMode.eOff);
+    // for debugging
+    CommandScheduler.getInstance().onCommandInitialize((command) -> System.out.println(command.getName() + " starting..."));
+    CommandScheduler.getInstance().onCommandInterrupt((command) -> System.out.println(command.getName() + " interrupted!"));
+    CommandScheduler.getInstance().onCommandFinish((command) -> System.out.println(command.getName() + " ended."));
   }
 
   /**
@@ -69,7 +71,7 @@ public class Robot extends TimedRobot {
   @Override
   public void disabledInit() {
     if (RobotContainer.grabber != null) {
-      RobotContainer.grabber.turnOffGrabSolenoid();
+      RobotContainer.grabber.turnOff();
     }
   }
 
@@ -78,6 +80,13 @@ public class Robot extends TimedRobot {
     RobotContainer.arm.armPivotSetpointRadians = RobotContainer.arm.getAngle().getRadians();
     RobotContainer.arm.armLengthSetpoint = RobotContainer.arm.getLength();
     RobotContainer.wrist.setAngleSetpoint(RobotContainer.wrist.getAbsoluteAngle());
+
+    SmartDashboard.putNumber("Wrist-Voltage", RobotContainer.wrist.getVoltage());
+    SmartDashboard.putNumber("Wrist-Angle", RobotContainer.wrist.getAngle());
+
+    if (RobotContainer.swerveDrive != null && !RobotContainer.swerveDrive.isCalibrated && RobotContainer.swerveDrive.resetEncoders()) {
+      RobotContainer.swerveDrive.isCalibrated = true;
+    }
   }
 
   /**
@@ -114,19 +123,12 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopInit() {
-    //RobotContainer.arm.armPivotSetpointRadians = 0.5;
-    //RobotContainer.arm.armLengthSetpoint = Constants.MIN_LENGTH;
-
     // This makes sure that the autonomous stops running when
     // teleop starts running. If you want the autonomous to
     // continue until interrupted by another command, remove
     // this line or comment it out.
     if (autonmousRoutine != null) {
       autonmousRoutine.cancel();
-    }
-
-    if (RobotContainer.grabber != null) {
-      RobotContainer.grabber.turnOffGrabSolenoid();
     }
   }
 

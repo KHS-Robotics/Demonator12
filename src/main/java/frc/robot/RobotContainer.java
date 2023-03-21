@@ -19,8 +19,6 @@ import com.pathplanner.lib.auto.SwerveAutoBuilder;
 import com.pathplanner.lib.commands.PPSwerveControllerCommand;
 
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation3d;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.RobotState;
@@ -29,7 +27,6 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
@@ -37,8 +34,6 @@ import edu.wpi.first.wpilibj2.command.ProxyCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.arm.ArmControlJoystick;
-import frc.robot.commands.arm.ArmControlLength;
-import frc.robot.commands.arm.ArmControlPivot;
 import frc.robot.commands.arm.ArmHoldSetpoint;
 import frc.robot.commands.drive.CenterSwerveModules;
 import frc.robot.commands.drive.DriveSwerveWithXbox;
@@ -47,7 +42,6 @@ import frc.robot.commands.drive.balance.BalanceSequence;
 import frc.robot.commands.drive.balance.DriveOverThenBalanceSequence;
 import frc.robot.commands.grabber.SetGrabber;
 import frc.robot.commands.wrist.WristDeltaSetpoint;
-import frc.robot.commands.wrist.WristGoToAngle;
 import frc.robot.commands.wrist.WristHoldSetpoint;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Grabber;
@@ -237,7 +231,6 @@ public class RobotContainer {
 
     Trigger zeroArmLength = new Trigger(operatorBox::zeroArmLength);
     zeroArmLength.onTrue(new InstantCommand(() -> arm.zeroArmLength()));
-
   }
 
   /** Binds commands to the operator stick. */
@@ -255,18 +248,18 @@ public class RobotContainer {
     midPosCube.onTrue(new ProxyCommand(() -> RobotContainer.arm.goToSetpointScoreCube(Constants.MID_POS)));
 
     Trigger lowPos = new Trigger(operatorStick::lowPos);
-    lowPos.onTrue(new ProxyCommand(() -> RobotContainer.arm.goToSetpoint(Constants.FLOOR_POS, Rotation2d.fromDegrees(-10))));
+    lowPos.onTrue(new ProxyCommand(() -> RobotContainer.arm.goToSetpoint(Constants.FLOOR_POS, Rotation2d.fromDegrees(0))));
 
     Trigger home = new Trigger(operatorStick::home);
     home.onTrue(RobotContainer.arm.goToPivotLength(Math.toRadians(60), Constants.MIN_LENGTH).andThen(
-      new InstantCommand(() -> wrist.setAngleSetpoint(Rotation2d.fromDegrees(135)))));
+      new InstantCommand(() -> wrist.setAngleSetpoint(Rotation2d.fromDegrees(150)))));
 
     Trigger armFlat = new Trigger(operatorStick::stow);
     armFlat.onTrue(RobotContainer.arm.goToPivotLength(Math.toRadians(0), Constants.MIN_LENGTH).andThen(
         new InstantCommand(() -> wrist.setAngleSetpoint(Rotation2d.fromDegrees(80)))));
 
     Trigger scoreAngle = new Trigger(operatorStick::scoreAngle);
-    scoreAngle.onTrue(RobotContainer.arm.goToPivotLength(Math.toRadians(45), Constants.MIN_LENGTH));
+    scoreAngle.onTrue(RobotContainer.arm.goToPivotLength(Math.toRadians(45), Constants.MIN_LENGTH).alongWith(new InstantCommand(() -> RobotContainer.wrist.setAngleSetpoint(Rotation2d.fromDegrees(-40)))));
 
     Trigger shelfPos = new Trigger(operatorStick::shelfPos);
     shelfPos.onTrue(RobotContainer.arm.goToSetpoint(Constants.SHELF_POS, new Rotation2d()));
@@ -293,24 +286,24 @@ public class RobotContainer {
     moveArm.onTrue(new ArmControlJoystick());
 
     Trigger grip = new Trigger(() -> (/*operatorBox.coneMode() &&*/ operatorStick.closeClaw()));
-    grip.onTrue(new SetGrabber(true).alongWith(new InstantCommand(() -> grabber.waitForCone())));
+    grip.onTrue(new SetGrabber(true).alongWith(new InstantCommand(() -> grabber.stopWaitingForCone())));
 
     Trigger release = new Trigger(() -> (/*operatorBox.cubeMode() ||*/ operatorStick.openClaw()));
-    release.onTrue(new SetGrabber(false).alongWith(new InstantCommand(() -> grabber.waitForCone())));
+    release.onTrue(new SetGrabber(false).alongWith(new InstantCommand(() -> grabber.stopWaitingForCone())));
 
     Trigger outtake = new Trigger(operatorStick::outtake);
     outtake.onTrue(new InstantCommand(() -> grabber.set(0.5)));
     outtake.onFalse(new InstantCommand(() -> grabber.set(0)));
 
     Trigger intake = new Trigger(operatorStick::intake);
-    intake.onTrue(new InstantCommand(() -> grabber.set(-0.35)));
+    intake.onTrue(new InstantCommand(() -> grabber.set(-0.5)));
     intake.onFalse(new InstantCommand(() -> grabber.set(0)));
 
     Trigger waitForCone = new Trigger(operatorStick::waitForCone);
     waitForCone.onTrue(new InstantCommand(() -> grabber.waitForCone()));
 
     Trigger coneIn = new Trigger(() -> (grabber.waiting && grabber.getSensor() && operatorBox.coneMode()));
-    coneIn.onTrue(new SetGrabber(true).alongWith(new InstantCommand(() -> grabber.waitForCone())));
+    coneIn.onTrue(new SetGrabber(false)/*.alongWith(new InstantCommand(() -> grabber.stopWaitingForCone()))*/);
   }
 
   /**

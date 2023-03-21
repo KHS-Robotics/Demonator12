@@ -129,7 +129,7 @@ public class Arm extends SubsystemBase {
   }
 
   public void setLengthV(double vLength) {
-    var voltage = extendFeedForward.calculate(vLength) + extendPID.calculate(getLengthV(), vLength)
+    var voltage = extendFeedForward.calculate(vLength) //+ extendPID.calculate(getLengthV(), vLength)
         + Constants.EXTEND_KG * Math.sin(this.getAngle().getRadians());
     extendMotor.setVoltage(voltage);
     SmartDashboard.putNumber("ExtendVoltage", voltage);
@@ -377,9 +377,9 @@ public class Arm extends SubsystemBase {
 
     var command = new SequentialCommandGroup();
     if (isFurther(target)) {
-      command = new SequentialCommandGroup(new ArmControlPivot(pivot), new ArmControlLength(length));
-    } else {
       command = new SequentialCommandGroup(new ArmControlLength(length), new ArmControlPivot(pivot));
+    } else {
+      command = new SequentialCommandGroup(new ArmControlPivot(pivot), new ArmControlLength(length));
     }
     return command;
   }

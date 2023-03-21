@@ -8,14 +8,16 @@ import com.revrobotics.SparkMaxLimitSwitch.Type;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
+import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotMap;
 
 public class Grabber extends SubsystemBase {
   private final CANSparkMax intakeMotor;
   private final SparkMaxLimitSwitch intakeSensor;
-  private final DoubleSolenoid grabSolenoid;
+  private final Solenoid grab, release;
   public boolean waiting;
 
   public Grabber() {
@@ -24,9 +26,12 @@ public class Grabber extends SubsystemBase {
     intakeSensor = intakeMotor.getForwardLimitSwitch(Type.kNormallyClosed);
     intakeSensor.enableLimitSwitch(true);
 
-    grabSolenoid = new DoubleSolenoid(PneumaticsModuleType.REVPH, RobotMap.GRABBER_SOLENOID_FORWARD,
-        RobotMap.GRABBER_SOLENOID_REVERSE);
-    turnOffGrabSolenoid();
+    grab = new Solenoid(PneumaticsModuleType.REVPH, RobotMap.GRABBER_SOLENOID_FORWARD);
+    grab.setPulseDuration(0.5);
+    release = new Solenoid(PneumaticsModuleType.REVPH, RobotMap.GRABBER_SOLENOID_REVERSE);
+    release.setPulseDuration(0.5);
+        
+    turnOff();
   }
 
   public void set(double speed) {
@@ -38,26 +43,34 @@ public class Grabber extends SubsystemBase {
   }
 
   public void grip() {
-    grabSolenoid.set(Value.kForward);
+    grab.set(true);
+    release.set(false);
   }
 
   public void release() {
-    grabSolenoid.set(Value.kReverse);
+    release.set(true);
+    grab.set(false);
   }
 
-  public void turnOffGrabSolenoid() {
-    grabSolenoid.set(Value.kOff);
+  public void turnOff() {
+    release.set(false);
+    grab.set(false);
   }
 
   public void waitForCone() {
     waiting = true;
   }
 
-  public void stopWaitingtForCone() {
+  public void stopWaitingForCone() {
     waiting = false;
   }
 
   public boolean getSensor() {
     return intakeSensor.isPressed();
+  }
+  @Override
+  public void periodic() {
+    SmartDashboard.putBoolean("waiting", waiting);
+    SmartDashboard.putBoolean("isPressed", getSensor());
   }
 }
