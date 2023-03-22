@@ -369,14 +369,14 @@ public class RobotContainer {
         AutonomousEventMap.put("PlaceHighFast", RobotContainer.arm.goToSetpointScoreFast(Constants.HIGH_POS)); 
         AutonomousEventMap.put("PlaceMid", new PrintCommand("placeholder for place mid"));
         AutonomousEventMap.put("PlaceHybrid", new PrintCommand("placeholder for place hybrid"));
-        AutonomousEventMap.put("BalanceFacingAway", new BalanceSequence(0).deadlineWith(new ArmHoldSetpoint()));
-        AutonomousEventMap.put("BalanceFacingDriver", new BalanceSequence(180).deadlineWith(new ArmHoldSetpoint()));
-        AutonomousEventMap.put("BalanceFacingDriverReversed", new BalanceSequence(180, true).deadlineWith(new ArmHoldSetpoint()));
-        AutonomousEventMap.put("DriveOverThenBalance", new DriveOverThenBalanceSequence().deadlineWith(new ArmHoldSetpoint()));
-        AutonomousEventMap.put("ScoreAngle", RobotContainer.arm.goToPivotLength(0.75, Constants.MIN_LENGTH).withTimeout(2));
+        AutonomousEventMap.put("BalanceFacingAway", new BalanceSequence(0));
+        AutonomousEventMap.put("BalanceFacingDriver", new BalanceSequence(180));
+        AutonomousEventMap.put("BalanceFacingDriverReversed", new BalanceSequence(180, true));
+        AutonomousEventMap.put("DriveOverThenBalance", new DriveOverThenBalanceSequence());
+        AutonomousEventMap.put("ScoreAngle", RobotContainer.arm.goToPivotLength(0.75, Constants.MIN_LENGTH).asProxy().withTimeout(2));
         AutonomousEventMap.put("Release", new SetGrabber(true));
         AutonomousEventMap.put("Grab", new SetGrabber(false));
-        AutonomousEventMap.put("Flat", RobotContainer.arm.goToPivotLength(Math.toRadians(0), Constants.MIN_LENGTH).andThen(
+        AutonomousEventMap.put("Flat", RobotContainer.arm.goToPivotLength(Math.toRadians(0), Constants.MIN_LENGTH).asProxy().andThen(
           new InstantCommand(() -> wrist.setAngleSetpoint(Rotation2d.fromDegrees(80)))));
         AutonomousEventMap.put("Hold", new ArmHoldSetpoint().alongWith(new WristHoldSetpoint()));
         // AutonomousEventMap.put("Outtake", new InstantCommand(() -> RobotContainer.grabber.set(0.6)));

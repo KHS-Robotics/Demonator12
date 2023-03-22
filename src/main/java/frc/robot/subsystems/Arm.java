@@ -281,15 +281,15 @@ public class Arm extends SubsystemBase {
     if (isFurther(target)) {
       //wrist, then pivot, then length
       command = new SequentialCommandGroup(
-          new WristGoToSetpoint(wristAngle),
-          (new ArmControlPivot(rotToPoint).andThen(
-          new ArmControlLength(lengthToPoint))).raceWith(new WristHoldSetpoint()));
+          new WristGoToSetpoint(wristAngle).asProxy(),
+          new ArmControlPivot(rotToPoint).asProxy().andThen(
+          new ArmControlLength(lengthToPoint).asProxy()));
     } else {
       //wrist, then length, then pivot
       command = new SequentialCommandGroup(
-          new WristGoToSetpoint(wristAngle),
-          (new ArmControlLength(lengthToPoint)).andThen(
-          new ArmControlPivot(rotToPoint)).deadlineWith(new WristHoldSetpoint()));
+          new WristGoToSetpoint(wristAngle).asProxy(),
+          (new ArmControlLength(lengthToPoint).asProxy()).andThen(
+          new ArmControlPivot(rotToPoint).asProxy()));
     }
     return command;
   }
@@ -349,8 +349,8 @@ public class Arm extends SubsystemBase {
       if(isPivotedHigher) {
         // all in parallel
         command = new ParallelDeadlineGroup(
-        new ArmControlPivotLength(rotToPoint, lengthToPoint),
-        new WristHoldSetpoint());
+        new ArmControlPivotLength(rotToPoint, lengthToPoint).asProxy(),
+        new WristHoldSetpoint().asProxy());
       } else {
       return goToSetpoint(target, wristAngle);
       }
@@ -358,8 +358,8 @@ public class Arm extends SubsystemBase {
       if(!isPivotedHigher) {
         // all in parallel
         command = new ParallelDeadlineGroup(
-          new ArmControlPivotLength(rotToPoint, lengthToPoint),
-          new WristHoldSetpoint());
+          new ArmControlPivotLength(rotToPoint, lengthToPoint).asProxy(),
+          new WristHoldSetpoint().asProxy());
       } else {
       return goToSetpoint(target, wristAngle);
       }
@@ -389,9 +389,9 @@ public class Arm extends SubsystemBase {
     var command = new SequentialCommandGroup();
     SmartDashboard.putBoolean("isFurtherTest", isFurther(target));
     if (!isFurther(target)) {
-      command = new SequentialCommandGroup(new ArmControlLength(length), new ArmControlPivot(pivot));
+      command = new SequentialCommandGroup(new ArmControlLength(length).asProxy(), new ArmControlPivot(pivot).asProxy());
     } else {
-      command = new SequentialCommandGroup(new ArmControlPivot(pivot), new ArmControlLength(length));
+      command = new SequentialCommandGroup(new ArmControlPivot(pivot).asProxy(), new ArmControlLength(length).asProxy());
     }
     return command;
   }
