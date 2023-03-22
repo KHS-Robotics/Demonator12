@@ -54,6 +54,7 @@ public class Field {
   public static final double MID_TAPE_HEIGHT = Units.inchesToMeters(24); //tape from 22 to 26 in
 
   public static final double DIST_FROM_NODE_X_METERS = Units.inchesToMeters(35.28);
+  public static final double PLACEMENTX = fieldLayout.getTagPose(8).get().getX() + DIST_FROM_NODE_X_METERS;
 
   // flips coordinates to be correctly aligned with alliance
   public static Translation3d flip(Translation3d translation) {
@@ -82,6 +83,19 @@ public class Field {
   // takes apriltag num from 1-8 and node num from 0-8
   public static Translation3d getNodeCoordinatesFieldRelative(int apriltag, int node) {
     return flip(fieldLayout.getTagPose(apriltag).get().getTranslation()).plus(NODEOFFSETS[node]);
+  }
+
+  public static double[] getNodeYArray() {
+    double[] array = {flip(getNodeCoordinatesFieldRelative(8, 0)).getY(),
+      flip(getNodeCoordinatesFieldRelative(8, 1)).getY(),
+      flip(getNodeCoordinatesFieldRelative(8, 2)).getY(),
+      flip(getNodeCoordinatesFieldRelative(7, 0)).getY(),
+      flip(getNodeCoordinatesFieldRelative(7, 1)).getY(),
+      flip(getNodeCoordinatesFieldRelative(7, 2)).getY(),
+      flip(getNodeCoordinatesFieldRelative(6, 0)).getY(),
+      flip(getNodeCoordinatesFieldRelative(6, 1)).getY(),
+      flip(getNodeCoordinatesFieldRelative(6, 2)).getY()};
+    return array;
   }
 
   public static enum GridPosition {
