@@ -20,6 +20,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -74,7 +75,7 @@ public class Arm extends SubsystemBase {
     extendFeedForward = new SimpleMotorFeedforward(Constants.EXTEND_KS, Constants.EXTEND_KV, Constants.EXTEND_KA);
     extendPID = new PIDController(Constants.EXTEND_P, Constants.EXTEND_I, Constants.EXTEND_D);
 
-    pivotConstraints = new TrapezoidProfile.Constraints(2, 2);
+    pivotConstraints = new TrapezoidProfile.Constraints(1.5, 3);
     extendConstraints = new TrapezoidProfile.Constraints(2.25, 2.25);
 
 
@@ -119,6 +120,7 @@ public class Arm extends SubsystemBase {
     TrapezoidProfile profile = new TrapezoidProfile(extendConstraints, new TrapezoidProfile.State(length, 0),
         lengthSetpoint);
     lengthSetpoint = profile.calculate(kDt);
+    SmartDashboard.putNumber("ExtendSetpointPosition", lengthSetpoint.position);
     // setLengthV(lengthSetpoint.velocity);
     extendMotor.setVoltage(
         calcLengthV(lengthSetpoint.velocity) + extendPID.calculate(getLength(), lengthSetpoint.position));
@@ -189,6 +191,7 @@ public class Arm extends SubsystemBase {
     TrapezoidProfile profile = new TrapezoidProfile(pivotConstraints, new TrapezoidProfile.State(angle, 0),
         pivotSetpoint);
     pivotSetpoint = profile.calculate(kDt);
+    SmartDashboard.putNumber("PivotSetpointPosition", pivotSetpoint.position);
 
     var armPidOutput = armPID.calculate(getAngle().getRadians(), pivotSetpoint.position);
     pivotMotor.setVoltage(calcAngleV(pivotSetpoint.velocity) + armPidOutput);
@@ -344,19 +347,19 @@ public class Arm extends SubsystemBase {
     Command command;
     if (isFurther(target)) {
       if(isPivotedHigher) {
-        //all in parrallel
-        command = new ParallelCommandGroup(
-          new WristHoldSetpoint(),
-          new ArmControlPivotLength(rotToPoint, lengthToPoint));
+        // all in parallel
+        command = new ParallelDeadlineGroup(
+        new ArmControlPivotLength(rotToPoint, lengthToPoint),
+        new WristHoldSetpoint());
       } else {
       return goToSetpoint(target, wristAngle);
       }
     } else {
       if(!isPivotedHigher) {
-        //all in parrallel
-        command = new ParallelCommandGroup(
-          new WristHoldSetpoint(),
-          new ArmControlPivotLength(rotToPoint, lengthToPoint));
+        // all in parallel
+        command = new ParallelDeadlineGroup(
+          new ArmControlPivotLength(rotToPoint, lengthToPoint),
+          new WristHoldSetpoint());
       } else {
       return goToSetpoint(target, wristAngle);
       }

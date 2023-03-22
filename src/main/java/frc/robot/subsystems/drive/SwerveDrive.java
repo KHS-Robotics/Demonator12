@@ -229,7 +229,7 @@ public class SwerveDrive extends SubsystemBase {
   }
 
   public Command goToNode(int apriltag, int node) {
-    /*SmartDashboard.putNumber("GoToNodeTag", apriltag);
+    SmartDashboard.putNumber("GoToNodeTag", apriltag);
     SmartDashboard.putNumber("GoToNodeNode", node);
     Rotation2d heading;
 
@@ -265,8 +265,7 @@ public class SwerveDrive extends SubsystemBase {
         new PathPoint(goal, Rotation2d.fromDegrees(180), Rotation2d.fromDegrees(180), 0)); // position, heading(direction of
                                                                                       // travel), holonomic rotation
     //return followTrajectoryCommand(trajToGoal, false);
-    return RobotContainer.swerveAutoBuilder.followPath(trajToGoal);*/
-    return new PrintCommand("gotonode");
+    return RobotContainer.swerveAutoBuilder.followPath(trajToGoal);
   }
 
   public void setPose(Pose2d pose) {
@@ -344,7 +343,7 @@ public class SwerveDrive extends SubsystemBase {
       }
 
       if(minimum < 0.05 && poseEstimator.getEstimatedPosition().getTranslation().getDistance(getPose().getTranslation()) < 0.6) {
-        poseEstimator.addVisionMeasurement(Field.flipPose(robotPose.estimatedPose.toPose2d()), robotPose.timestampSeconds, VecBuilder.fill(distance/2, distance/2, 5));
+        poseEstimator.addVisionMeasurement(Field.flipPose(robotPose.estimatedPose.toPose2d()), robotPose.timestampSeconds, VecBuilder.fill(distance/2, distance/2, 500));
       }
     }
   }
@@ -353,7 +352,7 @@ public class SwerveDrive extends SubsystemBase {
   public void resetOdometry() {
     RobotContainer.navx.reset();
     offset = Math.toDegrees(Math.PI);
-    poseEstimator.resetPosition(getAngle(), getSwerveModulePositions(), new Pose2d(2, 4, new Rotation2d(Math.PI)));
+    poseEstimator.resetPosition(getAngle(), getSwerveModulePositions(), new Pose2d(this.getPose().getX(), this.getPose().getY(), new Rotation2d(Math.PI)));
   }
 
   public ChassisSpeeds getChassisSpeeds() {

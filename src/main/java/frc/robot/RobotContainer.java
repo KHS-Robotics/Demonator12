@@ -8,7 +8,6 @@ package frc.robot;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 import com.kauailabs.navx.frc.AHRS;
 import com.pathplanner.lib.PathConstraints;
@@ -18,6 +17,7 @@ import com.pathplanner.lib.auto.PIDConstants;
 import com.pathplanner.lib.auto.SwerveAutoBuilder;
 import com.pathplanner.lib.commands.PPSwerveControllerCommand;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.PowerDistribution;
@@ -68,12 +68,11 @@ public class RobotContainer {
     return instance;
   }
 
-  private static final SendableChooser<List<PathPlannerTrajectory>> autoChooser = new SendableChooser<>();
-  // private static final SendableChooser<Command> autoChooser = new SendableChooser<>();
-  public SwerveAutoBuilder swerveAutoBuilder;
+  private static final SendableChooser<AutoRoutine> autoChooser = new SendableChooser<>();
+  public static SwerveAutoBuilder swerveAutoBuilder;
 
   /** Gets the selected autonomous command. */
-  public List<PathPlannerTrajectory> getAutoCommand() {
+  public AutoRoutine getAutoRoutine() {
     return autoChooser.getSelected();
   }
 
@@ -239,7 +238,7 @@ public class RobotContainer {
   /** Binds commands to the operator stick. */
   private void configureOperatorStickBindings() {
     Trigger highPos = new Trigger(() -> (operatorStick.highPos() && operatorBox.coneMode()));
-    highPos.onTrue(new ProxyCommand(() -> RobotContainer.arm.goToSetpointScore(Constants.HIGH_POS)));
+    highPos.onTrue(new ProxyCommand(() -> RobotContainer.arm.goToSetpointScoreFast(Constants.HIGH_POS)));
 
     Trigger midPos = new Trigger(() -> (operatorStick.midPos() && operatorBox.coneMode()));
     midPos.onTrue(new ProxyCommand(() -> RobotContainer.arm.goToSetpointScore(Constants.MID_POS)));
@@ -279,19 +278,13 @@ public class RobotContainer {
     Trigger wristScoreAngle = new Trigger(operatorStick::wristScoreAngle);
     wristScoreAngle.onTrue(new InstantCommand(() -> wrist.setAngleSetpoint(Rotation2d.fromDegrees(45))));
 
-    //Trigger wristDownOverride = new Trigger(operatorStick::wristDownOverride);
-    //wristDownOverride.onTrue(new WristGoToAngle(() -> wrist.getRelativeAngle().minus(Rotation2d.fromDegrees(10))));
-
-    //Trigger wristUpOverride = new Trigger(operatorStick::wristUpOverride);
-    //wristUpOverride.onTrue(new WristGoToAngle(() -> wrist.getRelativeAngle().plus(Rotation2d.fromDegrees(10))));
-
     Trigger moveArm = new Trigger(() -> Math.abs(operatorStick.getX()) > 0.05 || Math.abs(operatorStick.getY()) > 0.05);
     moveArm.onTrue(new ArmControlJoystick());
 
-    Trigger grip = new Trigger(() -> (/*operatorBox.coneMode() &&*/ operatorStick.closeClaw()));
+    Trigger grip = new Trigger(() -> (/*operatorBox.coneMode() &&*/ operatorStick.openClaw()));
     grip.onTrue(new SetGrabber(true).alongWith(new InstantCommand(() -> grabber.stopWaitingForCone())));
 
-    Trigger release = new Trigger(() -> (/*operatorBox.cubeMode() ||*/ operatorStick.openClaw()));
+    Trigger release = new Trigger(() -> (/*operatorBox.cubeMode() ||*/ operatorStick.closeClaw()));
     release.onTrue(new SetGrabber(false).alongWith(new InstantCommand(() -> grabber.stopWaitingForCone())));
 
     Trigger outtake = new Trigger(operatorStick::outtake);
@@ -307,6 +300,18 @@ public class RobotContainer {
 
     Trigger coneIn = new Trigger(() -> (grabber.waiting && grabber.getSensor() && operatorBox.coneMode()));
     coneIn.onTrue(new SetGrabber(false)/*.alongWith(new InstantCommand(() -> grabber.stopWaitingForCone()))*/);
+
+    Trigger singleSubstation = new Trigger(operatorStick::singleSubstation);
+    singleSubstation.onTrue(new ProxyCommand(() -> RobotContainer.arm.goToSetpoint(Constants.SINGLE_POS, Rotation2d.fromDegrees(35))));
+
+    Trigger autoWaitForCone = new Trigger(() -> (operatorStick.singleSubstation() || operatorStick.shelfPos() || operatorStick.lowPos()) && operatorBox.coneMode());
+    autoWaitForCone.onTrue(new InstantCommand(() -> RobotContainer.grabber.waitForCone()));
+
+    Trigger stopWaitingForCone = new Trigger(operatorBox::cubeMode);
+    stopWaitingForCone.onTrue(new InstantCommand(() -> RobotContainer.grabber.stopWaitingForCone()));
+
+    Trigger autoRetract = new Trigger(() -> operatorStick.openClaw() && arm.getTranslation().getNorm() > 0.75 && swerveDrive.getPose().getX() < 2.5);
+    autoRetract.onTrue(RobotContainer.arm.goToPivotLength(0.63, Constants.MIN_LENGTH).alongWith(new InstantCommand(() -> wrist.setAngleSetpoint(Rotation2d.fromDegrees(Math.toDegrees(0.63) + 80)))));
   }
 
   /**
@@ -325,12 +330,8 @@ public class RobotContainer {
       swerveDrive
     );
 
-    // autoChooser.setDefaultOption("Nothing", new PrintCommand("No auto!"));
-    // autoChooser.addOption("Place + Mobility (Cable Protector)", AutoRoutines.getPlace1MobilityCableProtector());
-    // autoChooser.addOption("Place + Mobility (Loading Station)", AutoRoutines.getPlace1MobilityLoadingStation());
-    // autoChooser.addOption("Place + Dock (Center)", AutoRoutines.getPlace1BalanceSequenceCenter());
-
-    autoChooser.setDefaultOption("Nothing", new ArrayList<PathPlannerTrajectory>());
+    // Do nothing routine
+    autoChooser.setDefaultOption("Nothing", new AutoRoutine(new ArrayList<PathPlannerTrajectory>()));
 
     // dynamically create the options using the PathPlanner paths under "src/main/deploy/pathplanner"
     File ppDirectory = Filesystem.getDeployDirectory().toPath().resolve("pathplanner").toFile();
@@ -338,9 +339,19 @@ public class RobotContainer {
       if (!file.isDirectory() && file.getName().endsWith(".path")) {
         // remove ".path" from the name for PathPlanner
         var pathName = file.getName().replace(".path", "");
-        autoChooser.addOption(pathName, PathPlanner.loadPathGroup(pathName, new PathConstraints(2, 3)));
+        autoChooser.addOption(pathName, new AutoRoutine(PathPlanner.loadPathGroup(pathName, new PathConstraints(2, 3))));
       }
     }
+
+    // "Manually written" autos
+    autoChooser.addOption("Manual Place + Mobility + Engage (center)", new AutoRoutine(
+      new CenterSwerveModules(false).andThen( // ensure calbirated
+      RobotContainer.arm.goToSetpointScore(Constants.HIGH_POS)).andThen( // place high
+      new SetGrabber(true)).andThen( // release
+      RobotContainer.arm.goToPivotLength(Math.toRadians(0), Constants.MIN_LENGTH).andThen(new InstantCommand(() -> wrist.setAngleSetpoint(Rotation2d.fromDegrees(80))))).andThen( // retract
+      new DriveOverThenBalanceSequence().deadlineWith(new ArmHoldSetpoint().alongWith(new WristHoldSetpoint()))), // go over + balance
+      new Pose2d(1.82, 3.30, Rotation2d.fromDegrees(180))
+    ));
 
     SmartDashboard.putData(autoChooser);
     SmartDashboard.putData("field", field);
@@ -361,13 +372,13 @@ public class RobotContainer {
         AutonomousEventMap.put("BalanceFacingAway", new BalanceSequence(0).deadlineWith(new ArmHoldSetpoint()));
         AutonomousEventMap.put("BalanceFacingDriver", new BalanceSequence(180).deadlineWith(new ArmHoldSetpoint()));
         AutonomousEventMap.put("BalanceFacingDriverReversed", new BalanceSequence(180, true).deadlineWith(new ArmHoldSetpoint()));
-        AutonomousEventMap.put("DriveOverThenBalance", new DriveOverThenBalanceSequence());
+        AutonomousEventMap.put("DriveOverThenBalance", new DriveOverThenBalanceSequence().deadlineWith(new ArmHoldSetpoint()));
         AutonomousEventMap.put("ScoreAngle", RobotContainer.arm.goToPivotLength(0.75, Constants.MIN_LENGTH).withTimeout(2));
         AutonomousEventMap.put("Release", new SetGrabber(true));
         AutonomousEventMap.put("Grab", new SetGrabber(false));
         AutonomousEventMap.put("Flat", RobotContainer.arm.goToPivotLength(Math.toRadians(0), Constants.MIN_LENGTH).andThen(
           new InstantCommand(() -> wrist.setAngleSetpoint(Rotation2d.fromDegrees(80)))));
-        AutonomousEventMap.put("Hold", new ArmHoldSetpoint());
+        AutonomousEventMap.put("Hold", new ArmHoldSetpoint().alongWith(new WristHoldSetpoint()));
         // AutonomousEventMap.put("Outtake", new InstantCommand(() -> RobotContainer.grabber.set(0.6)));
         // AutonomousEventMap.put("Intake", new InstantCommand(() -> RobotContainer.grabber.set(-0.45)));
     }

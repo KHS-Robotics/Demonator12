@@ -35,8 +35,8 @@ public class ArmControlLength extends CommandBase {
     RobotContainer.arm.resetPivotPID();
     RobotContainer.arm.resetExtendPID();
 
-    if (length.get() < Constants.MIN_LENGTH + 0.05) {
-      length = () -> Constants.MIN_LENGTH + 0.05;
+    if (length.get() < Constants.MIN_LENGTH) {
+      length = () -> Constants.MIN_LENGTH ;
     }
 
     RobotContainer.arm.armPivotSetpointRadians = RobotContainer.arm.getAngle().getRadians();

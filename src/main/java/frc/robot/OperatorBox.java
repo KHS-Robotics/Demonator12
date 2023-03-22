@@ -52,11 +52,11 @@ public class OperatorBox extends Joystick {
   }
 
   public boolean cubeMode() {
-    return (!this.getRawButton(5));
+    return (this.getRawButton(5));
   }
 
   public boolean coneMode() {
-    return (this.getRawButton(5));
+    return !(this.getRawButton(5));
   }
 
 }

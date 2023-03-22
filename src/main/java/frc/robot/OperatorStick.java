@@ -59,11 +59,11 @@ public class OperatorStick extends Joystick {
   }
 
   // stuff on the stick
-  public boolean openClaw() {
+  public boolean closeClaw() {
     return this.getRawButton(2);
   }
 
-  public boolean closeClaw() {
+  public boolean openClaw() {
     return this.getRawButton(1);
   }
 

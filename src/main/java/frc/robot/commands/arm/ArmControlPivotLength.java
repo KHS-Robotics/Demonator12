@@ -40,8 +40,8 @@ public class ArmControlPivotLength extends CommandBase {
   // Called repeatedly when this Command is scheduled to run
   @Override
   public void execute() {
-    RobotContainer.arm.setAngle(RobotContainer.arm.armPivotSetpointRadians);
-    RobotContainer.arm.setLength(RobotContainer.arm.armLengthSetpoint);
+    RobotContainer.arm.setAngle(angle);
+    RobotContainer.arm.setLength(length);
 
     SmartDashboard.putNumber("ArmLengthError", Math.abs(RobotContainer.arm.getLength() - length));
   }
