@@ -248,7 +248,6 @@ public class SwerveDrive extends SubsystemBase {
 
     Translation2d goal = new Translation2d(
         Field.fieldLayout.getTagPose(apriltag).get().getTranslation().getX() + Field.DIST_FROM_NODE_X_METERS,
-        
     nodeTrans.getY());
     if(getPose().getY() > goal.getY()) {
       heading = Rotation2d.fromDegrees(-90);
@@ -265,6 +264,47 @@ public class SwerveDrive extends SubsystemBase {
         new PathPoint(goal, Rotation2d.fromDegrees(180), Rotation2d.fromDegrees(180), 0)); // position, heading(direction of
                                                                                       // travel), holonomic rotation
     //return followTrajectoryCommand(trajToGoal, false);
+    return RobotContainer.swerveAutoBuilder.followPath(trajToGoal);
+  }
+
+  public Command goToClosestNode() {
+    Pose2d pose = getPose();
+    double[] nodePositions = Field.getNodeYArray();
+    ChassisSpeeds currentSpeeds = getChassisSpeeds();
+    double linearVel =
+        Math.sqrt(
+            (currentSpeeds.vxMetersPerSecond * currentSpeeds.vxMetersPerSecond)
+                + (currentSpeeds.vyMetersPerSecond * currentSpeeds.vyMetersPerSecond));
+    Rotation2d heading;
+    
+
+    //finds the closest node by y coordinate
+    double minimumDist = 100;
+    double desiredY = 1;
+    for(double y : nodePositions) {
+      if(Math.abs(pose.getY() - y) < minimumDist) {
+        minimumDist = Math.abs(pose.getY() - y);
+        desiredY = y;
+      }
+    }
+
+    
+    Translation2d goal = new Translation2d(Field.PLACEMENTX, desiredY);
+
+    //finds correct heading for robot to start path (left or right)
+    if(getPose().getY() > goal.getY()) {
+      heading = Rotation2d.fromDegrees(-90);
+     } else {
+      heading = Rotation2d.fromDegrees(90);
+     }
+
+    PathPoint initialPoint = new PathPoint(
+      getPose().getTranslation(), heading, getPose().getRotation(), linearVel);
+    PathPlannerTrajectory trajToGoal = PathPlanner.generatePath(
+        new PathConstraints(1, 1.5),
+        initialPoint,
+        new PathPoint(goal, Rotation2d.fromDegrees(180), Rotation2d.fromDegrees(180), 0)); // position, heading(direction of
+                                                                                      // travel), holonomic rotation
     return RobotContainer.swerveAutoBuilder.followPath(trajToGoal);
   }
 

@@ -110,6 +110,9 @@ public class Robot extends TimedRobot {
     // start the auto, if there is one
     if (this.autonmousRoutine != null) {
       this.autonmousRoutine.schedule();
+      SmartDashboard.putBoolean("AutoRequiresSwerve", this.autonmousRoutine.hasRequirement(RobotContainer.swerveDrive));
+      SmartDashboard.putBoolean("AutoRequiresArm", this.autonmousRoutine.hasRequirement(RobotContainer.arm));
+      SmartDashboard.putBoolean("AutoRequiresWrist", this.autonmousRoutine.hasRequirement(RobotContainer.wrist));
     }
   }
 
