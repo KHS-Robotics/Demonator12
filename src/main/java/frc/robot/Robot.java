@@ -102,7 +102,8 @@ public class Robot extends TimedRobot {
     if (auto.isPathPlannerRoutine() && !auto.pathplannerRoutine.isEmpty()) {
       this.autonmousRoutine = RobotContainer.swerveAutoBuilder.fullAuto(auto.pathplannerRoutine);
     } else {
-      RobotContainer.swerveDrive.setPose(auto.startingPose);
+      var startingPose = auto.startingPose != null ? auto.startingPose : RobotContainer.swerveDrive.getPose();
+      RobotContainer.swerveDrive.setPose(startingPose);
       this.autonmousRoutine = auto.cmdRoutine;
     }
 
