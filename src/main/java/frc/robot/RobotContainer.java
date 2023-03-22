@@ -19,6 +19,8 @@ import com.pathplanner.lib.commands.PPSwerveControllerCommand;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.RobotState;
@@ -31,6 +33,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.ProxyCommand;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.arm.ArmControlJoystick;
@@ -238,7 +241,7 @@ public class RobotContainer {
   /** Binds commands to the operator stick. */
   private void configureOperatorStickBindings() {
     Trigger highPos = new Trigger(() -> (operatorStick.highPos() && operatorBox.coneMode()));
-    highPos.onTrue(new ProxyCommand(() -> RobotContainer.arm.goToSetpointScoreFast(Constants.HIGH_POS)));
+    highPos.onTrue(new ProxyCommand(() -> RobotContainer.arm.goToSetpointScoreFast(Constants.HIGH_POS.plus(new Translation3d(0, 0, Units.inchesToMeters(3))))));
 
     Trigger midPos = new Trigger(() -> (operatorStick.midPos() && operatorBox.coneMode()));
     midPos.onTrue(new ProxyCommand(() -> RobotContainer.arm.goToSetpointScore(Constants.MID_POS)));
@@ -260,8 +263,8 @@ public class RobotContainer {
     armFlat.onTrue(RobotContainer.arm.goToPivotLength(Math.toRadians(0), Constants.MIN_LENGTH).andThen(
         new InstantCommand(() -> wrist.setAngleSetpoint(Rotation2d.fromDegrees(80)))));
 
-    Trigger scoreAngle = new Trigger(operatorStick::scoreAngle);
-    scoreAngle.onTrue(RobotContainer.arm.goToPivotLength(Math.toRadians(45), Constants.MIN_LENGTH).alongWith(new InstantCommand(() -> RobotContainer.wrist.setAngleSetpoint(Rotation2d.fromDegrees(-40)))));
+    Trigger stow = new Trigger(operatorStick::scoreAngle);
+    stow.onTrue(RobotContainer.arm.goToPivotLength(0.63, Constants.MIN_LENGTH).alongWith(new InstantCommand(() -> wrist.setAngleSetpoint(Rotation2d.fromDegrees(Math.toDegrees(0.63) + 80)))));
 
     Trigger shelfPos = new Trigger(operatorStick::shelfPos);
     shelfPos.onTrue(RobotContainer.arm.goToSetpoint(Constants.SHELF_POS, new Rotation2d()));
@@ -292,7 +295,7 @@ public class RobotContainer {
     outtake.onFalse(new InstantCommand(() -> grabber.set(0)));
 
     Trigger intake = new Trigger(operatorStick::intake);
-    intake.onTrue(new InstantCommand(() -> grabber.set(-0.2)));
+    intake.onTrue(new InstantCommand(() -> grabber.set(-0.5)));
     intake.onFalse(new InstantCommand(() -> grabber.set(0)));
 
     Trigger waitForCone = new Trigger(operatorStick::waitForCone);
@@ -311,7 +314,7 @@ public class RobotContainer {
     stopWaitingForCone.onTrue(new InstantCommand(() -> RobotContainer.grabber.stopWaitingForCone()));
 
     Trigger autoRetract = new Trigger(() -> operatorStick.openClaw() && arm.getTranslation().getNorm() > 0.75 && swerveDrive.getPose().getX() < 2.5);
-    autoRetract.onTrue(RobotContainer.arm.goToPivotLength(0.63, Constants.MIN_LENGTH).alongWith(new InstantCommand(() -> wrist.setAngleSetpoint(Rotation2d.fromDegrees(Math.toDegrees(0.63) + 80)))));
+    autoRetract.onTrue(new WaitCommand(0.2).andThen(RobotContainer.arm.goToPivotLength(0.63, Constants.MIN_LENGTH).alongWith(new InstantCommand(() -> wrist.setAngleSetpoint(Rotation2d.fromDegrees(Math.toDegrees(0.63) + 80))))));
   }
 
   /**

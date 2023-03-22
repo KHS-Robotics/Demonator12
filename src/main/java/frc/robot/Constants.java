@@ -57,7 +57,7 @@ public class Constants {
 
   public static final double ARM_P = 8;
   public static final double ARM_I = 0.5;
-  public static final double ARM_D = 0.01;
+  public static final double ARM_D = 0.75;
   public static final double ARM_KS = 0.26602;
   public static final double ARM_KG = 0.75656966792;
   public static final double ARM_KV = 4.5387;
@@ -67,7 +67,7 @@ public class Constants {
 
   public static final double EXTEND_P = 4;
   public static final double EXTEND_I = 0.6;
-  public static final double EXTEND_D = 0.0;
+  public static final double EXTEND_D = 0.3;
   public static final double EXTEND_KS = 0.22841;
   public static final double EXTEND_KV = 5.3504;
   public static final double EXTEND_KA = 0.33319;

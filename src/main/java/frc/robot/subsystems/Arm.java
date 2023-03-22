@@ -122,8 +122,13 @@ public class Arm extends SubsystemBase {
     lengthSetpoint = profile.calculate(kDt);
     SmartDashboard.putNumber("ExtendSetpointPosition", lengthSetpoint.position);
     // setLengthV(lengthSetpoint.velocity);
+    if(getLength() > 0.05 + Constants.MIN_LENGTH) {
     extendMotor.setVoltage(
         calcLengthV(lengthSetpoint.velocity) + extendPID.calculate(getLength(), lengthSetpoint.position));
+    } else {
+      extendMotor.setVoltage(MathUtil.clamp(
+        calcLengthV(lengthSetpoint.velocity) + extendPID.calculate(getLength(), lengthSetpoint.position), 0, 12));
+    }
   }
 
   // gets the arm extension

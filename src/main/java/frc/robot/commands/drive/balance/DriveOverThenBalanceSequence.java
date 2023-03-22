@@ -22,7 +22,7 @@ public class DriveOverThenBalanceSequence extends SequentialCommandGroup {
             if (inter) CommandScheduler.getInstance().cancelAll();
           }).withTimeout(2.5),
           new PrintCommand("Now driving forward"),
-          new DriveForward(180, true, 1).withTimeout(2.7),
+          new DriveForward(180, true, 1).withTimeout(2.5),
           new PrintCommand("Now starting balance seq"),
           new BalanceSequence(180)
           //RobotContainer.arm.goToPivotLength(Math.toRadians(0), Constants.MIN_LENGTH).finallyDo((interrupted) -> new ArmHoldSetpoint()).andThen( new InstantCommand(() -> RobotContainer.wrist.setAngleSetpoint(Rotation2d.fromDegrees(80))))

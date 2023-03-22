@@ -49,7 +49,7 @@ public class ArmControlPivotLength extends CommandBase {
   // Make this return true when this Command no longer needs to run execute()
   @Override
   public boolean isFinished() {
-    return (Math.abs(RobotContainer.arm.getAngle().getRadians() - angle) < Math.toRadians(3)) && (Math.abs(RobotContainer.arm.getLength() - length) < 0.045);
+    return (Math.abs(RobotContainer.arm.getAngle().getRadians() - angle) < Math.toRadians(3)) && (Math.abs(RobotContainer.arm.getLength() - length) < 0.03);
         //|| !RobotContainer.arm.isLegalHeight(RobotContainer.arm.getTranslation());
   }
 
