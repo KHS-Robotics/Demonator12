@@ -350,7 +350,7 @@ public class RobotContainer {
     autoChooser.addOption("Manual Place + Mobility + Engage (center)", new AutoRoutine(
       new CenterSwerveModules(false).andThen( // ensure calbirated
       RobotContainer.arm.goToSetpointScore(Constants.HIGH_POS)).andThen( // place high
-      new SetGrabber(true)).andThen( // release
+      new SetGrabber(true).andThen(new WaitCommand(0.3))).andThen( // release, then very briefly wait to drop game piece
       RobotContainer.arm.goToPivotLength(Math.toRadians(0), Constants.MIN_LENGTH).andThen(new InstantCommand(() -> wrist.setAngleSetpoint(Rotation2d.fromDegrees(80))))).andThen( // retract
       new DriveOverThenBalanceSequence().deadlineWith(new ArmHoldSetpoint().alongWith(new WristHoldSetpoint()))), // go over + balance
       new Pose2d(1.82, 3.30, Rotation2d.fromDegrees(180))
@@ -377,7 +377,7 @@ public class RobotContainer {
         AutonomousEventMap.put("BalanceFacingDriverReversed", new BalanceSequence(180, true));
         AutonomousEventMap.put("DriveOverThenBalance", new DriveOverThenBalanceSequence());
         AutonomousEventMap.put("ScoreAngle", RobotContainer.arm.goToPivotLength(0.75, Constants.MIN_LENGTH).asProxy().withTimeout(2));
-        AutonomousEventMap.put("Release", new SetGrabber(true));
+        AutonomousEventMap.put("Release", new SetGrabber(true).andThen(new WaitCommand(0.3)));
         AutonomousEventMap.put("Grab", new SetGrabber(false));
         AutonomousEventMap.put("Flat", RobotContainer.arm.goToPivotLength(Math.toRadians(0), Constants.MIN_LENGTH).asProxy().andThen(
           new InstantCommand(() -> wrist.setAngleSetpoint(Rotation2d.fromDegrees(80)))));
