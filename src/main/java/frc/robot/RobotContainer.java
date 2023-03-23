@@ -256,15 +256,15 @@ public class RobotContainer {
     lowPos.onTrue(new ProxyCommand(() -> RobotContainer.arm.goToSetpoint(Constants.FLOOR_POS, Rotation2d.fromDegrees(0))));
 
     Trigger home = new Trigger(operatorStick::home);
-    home.onTrue(RobotContainer.arm.goToPivotLength(Math.toRadians(60), Constants.MIN_LENGTH).andThen(
+    home.onTrue(RobotContainer.arm.goToPivotLength(Math.toRadians(60), Constants.MIN_LENGTH).asProxy().andThen(
       new InstantCommand(() -> wrist.setAngleSetpoint(Rotation2d.fromDegrees(150)))));
 
     Trigger armFlat = new Trigger(operatorStick::stow);
-    armFlat.onTrue(RobotContainer.arm.goToPivotLength(Math.toRadians(0), Constants.MIN_LENGTH).andThen(
+    armFlat.onTrue(RobotContainer.arm.goToPivotLength(Math.toRadians(0), Constants.MIN_LENGTH).asProxy().andThen(
         new InstantCommand(() -> wrist.setAngleSetpoint(Rotation2d.fromDegrees(80)))));
 
     Trigger stow = new Trigger(operatorStick::scoreAngle);
-    stow.onTrue(RobotContainer.arm.goToPivotLength(0.63, Constants.MIN_LENGTH).alongWith(new InstantCommand(() -> wrist.setAngleSetpoint(Rotation2d.fromDegrees(Math.toDegrees(0.63) + 80)))));
+    stow.onTrue(RobotContainer.arm.goToPivotLength(0.63, Constants.MIN_LENGTH).asProxy().alongWith(new InstantCommand(() -> wrist.setAngleSetpoint(Rotation2d.fromDegrees(Math.toDegrees(0.63) + 80)))));
 
     Trigger shelfPos = new Trigger(operatorStick::shelfPos);
     shelfPos.onTrue(RobotContainer.arm.goToSetpoint(Constants.SHELF_POS, new Rotation2d()));
@@ -314,7 +314,7 @@ public class RobotContainer {
     stopWaitingForCone.onTrue(new InstantCommand(() -> RobotContainer.grabber.stopWaitingForCone()));
 
     Trigger autoRetract = new Trigger(() -> operatorStick.openClaw() && arm.getTranslation().getNorm() > 0.75 && swerveDrive.getPose().getX() < 2.5);
-    autoRetract.onTrue(new WaitCommand(0.2).andThen(RobotContainer.arm.goToPivotLength(0.63, Constants.MIN_LENGTH).alongWith(new InstantCommand(() -> wrist.setAngleSetpoint(Rotation2d.fromDegrees(Math.toDegrees(0.63) + 80))))));
+    autoRetract.onTrue(new WaitCommand(0.2).andThen((RobotContainer.arm.goToPivotLength(0.63, Constants.MIN_LENGTH).asProxy()).alongWith(new InstantCommand(() -> wrist.setAngleSetpoint(Rotation2d.fromDegrees(Math.toDegrees(0.63) + 80))))));
   }
 
   /**

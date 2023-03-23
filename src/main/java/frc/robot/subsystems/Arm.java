@@ -389,15 +389,7 @@ public class Arm extends SubsystemBase {
   }
 
   public Command goToPivotLength(double pivot, double length) {
-    var target = new Translation3d(length, new Rotation3d(0, -pivot, 0)).plus(Constants.ARMOFFSET);
-
-    var command = new SequentialCommandGroup();
-    SmartDashboard.putBoolean("isFurtherTest", isFurther(target));
-    if (!isFurther(target)) {
-      command = new SequentialCommandGroup(new ArmControlLength(length).asProxy(), new ArmControlPivot(pivot).asProxy());
-    } else {
-      command = new SequentialCommandGroup(new ArmControlPivot(pivot).asProxy(), new ArmControlLength(length).asProxy());
-    }
+      Command command = new SequentialCommandGroup(new ArmControlLength(length).asProxy(), new ArmControlPivot(pivot).asProxy());
     return command;
   }
 
