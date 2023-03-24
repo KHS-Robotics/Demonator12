@@ -43,6 +43,7 @@ import frc.robot.commands.drive.DriveSwerveWithXbox;
 import frc.robot.commands.drive.HoldAngleWithXbox;
 import frc.robot.commands.drive.balance.BalanceSequence;
 import frc.robot.commands.drive.balance.DriveOverThenBalanceSequence;
+import frc.robot.commands.grabber.AutoPullIn;
 import frc.robot.commands.grabber.SetGrabber;
 import frc.robot.commands.wrist.WristDeltaSetpoint;
 import frc.robot.commands.wrist.WristHoldSetpoint;
@@ -158,12 +159,9 @@ public class RobotContainer {
     Trigger autoCalibrateTeleop = new Trigger(
         () -> (!swerveDrive.isCalibrated && RobotState.isTeleop() && RobotState.isEnabled()));
     autoCalibrateTeleop.onTrue(new CenterSwerveModules(true));
-
-    // Trigger resetWristEncoderTop = new Trigger(() -> (wrist.getTopTalonTach()));
-    // resetWristEncoderTop.onTrue(new InstantCommand(() -> wrist.zeroWrist(Math.PI/2.0), wrist));
-
-    // Trigger resetWristEncoderBottom = new Trigger(() -> (wrist.getTopTalonTach()));
-    // resetWristEncoderBottom.onTrue(new InstantCommand(() -> wrist.zeroWrist(-Math.PI/2.0), wrist));
+    
+    Trigger autoPullIn = new Trigger(grabber::getSensor);
+    autoPullIn.onTrue(new AutoPullIn());
   }
 
   /** Binds commands to xbox controller buttons. */
@@ -291,7 +289,7 @@ public class RobotContainer {
     release.onTrue(new SetGrabber(false).alongWith(new InstantCommand(() -> grabber.stopWaitingForCone())));
 
     Trigger outtake = new Trigger(operatorStick::outtake);
-    outtake.onTrue(new InstantCommand(() -> grabber.set(1)));
+    outtake.onTrue(new InstantCommand(() -> grabber.set(0.3)));
     outtake.onFalse(new InstantCommand(() -> grabber.set(0)));
 
     Trigger intake = new Trigger(operatorStick::intake);

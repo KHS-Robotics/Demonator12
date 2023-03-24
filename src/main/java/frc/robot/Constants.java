@@ -26,14 +26,14 @@ public class Constants {
   public static final Translation3d ARMOFFSET = new Translation3d(0.0, 0.0, Units.inchesToMeters(20));
   public static final double MIN_LENGTH = Units.inchesToMeters(24.0);
   public static final double GRIPPERLENGTH = Units.inchesToMeters(16);
-  public static final double GRIPPERHOLDDISTANCE = Units.inchesToMeters(11);
+  public static final double GRIPPERHOLDDISTANCE = Units.inchesToMeters(10);
 
-  public static final Translation3d MID_POS = new Translation3d(Units.inchesToMeters(41.7), Units.inchesToMeters(0),
-      Units.inchesToMeters(46));
+  public static final Translation3d MID_POS = new Translation3d(Units.inchesToMeters(40.7), Units.inchesToMeters(0),
+      Units.inchesToMeters(43));
   public static final Translation3d HIGH_POS = new Translation3d(Units.inchesToMeters(56.73), Units.inchesToMeters(0),
       Units.inchesToMeters(58));
   public static final Translation3d SHELF_POS = new Translation3d(Units.inchesToMeters(40), 0, Units.inchesToMeters(42));
-  public static final Translation3d FLOOR_POS = new Translation3d(Units.inchesToMeters(30), 0, Units.inchesToMeters(9));
+  public static final Translation3d FLOOR_POS = new Translation3d(Units.inchesToMeters(33), 0, Units.inchesToMeters(6));
   public static final Translation3d SINGLE_POS = new Translation3d(Units.inchesToMeters(32), 0, Units.inchesToMeters(32));
 
   public static final double SENS = 0.5;
@@ -65,8 +65,8 @@ public class Constants {
 
   public static final double ARM_START_ANGLE = Math.toRadians(35);
 
-  public static final double EXTEND_P = 4;
-  public static final double EXTEND_I = 0.6;
+  public static final double EXTEND_P = 7;
+  public static final double EXTEND_I = 2;
   public static final double EXTEND_D = 0.3;
   public static final double EXTEND_KS = 0.22841;
   public static final double EXTEND_KV = 5.3504;

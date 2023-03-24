@@ -127,7 +127,7 @@ public class Arm extends SubsystemBase {
         calcLengthV(lengthSetpoint.velocity) + extendPID.calculate(getLength(), lengthSetpoint.position));
     } else {
       extendMotor.setVoltage(MathUtil.clamp(
-        calcLengthV(lengthSetpoint.velocity) + extendPID.calculate(getLength(), lengthSetpoint.position), 0, 12));
+        calcLengthV(lengthSetpoint.velocity) + extendPID.calculate(getLength(), lengthSetpoint.position), -2, 12));
     }
   }
 

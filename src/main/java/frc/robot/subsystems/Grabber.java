@@ -6,6 +6,8 @@ import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.SparkMaxLimitSwitch.Type;
 
+import edu.wpi.first.math.MathUsageId;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
@@ -24,7 +26,7 @@ public class Grabber extends SubsystemBase {
     intakeMotor = new CANSparkMax(RobotMap.GRABBER_INTAKE, MotorType.kBrushless);
     intakeMotor.setIdleMode(IdleMode.kBrake);
     intakeSensor = intakeMotor.getForwardLimitSwitch(Type.kNormallyClosed);
-    intakeSensor.enableLimitSwitch(true);
+    intakeSensor.enableLimitSwitch(false);
 
     grab = new Solenoid(PneumaticsModuleType.REVPH, RobotMap.GRABBER_SOLENOID_FORWARD);
     grab.setPulseDuration(0.5);
@@ -35,7 +37,11 @@ public class Grabber extends SubsystemBase {
   }
 
   public void set(double speed) {
-    intakeMotor.setVoltage(-12 * speed);
+    if(getSensor()) {
+      intakeMotor.setVoltage(MathUtil.clamp(-12 * speed, -12, 1));
+    } else {
+      intakeMotor.setVoltage(-12 * speed);
+    }
   }
 
   public void stopMotor() {
@@ -68,6 +74,7 @@ public class Grabber extends SubsystemBase {
   public boolean getSensor() {
     return intakeSensor.isPressed();
   }
+  
   @Override
   public void periodic() {
     SmartDashboard.putBoolean("waiting", waiting);
