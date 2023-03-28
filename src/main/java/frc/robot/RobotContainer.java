@@ -122,8 +122,8 @@ public class RobotContainer {
    */
   private RobotContainer() {
     this.configureSubsystemDefaultCommands();
-    this.configureBindings();
     this.configureAutonmousChooser();
+    this.configureBindings();
   }
 
   /** Configures the subsystem's default commands. */
@@ -186,12 +186,8 @@ public class RobotContainer {
       SwerveDrive.kMaxSpeed = 3.5;
     }));
 
-    // Trigger placeHigh = driverController.x();
-    // placeHigh.onTrue(swerveDrive.goToNode(7, 0).andThen(new
-    // ArmControlSetpoint(Field.getNodeCoordinatesFieldRelative(7, 0))));
-
-    //Trigger wristUp = driverController.x();
-    //wristUp.onTrue(new WristGoToAngle(() -> new Rotation2d()));
+    Trigger goToClosestNode = driverController.x();
+    goToClosestNode.onTrue(new ProxyCommand(() -> swerveDrive.goToClosestNode()));
 
     //Trigger wristDown = driverController.b();
     //wristDown.onTrue(new WristGoToAngle(() -> new Rotation2d(-Math.PI / 4)));
