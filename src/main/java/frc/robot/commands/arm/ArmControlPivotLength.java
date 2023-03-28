@@ -56,7 +56,7 @@ public class ArmControlPivotLength extends CommandBase {
   // Called once after isFinished returns true
   @Override
   public void end(boolean interrupted) {
-    RobotContainer.arm.armLengthSetpoint = RobotContainer.arm.getLength();
-    RobotContainer.arm.armPivotSetpointRadians = RobotContainer.arm.getAngle().getRadians();
+    RobotContainer.arm.armLengthSetpoint = length;
+    RobotContainer.arm.armPivotSetpointRadians = angle;
   }
 }

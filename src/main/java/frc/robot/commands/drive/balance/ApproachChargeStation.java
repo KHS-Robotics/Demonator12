@@ -14,7 +14,7 @@ import frc.robot.RobotContainer;
 public class ApproachChargeStation extends CommandBase {
   private Timer timer = new Timer();
   private static final double AbsoluteTargetPitchToEndCommand = 10;
-  private static final double ApporachSpeedMetersPerSecond = 1.2;
+  private static final double ApporachSpeedMetersPerSecond = 1.5;
   private double yaw;
   private boolean reverse;
 

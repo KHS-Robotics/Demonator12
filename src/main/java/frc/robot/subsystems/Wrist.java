@@ -34,7 +34,7 @@ public class Wrist extends SubsystemBase {
 
   // wrist acts as an "arm" in code
   private final ArmFeedforward wristFeedForward;
-  private final Constraints wristConstraints = new TrapezoidProfile.Constraints(3, 6);
+  private final Constraints wristConstraints = new TrapezoidProfile.Constraints(1.5, 10);
   public TrapezoidProfile.State wristSetpoint = new TrapezoidProfile.State();
   private static final double kDt = 0.02;
   private static final double OFFSET = 1.98;
@@ -85,6 +85,7 @@ public class Wrist extends SubsystemBase {
     // wristSetpoint.velocity));
     // SmartDashboard.putNumber("wristSetpointVel", wristSetpoint.velocity);
     // SmartDashboard.putNumber("WristError", wristPID.getVelocityError());
+    SmartDashboard.putNumber("wristSetpoint.position", wristSetpoint.position);
     pivotMotor.setVoltage(wristFeedForward.calculate(getAbsoluteAngle().getRadians(), wristSetpoint.velocity)
         + wristPID.calculate(getRelativeAngle().getRadians(), wristSetpoint.position));
   }

@@ -55,7 +55,7 @@ public class ArmControlLength extends CommandBase {
   // Make this return true when this Command no longer needs to run execute()
   @Override
   public boolean isFinished() {
-      return (Math.abs(RobotContainer.arm.getLength() - length.get()) < 0.04);
+      return (Math.abs(RobotContainer.arm.getLength() - length.get()) < 0.05);
         //|| !RobotContainer.arm.isLegalExtension(RobotContainer.arm.getTranslation());
   }
 

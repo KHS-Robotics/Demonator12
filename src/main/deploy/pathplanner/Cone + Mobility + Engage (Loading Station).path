@@ -19,8 +19,7 @@
         "names": [
           "CenterSwerveModules",
           "PlaceHigh",
-          "Release",
-          "Flat"
+          "Release"
         ],
         "executionBehavior": "sequential",
         "waitBehavior": "after",
@@ -52,5 +51,12 @@
       }
     }
   ],
-  "markers": []
+  "markers": [
+    {
+      "position": 0.029090909090909504,
+      "names": [
+        "Flat"
+      ]
+    }
+  ]
 }

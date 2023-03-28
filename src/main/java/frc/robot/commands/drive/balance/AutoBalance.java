@@ -12,7 +12,7 @@ public class AutoBalance extends CommandBase {
 
   private boolean reverse;
   private double slopeTolerance = 6.7;
-  private final double balanceSpeedMetersPerSecond = 0.2, levelPitch = 5, elapsedTimeToConsiderLevelInSeconds = 1;
+  private final double balanceSpeedMetersPerSecond = 0.15, levelPitch = 5, elapsedTimeToConsiderLevelInSeconds = 1;
   private double yaw, slope, currentPitch, previousPitch;
   private static final double dt = 0.02;
 
@@ -51,7 +51,7 @@ public class AutoBalance extends CommandBase {
       var xSpeed = (reverse ? -1 : 1) * Math.signum(currentPitch) * balanceSpeedMetersPerSecond;
       RobotContainer.swerveDrive.holdAngleWhileDriving(xSpeed, 0, yaw, false);
       backUpTimer.reset();
-    } else if(!backUpTimer.hasElapsed(0.1)) {
+    } else if(!backUpTimer.hasElapsed(0.15)) {
       var xSpeed = (reverse ? -1 : 1) * Math.signum(currentPitch) * balanceSpeedMetersPerSecond;
       RobotContainer.swerveDrive.holdAngleWhileDriving(- xSpeed / 2.0, 0, yaw, false);
     } else {

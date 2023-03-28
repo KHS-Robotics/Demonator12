@@ -239,7 +239,7 @@ public class RobotContainer {
   /** Binds commands to the operator stick. */
   private void configureOperatorStickBindings() {
     Trigger highPos = new Trigger(() -> (operatorStick.highPos() && operatorBox.coneMode()));
-    highPos.onTrue(new ProxyCommand(() -> RobotContainer.arm.goToSetpointScoreFast(Constants.HIGH_POS.plus(new Translation3d(0, 0, Units.inchesToMeters(3))))));
+    highPos.onTrue(new ProxyCommand(() -> RobotContainer.arm.goToSetpointScore(Constants.HIGH_POS)));
 
     Trigger midPos = new Trigger(() -> (operatorStick.midPos() && operatorBox.coneMode()));
     midPos.onTrue(new ProxyCommand(() -> RobotContainer.arm.goToSetpointScore(Constants.MID_POS)));
@@ -354,6 +354,8 @@ public class RobotContainer {
       new Pose2d(1.82, 3.30, Rotation2d.fromDegrees(180))
     ));
 
+    autoChooser.addOption("balanceNoArm", new AutoRoutine(new BalanceSequence(0), new Pose2d(1.82, 3.30, Rotation2d.fromDegrees(0))));
+
     SmartDashboard.putData(autoChooser);
     SmartDashboard.putData("field", field);
 
@@ -366,7 +368,7 @@ public class RobotContainer {
   private static HashMap<String, Command> getAutonomousEventMap() {
     if (AutonomousEventMap.isEmpty()) {
         AutonomousEventMap.put("CenterSwerveModules", new CenterSwerveModules(false)); 
-        AutonomousEventMap.put("PlaceHigh", RobotContainer.arm.goToSetpointScore(Constants.HIGH_POS)); 
+        AutonomousEventMap.put("PlaceHigh", RobotContainer.arm.goToSetpointScore(Constants.HIGH_POS).withTimeout(3.5)); 
         AutonomousEventMap.put("PlaceHighFast", RobotContainer.arm.goToSetpointScoreFast(Constants.HIGH_POS)); 
         AutonomousEventMap.put("PlaceMid", new PrintCommand("placeholder for place mid"));
         AutonomousEventMap.put("PlaceHybrid", new PrintCommand("placeholder for place hybrid"));

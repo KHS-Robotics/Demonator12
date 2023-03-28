@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.RobotContainer;
@@ -17,6 +18,8 @@ public class LEDStrip extends SubsystemBase {
   int numberSections;
   int counter;
   int ticksPerSecond = 50;
+  //int stackercount = 0;
+  //Color[] stacker = new Color[Constants.LED_LENGTH];
 
   public LEDStrip() {
     t = new Thread(() -> {
@@ -79,21 +82,31 @@ public class LEDStrip extends SubsystemBase {
   public void runBlue() {
     ticksPerSecond = 20;
     for (int i = 0; i < Constants.LED_LENGTH; i++) {
-      double alternate = (255 / 2) * ((-Math.cos((2 * Math.PI * 2 * i) / Constants.LED_LENGTH)) + 1);
+      double alternate = (255 / 1) * ((-Math.cos((2 * Math.PI * 2 * i) / Constants.LED_LENGTH)) + 1);
       buffer.setRGB((i + counter) % Constants.LED_LENGTH, 0, (int) alternate, 255);
     }
   }
 
+  /*
+  public void blueStack() {
+    ticksPerSecond = 10;
+    
+    for (int i = 0; i < Constants.LED_LENGTH; i++) {
+      stacker[i % Constants.LED_LENGTH] = Color.kBlue;
+    }
+  }
+  */
+
   public void runRed() {
     ticksPerSecond = 20;
     for (int i = 0; i < Constants.LED_LENGTH; i++) {
-      double alternate = (40 / 2) * ((-Math.cos((2 * Math.PI * 2 * i) / Constants.LED_LENGTH)) + 1);
-      buffer.setRGB((i + counter) % Constants.LED_LENGTH, 255, (int) alternate, 0);
+      double alternate = (25 / 2) * ((-Math.cos((2 * Math.PI * 2 * i) / Constants.LED_LENGTH)) + 1);
+      buffer.setRGB((i + counter) % Constants.LED_LENGTH, 255, 0, (int) alternate);
     }
   }
 
   public void runRainbow() {
-    ticksPerSecond = 20;
+    ticksPerSecond = 50;
     for (int i = 0; i < Constants.LED_LENGTH; i++) {
       buffer.setHSV((i + counter) % Constants.LED_LENGTH, (int) (((double) i / Constants.LED_LENGTH) * 180), 255, 255);
     }

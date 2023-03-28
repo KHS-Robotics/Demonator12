@@ -101,7 +101,7 @@ public class Arm extends SubsystemBase {
     SmartDashboard.putBoolean("isLegalH", isLegalHeight(translation));
     SmartDashboard.putBoolean("isLegalE", isLegalExtension(translation));
 
-    SmartDashboard.putNumber("ExtendArmSetpoint", armLengthSetpoint);
+    SmartDashboard.putNumber("ExtendArmSetpoint", lengthSetpoint.position);
     SmartDashboard.putNumber("ExtendArmPosition", getLength());
   }
 
@@ -122,13 +122,8 @@ public class Arm extends SubsystemBase {
     lengthSetpoint = profile.calculate(kDt);
     SmartDashboard.putNumber("ExtendSetpointPosition", lengthSetpoint.position);
     // setLengthV(lengthSetpoint.velocity);
-    if(getLength() > 0.05 + Constants.MIN_LENGTH) {
     extendMotor.setVoltage(
         calcLengthV(lengthSetpoint.velocity) + extendPID.calculate(getLength(), lengthSetpoint.position));
-    } else {
-      extendMotor.setVoltage(MathUtil.clamp(
-        calcLengthV(lengthSetpoint.velocity) + extendPID.calculate(getLength(), lengthSetpoint.position), -2, 12));
-    }
   }
 
   // gets the arm extension

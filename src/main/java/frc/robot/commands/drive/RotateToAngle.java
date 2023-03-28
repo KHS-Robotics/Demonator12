@@ -20,7 +20,7 @@ public class RotateToAngle extends CommandBase {
    * Creates a new RotateToAngle.
    */
   public RotateToAngle(double angle) {
-    this(angle, 1);
+    this(angle, 5);
   }
 
   public RotateToAngle(double angle, double error) {

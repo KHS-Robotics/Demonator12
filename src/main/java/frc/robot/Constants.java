@@ -65,8 +65,8 @@ public class Constants {
 
   public static final double ARM_START_ANGLE = Math.toRadians(35);
 
-  public static final double EXTEND_P = 7;
-  public static final double EXTEND_I = 2;
+  public static final double EXTEND_P = 7.5;
+  public static final double EXTEND_I = 2.2;
   public static final double EXTEND_D = 0.3;
   public static final double EXTEND_KS = 0.22841;
   public static final double EXTEND_KV = 5.3504;
@@ -74,7 +74,7 @@ public class Constants {
   public static final double EXTEND_KG = 0.88663;
   public static final double EXTEND_KSPRING = 0;
 
-  public static final double WRIST_P = 2.5;
+  public static final double WRIST_P = 4;
   public static final double WRIST_I = 0.4;
   public static final double WRIST_D = 0.16;
   public static final double WRIST_KS = 0.15463;
