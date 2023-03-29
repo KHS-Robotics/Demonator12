@@ -16,6 +16,7 @@ import frc.robot.subsystems.lighting.patterns.BlueWave;
 import frc.robot.subsystems.lighting.patterns.CalibratePattern;
 import frc.robot.subsystems.lighting.patterns.ConeMode;
 import frc.robot.subsystems.lighting.patterns.CubeMode;
+import frc.robot.subsystems.lighting.patterns.DisplayMorse;
 import frc.robot.subsystems.lighting.patterns.Rainbow;
 import frc.robot.subsystems.lighting.patterns.RedWave;
 
@@ -77,6 +78,8 @@ public class LEDStrip extends SubsystemBase {
   public void periodic() {
     if (RobotContainer.swerveDrive != null && !RobotContainer.swerveDrive.isCalibrated) {
       active = new CalibratePattern();
+      //if (active == null || !active.isRunning())
+      //  active = new DisplayMorse("4342");
     }
     else if (RobotState.isDisabled() || RobotState.isAutonomous()) {
       if(DriverStation.getAlliance().equals(Alliance.Red)) {
@@ -92,7 +95,6 @@ public class LEDStrip extends SubsystemBase {
       active = new CubeMode();
     }
     active.run();
-
   }
 
   // todo make this suck less and move it to its own pattern (every pattern has its own counter)

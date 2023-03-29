@@ -16,7 +16,7 @@ public class DisplayMorse extends LEDPattern {
   ArrayList<Boolean> arr;
 
   public DisplayMorse(String message) {
-    super(20, "DisplayMorse");
+    super(6, "DisplayMorse");
     morseMap.put('a', ".-");
     morseMap.put('b', "-...");
     morseMap.put('c', "-.-.");
@@ -43,9 +43,18 @@ public class DisplayMorse extends LEDPattern {
     morseMap.put('x', "-..-");
     morseMap.put('y', "-.--");
     morseMap.put('z', "--..");
-    this.message = message;
+    morseMap.put('1', ".----");
+    morseMap.put('2', "..---");
+    morseMap.put('3', "...--");
+    morseMap.put('4', "....-");
+    morseMap.put('5', ".....");
+    morseMap.put('6', "-....");
+    morseMap.put('7', "--...");
+    morseMap.put('8', "---..");
+    morseMap.put('9', "----.");
+    morseMap.put('0', "-----");
+    this.message = message + " ";
     this.morseString = textToMorseString();
-    messageArray = new boolean[getMorseCodeLength()];
     arr = new ArrayList<>();
     for (char c : morseString.toCharArray()) {
       if (c == '.') {
@@ -72,7 +81,6 @@ public class DisplayMorse extends LEDPattern {
 
   @Override
   public void setPixels() {
-    this.ticksPerSecond = 5;
     if (arr.get(tick % getMorseCodeLength())) {
       on();
     } else {
@@ -101,7 +109,7 @@ public class DisplayMorse extends LEDPattern {
 
   public int getMorseCodeLength() {
     int units = 0;
-    for (char c : message.toCharArray()) {
+    for (char c : morseString.toCharArray()) {
       if (c == '.') {
         units += 2;
       } else if (c == '-') {
