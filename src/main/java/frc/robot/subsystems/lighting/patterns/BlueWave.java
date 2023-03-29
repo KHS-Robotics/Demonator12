@@ -14,7 +14,7 @@ public class BlueWave extends LEDPattern {
     this.ticksPerSecond = 20;
     for (int i = 0; i < Constants.LED_LENGTH; i++) {
       double alternate = (255 / 1) * ((-Math.cos((2 * Math.PI * 2 * i) / Constants.LED_LENGTH)) + 1);
-      LEDStrip.setRGBMirrored((i + LEDStrip.counter) % Constants.LED_LENGTH, 0, (int) alternate, 255);
+      LEDStrip.setRGBMirrored((i + this.tick) % Constants.LED_LENGTH, 0, (int) alternate, 255);
     }
   }
 }

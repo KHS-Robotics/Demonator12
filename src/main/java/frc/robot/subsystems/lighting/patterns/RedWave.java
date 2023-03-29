@@ -14,7 +14,7 @@ public class RedWave extends LEDPattern {
     ticksPerSecond = 20;
     for (int i = 0; i < Constants.LED_LENGTH; i++) {
       double alternate = (25 / 2) * ((-Math.cos((2 * Math.PI * 2 * i) / Constants.LED_LENGTH)) + 1);
-      LEDStrip.setRGBMirrored((i + LEDStrip.counter) % Constants.LED_LENGTH, 255, 0, (int) alternate);
+      LEDStrip.setRGBMirrored((i + this.tick) % Constants.LED_LENGTH, 255, 0, (int) alternate);
     }
   }
 }

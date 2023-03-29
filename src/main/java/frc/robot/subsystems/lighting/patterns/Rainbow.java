@@ -13,7 +13,7 @@ public class Rainbow extends LEDPattern {
   public void setPixels() {
     this.ticksPerSecond = 30;
     for (int i = 0; i < Constants.LED_LENGTH; i++) {
-      LEDStrip.setHSVMirrored((i + LEDStrip.counter) % Constants.LED_LENGTH, (int) (((double) i / Constants.LED_LENGTH) * 180), 255, 255);
+      LEDStrip.setHSVMirrored((i + this.tick) % Constants.LED_LENGTH, (int) (((double) i / Constants.LED_LENGTH) * 180), 255, 255);
     }
   }
 }

@@ -13,6 +13,7 @@ import frc.robot.RobotMap;
 import frc.robot.subsystems.lighting.patterns.AllBlue;
 import frc.robot.subsystems.lighting.patterns.AllRed;
 import frc.robot.subsystems.lighting.patterns.BlueWave;
+import frc.robot.subsystems.lighting.patterns.CalibratePattern;
 import frc.robot.subsystems.lighting.patterns.ConeMode;
 import frc.robot.subsystems.lighting.patterns.CubeMode;
 import frc.robot.subsystems.lighting.patterns.Rainbow;
@@ -23,7 +24,6 @@ public class LEDStrip extends SubsystemBase {
   Thread t;
   public static AddressableLED strip;
   public static AddressableLEDBuffer buffer;
-  public static int counter;
 
   public LEDStrip() {
     strip = new AddressableLED(RobotMap.LED_PORT);
@@ -38,12 +38,12 @@ public class LEDStrip extends SubsystemBase {
 
   public static void setRGBMirrored(int index, int r, int g, int b) {
     buffer.setRGB(index, r, g, b);
-    buffer.setRGB(Constants.LED_LENGTH * 2 - 1 - index, r, g, b);
+    buffer.setRGB(Constants.LED_LENGTH + index, r, g, b);
   }
 
   public static void setHSVMirrored(int index, int h, int s, int v) {
     buffer.setHSV(index, h, s, v);
-    buffer.setHSV(Constants.LED_LENGTH * 2 - 1 - index, h, s, v);
+    buffer.setHSV(Constants.LED_LENGTH + index, h, s, v);
   }
 
   public static boolean isRunning() {
@@ -70,21 +70,22 @@ public class LEDStrip extends SubsystemBase {
   @Override
   public void periodic() {
     if (RobotContainer.swerveDrive != null && !RobotContainer.swerveDrive.isCalibrated) {
-      new Rainbow();
+      active = new CalibratePattern();
     }
     else if (RobotState.isDisabled() || RobotState.isAutonomous()) {
       if(DriverStation.getAlliance().equals(Alliance.Red)) {
-        new RedWave();
+        active = new RedWave();
       } else {
-        new BlueWave();
+        active = new BlueWave();
       }
     }
     else if (RobotContainer.operatorBox.coneMode()) {
-      new ConeMode();
+      active = new ConeMode();
     }
     else if (RobotContainer.operatorBox.cubeMode()) {
-      new CubeMode();
+      active = new CubeMode();
     }
+    active.run();
 
   }
 
