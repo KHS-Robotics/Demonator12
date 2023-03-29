@@ -49,9 +49,9 @@ import frc.robot.commands.wrist.WristDeltaSetpoint;
 import frc.robot.commands.wrist.WristHoldSetpoint;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Grabber;
-import frc.robot.subsystems.LEDStrip;
 import frc.robot.subsystems.Wrist;
 import frc.robot.subsystems.drive.SwerveDrive;
+import frc.robot.subsystems.lighting.LEDStrip;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
