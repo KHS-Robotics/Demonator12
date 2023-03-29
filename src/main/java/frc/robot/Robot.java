@@ -81,9 +81,6 @@ public class Robot extends TimedRobot {
     RobotContainer.arm.armLengthSetpoint = RobotContainer.arm.getLength();
     RobotContainer.wrist.setAngleSetpoint(RobotContainer.wrist.getAbsoluteAngle());
 
-    SmartDashboard.putNumber("Wrist-Voltage", RobotContainer.wrist.getVoltage());
-    SmartDashboard.putNumber("Wrist-Angle", RobotContainer.wrist.getAngle());
-
     if (RobotContainer.swerveDrive != null && !RobotContainer.swerveDrive.isCalibrated && RobotContainer.swerveDrive.resetEncoders()) {
       RobotContainer.swerveDrive.isCalibrated = true;
     }

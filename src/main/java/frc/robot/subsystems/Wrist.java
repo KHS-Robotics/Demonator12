@@ -132,12 +132,9 @@ public class Wrist extends SubsystemBase {
 
   @Override
   public void periodic() {
-    SmartDashboard.putNumber("wristVoltage", pivotEncoder.getVoltage());
-    SmartDashboard.putNumber("wristPos", getAngle());
-    SmartDashboard.putNumber("wristVel", getVelocity());
-    SmartDashboard.putNumber("wristSetpoint", angleSetpoint.getRadians()); 
-    SmartDashboard.putBoolean("wristTopTalon", getTopTalonTach());
-    SmartDashboard.putBoolean("wristBotTalon", getBottomTalonTach());
+    SmartDashboard.putNumber("WristRelativeAngle", getAngle());
+    SmartDashboard.putNumber("WristAbsoluteAngle", getAbsoluteAngle().getRadians());
+    SmartDashboard.putNumber("WristSetpoint", wristSetpoint.position);
   }
 
   public boolean getTopTalonTach() {

@@ -253,13 +253,6 @@ public class Arm extends SubsystemBase {
   }
 
   public boolean isFurther(Translation3d target) {
-    SmartDashboard.putNumber("isFurtherCurrentX", getTranslation().getX());
-    SmartDashboard.putNumber("isFurtherCurrentY", getTranslation().getY());
-    SmartDashboard.putNumber("isFurtherCurrentZ", getTranslation().getZ());
-    
-    SmartDashboard.putNumber("isFurtherTargetX", target.getX());
-    SmartDashboard.putNumber("isFurtherTargetY", target.getY());
-    SmartDashboard.putNumber("isFurtherTargetZ", target.getZ());
     return getTranslation().getNorm() < target.getNorm();
   }
 
@@ -268,14 +261,11 @@ public class Arm extends SubsystemBase {
     var wristTranslation = new Translation3d(Constants.GRIPPERHOLDDISTANCE,
     new Rotation3d(0, -wristAngle.getRadians(), 0));
     target = target.minus(wristTranslation);
-    SmartDashboard.putNumber("WristTranslationX", wristTranslation.getX());
-    SmartDashboard.putNumber("WristTranslationZ", wristTranslation.getZ());
     double rotToPoint = rotToPoint(target).getRadians();
     double lengthToPoint = lengthToPoint(target);
       
     armTranslaton = target;
 
-    SmartDashboard.putBoolean("isFurther", isFurther(target));
 
     var command = new SequentialCommandGroup();
     if (isFurther(target)) {
@@ -299,14 +289,11 @@ public class Arm extends SubsystemBase {
     var wristTranslation = new Translation3d(Constants.GRIPPERHOLDDISTANCE,
     new Rotation3d(0, -wristAngle.getRadians(), 0));
     target = target.minus(wristTranslation);
-    SmartDashboard.putNumber("WristTranslationX", wristTranslation.getX());
-    SmartDashboard.putNumber("WristTranslationZ", wristTranslation.getZ());
     double rotToPoint = rotToPoint(target).getRadians();
     double lengthToPoint = lengthToPoint(target);
       
     armTranslaton = target;
 
-    SmartDashboard.putBoolean("isFurther", isFurther(target));
 
     var command = new SequentialCommandGroup();
     if (isFurther(target)) {
