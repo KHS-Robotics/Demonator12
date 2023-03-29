@@ -36,6 +36,12 @@ public class LEDStrip extends SubsystemBase {
     strip.start();
   }
 
+  public static void setAllRGB(int r, int g, int b) {
+    for (int i = 0; i < Constants.LED_LENGTH; i++) {
+      setRGBMirrored(i, r, g, b);
+    }
+  }
+
   public static void setRGBMirrored(int index, int r, int g, int b) {
     buffer.setRGB(index, r, g, b);
     buffer.setRGB(Constants.LED_LENGTH * 2 - 1 - index, r, g, b);
@@ -66,7 +72,7 @@ public class LEDStrip extends SubsystemBase {
     strip.setData(buffer);
   }
 
-  // should be logic determining which pattern to run, and NOTHING ELSE
+  // should be logic determining which pattern to run, and NOTHING ELSE (LEDs still run off thread so they don't stutter)
   @Override
   public void periodic() {
     if (RobotContainer.swerveDrive != null && !RobotContainer.swerveDrive.isCalibrated) {
