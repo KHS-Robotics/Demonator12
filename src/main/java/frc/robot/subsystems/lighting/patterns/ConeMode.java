@@ -10,7 +10,6 @@ public class ConeMode extends LEDPattern {
 
   @Override
   public void setPixels() {
-    this.ticksPerSecond = 20;
     LEDStrip.setAllRGB(255, 255, 0);
     stop();
   }
