@@ -3,7 +3,6 @@ package frc.robot.subsystems.lighting.patterns;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import frc.robot.Constants;
 import frc.robot.subsystems.lighting.LEDPattern;
 import frc.robot.subsystems.lighting.LEDStrip;
 

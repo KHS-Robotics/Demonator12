@@ -9,7 +9,6 @@ package frc.robot.commands.arm;
 
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.Constants;
 import frc.robot.RobotContainer;
 
 public class ArmHoldSetpoint extends CommandBase {

@@ -1,6 +1,5 @@
 package frc.robot.subsystems.lighting.patterns;
 
-import frc.robot.Constants;
 import frc.robot.subsystems.drive.SwerveDrive;
 import frc.robot.subsystems.lighting.LEDPattern;
 import frc.robot.subsystems.lighting.LEDStrip;
