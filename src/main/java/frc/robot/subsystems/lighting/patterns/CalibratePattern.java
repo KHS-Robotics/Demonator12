@@ -12,8 +12,6 @@ public class CalibratePattern extends LEDPattern {
 
     @Override
     public void setPixels() {
-        this.ticksPerSecond = 20;
-
         boolean frontLeftCalibrated = !SwerveDrive.frontLeft.setDetection.get();
         for (int i = 0; i < 3; i++) {
             LEDStrip.setRGBMirrored(i, frontLeftCalibrated ? 0 : 255, frontLeftCalibrated ? 255 : 0, 0);

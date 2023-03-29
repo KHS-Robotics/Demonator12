@@ -10,7 +10,6 @@ public class AllBlue extends LEDPattern {
 
   @Override
   public void setPixels() {
-    this.ticksPerSecond = 20;
     LEDStrip.setAllRGB(0, 0, 255);
     LEDStrip.update();
     stop();

@@ -10,7 +10,6 @@ public class AllRed extends LEDPattern {
 
   @Override
   public void setPixels() {
-    this.ticksPerSecond = 20;
     LEDStrip.setAllRGB(255, 0, 0);
     stop();
   }
