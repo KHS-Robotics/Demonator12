@@ -41,7 +41,7 @@ public class SwerveModule extends SubsystemBase {
   // private final SimpleMotorFeedforward pivotFeedForward;
 
   private final PIDController pivotPID;
-  private final DigitalInput setDetection;
+  public final DigitalInput setDetection;
 
   /**
    * Constructs a Swerve Module.
