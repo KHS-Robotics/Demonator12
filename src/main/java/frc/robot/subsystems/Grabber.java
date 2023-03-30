@@ -22,8 +22,45 @@ public class Grabber extends SubsystemBase {
   public Grabber() {
     intakeMotor = new CANSparkMax(RobotMap.GRABBER_INTAKE, MotorType.kBrushless);
     intakeMotor.setIdleMode(IdleMode.kBrake);
-    intakeSensor = intakeMotor.getForwardLimitSwitch(Type.kNormallyClosed);
+    intakeSensor = intakeMotor.getForwardLimitSwitch(Type.kNormallyClosed); //THIS IS TEMPORARY WHILE THE SENSOR ISNT MOUNTED PROPER
     intakeSensor.enableLimitSwitch(false);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    intakeMotor.setInverted(true);
 
     grab = new Solenoid(PneumaticsModuleType.REVPH, RobotMap.GRABBER_SOLENOID_FORWARD);
     grab.setPulseDuration(0.5);

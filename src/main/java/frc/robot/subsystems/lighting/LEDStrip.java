@@ -31,7 +31,7 @@ public class LEDStrip extends SubsystemBase {
     strip.setLength(Constants.LED_LENGTH * 2);
     buffer = new AddressableLEDBuffer(Constants.LED_LENGTH * 2);
     for (int i = 0; i < Constants.LED_LENGTH; i++) {
-      setRGBMirrored(i, 255, 255, 255);
+      setRGBMirrored(i, 0, 0, 0);
     }
     strip.setData(buffer);
     strip.start();
@@ -85,6 +85,7 @@ public class LEDStrip extends SubsystemBase {
       if(DriverStation.getAlliance().equals(Alliance.Red)) {
         active = new RedWave();
       } else {
+        System.out.println("here");
         active = new BlueWave();
       }
     }
@@ -94,6 +95,8 @@ public class LEDStrip extends SubsystemBase {
     else if (RobotContainer.operatorBox.cubeMode()) {
       active = new CubeMode();
     }
-    active.run();
+    if (!active.isRunning()) {
+      active.run();
+    }
   }
 }

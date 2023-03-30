@@ -5,6 +5,7 @@ public abstract class LEDPattern implements Runnable {
   private boolean running;
   protected int tick = 0;
   protected int ticksPerSecond;
+  private Thread t;
 
   public LEDPattern(int ticksPerSecond, String name) {
     this.name = name;
@@ -12,9 +13,11 @@ public abstract class LEDPattern implements Runnable {
     this.ticksPerSecond = ticksPerSecond;
     if (!LEDStrip.isRunning()) {
       LEDStrip.active = this;
+      run();
     } else {
       LEDStrip.active.stop();
       LEDStrip.active = this;
+      run();
     }
   }
 
@@ -30,32 +33,37 @@ public abstract class LEDPattern implements Runnable {
 
   @Override
   public void run() {
-    new Thread(() -> {
-      long lastTime = System.nanoTime();
-      double ns = 1000000000 / (double) ticksPerSecond;
-      double delta = 0;
+    if (t == null) {
+      t = new Thread(() -> {
+        System.out.println("ahhhhh");
+        long lastTime = System.nanoTime();
+        double ns = 1000000000 / (double) ticksPerSecond;
+        double delta = 0;
+        running = true;
 
-      while (running) {
-        try {
-          if (Thread.interrupted()) {
-            throw new InterruptedException();
+        while (running) {
+          try {
+            if (Thread.interrupted()) {
+              throw new InterruptedException();
+            }
+          }
+          catch (Exception e) {
+            return;
+          }
+          long now = System.nanoTime();
+          delta += (now - lastTime) / ns;
+          lastTime = now;
+
+          if (delta >= 1) {
+            setPixels();
+            LEDStrip.update();
+            tick++;
+            delta--;
           }
         }
-        catch (Exception e) {
-          return;
-        }
-        long now = System.nanoTime();
-        delta += (now - lastTime) / ns;
-        lastTime = now;
-
-        if (delta >= 1) {
-          setPixels();
-          LEDStrip.update();
-          tick++;
-          delta--;
-        }
-      }
-    });
+      });
+      t.start();
+    }
   }
 }
 

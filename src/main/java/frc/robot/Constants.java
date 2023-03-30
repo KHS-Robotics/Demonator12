@@ -33,7 +33,7 @@ public class Constants {
   public static final Translation3d HIGH_POS = new Translation3d(Units.inchesToMeters(56.73), Units.inchesToMeters(0),
       Units.inchesToMeters(58));
   public static final Translation3d SHELF_POS = new Translation3d(Units.inchesToMeters(40), 0, Units.inchesToMeters(42));
-  public static final Translation3d FLOOR_POS = new Translation3d(Units.inchesToMeters(33), 0, Units.inchesToMeters(6));
+  public static final Translation3d FLOOR_POS = new Translation3d(Units.inchesToMeters(39), 0, Units.inchesToMeters(6));
   public static final Translation3d SINGLE_POS = new Translation3d(Units.inchesToMeters(32), 0, Units.inchesToMeters(32));
 
   public static final double SENS = 0.5;
