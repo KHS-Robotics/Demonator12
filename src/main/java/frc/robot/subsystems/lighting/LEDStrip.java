@@ -94,6 +94,6 @@ public class LEDStrip extends SubsystemBase {
     else if (RobotContainer.operatorBox.cubeMode()) {
       active = new CubeMode();
     }
-    t = new Thread(() -> active.run());
+    active.run();
   }
 }

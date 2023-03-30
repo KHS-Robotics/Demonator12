@@ -30,30 +30,32 @@ public abstract class LEDPattern implements Runnable {
 
   @Override
   public void run() {
-    long lastTime = System.nanoTime();
-    double ns = 1000000000 / (double) ticksPerSecond;
-    double delta = 0;
+    new Thread(() -> {
+      long lastTime = System.nanoTime();
+      double ns = 1000000000 / (double) ticksPerSecond;
+      double delta = 0;
 
-    while (running) {
-      try {
-        if (Thread.interrupted()) {
-          throw new InterruptedException();
+      while (running) {
+        try {
+          if (Thread.interrupted()) {
+            throw new InterruptedException();
+          }
+        }
+        catch (Exception e) {
+          return;
+        }
+        long now = System.nanoTime();
+        delta += (now - lastTime) / ns;
+        lastTime = now;
+
+        if (delta >= 1) {
+          setPixels();
+          LEDStrip.update();
+          tick++;
+          delta--;
         }
       }
-      catch (Exception e) {
-        return;
-      }
-      long now = System.nanoTime();
-      delta += (now - lastTime) / ns;
-      lastTime = now;
-
-      if (delta >= 1) {
-        setPixels();
-        LEDStrip.update();
-        tick++;
-        delta--;
-      }
-    }
+    });
   }
 }
 
