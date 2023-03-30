@@ -113,7 +113,7 @@ public class RobotContainer {
   public static final Arm arm = new Arm();
   public static final Wrist wrist = new Wrist();
   public static final Grabber grabber = new Grabber();
-  public static final LEDStrip leds = new LEDStrip();
+  //public static final LEDStrip leds = new LEDStrip();
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
