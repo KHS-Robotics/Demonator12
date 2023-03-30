@@ -15,7 +15,7 @@ public class DisplayMorse extends LEDPattern {
   ArrayList<Boolean> arr;
 
   public DisplayMorse(String message) {
-    super(5, "DisplayMorse");
+    super(5, "DisplayMorse_" + message);
     morseMap.put('a', ".-");
     morseMap.put('b', "-...");
     morseMap.put('c', "-.-.");

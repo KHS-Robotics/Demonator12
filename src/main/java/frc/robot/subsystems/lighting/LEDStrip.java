@@ -62,9 +62,9 @@ public class LEDStrip extends SubsystemBase {
 
   public void setAllAllianceColor() {
     if(DriverStation.getAlliance() == Alliance.Red) {
-      new AllRed();
+      setAllRGB(255, 0, 0);
     } else {
-      new AllBlue();
+      setAllRGB(0, 0, 255);
     }
   }
 
@@ -85,7 +85,6 @@ public class LEDStrip extends SubsystemBase {
       if(DriverStation.getAlliance().equals(Alliance.Red)) {
         active = new RedWave();
       } else {
-        System.out.println("here");
         active = new BlueWave();
       }
     }
@@ -94,9 +93,6 @@ public class LEDStrip extends SubsystemBase {
     }
     else if (RobotContainer.operatorBox.cubeMode()) {
       active = new CubeMode();
-    }
-    if (!active.isRunning()) {
-      active.run();
     }
   }
 }
