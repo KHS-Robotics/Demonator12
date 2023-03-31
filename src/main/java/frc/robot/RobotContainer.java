@@ -158,7 +158,7 @@ public class RobotContainer {
         () -> (!swerveDrive.isCalibrated && RobotState.isTeleop() && RobotState.isEnabled()));
     autoCalibrateTeleop.onTrue(new CenterSwerveModules(true));
     
-    Trigger autoPullIn = new Trigger(grabber::getSensor);
+    Trigger autoPullIn = new Trigger(() -> operatorBox.cubeMode() && grabber.getSensor());
     autoPullIn.onTrue(new AutoPullIn());
   }
 
@@ -239,10 +239,10 @@ public class RobotContainer {
     midPos.onTrue(new ProxyCommand(() -> RobotContainer.arm.goToSetpointScore(Constants.MID_POS)));
 
     Trigger highPosCube = new Trigger(() -> (operatorStick.highPos() && operatorBox.cubeMode()));
-    highPosCube.onTrue(new ProxyCommand(() -> RobotContainer.arm.goToSetpointScoreCube(Constants.HIGH_POS)));
+    highPosCube.onTrue(new ProxyCommand(() -> RobotContainer.arm.goToSetpoint(Constants.CUBE_HIGH_POS, new Rotation2d())));
 
     Trigger midPosCube = new Trigger(() -> (operatorStick.midPos() && operatorBox.cubeMode()));
-    midPosCube.onTrue(new ProxyCommand(() -> RobotContainer.arm.goToSetpointScoreCube(Constants.MID_POS)));
+    midPosCube.onTrue(new ProxyCommand(() -> RobotContainer.arm.goToSetpoint(Constants.CUBE_MID_POS, new Rotation2d())));
 
     Trigger lowPos = new Trigger(operatorStick::lowPos);
     lowPos.onTrue(new ProxyCommand(() -> RobotContainer.arm.goToSetpoint(Constants.FLOOR_POS, Rotation2d.fromDegrees(0))));
@@ -283,7 +283,7 @@ public class RobotContainer {
     release.onTrue(new SetGrabber(false).alongWith(new InstantCommand(() -> grabber.stopWaitingForCone())));
 
     Trigger outtake = new Trigger(operatorStick::outtake);
-    outtake.onTrue(new InstantCommand(() -> grabber.set(0.3)));
+    outtake.onTrue(new InstantCommand(() -> grabber.set(0.35)));
     outtake.onFalse(new InstantCommand(() -> grabber.set(0)));
 
     Trigger intake = new Trigger(operatorStick::intake);
@@ -317,8 +317,8 @@ public class RobotContainer {
       swerveDrive::getPose,
       swerveDrive::setPose,
       swerveDrive.kinematics,
-      new PIDConstants(4, 0, 0), // translation
-      new PIDConstants(0.4, 0, 0), // rotation
+      new PIDConstants(4, 0, 0.3), // translation
+      new PIDConstants(1, 0, 1), // rotation
       swerveDrive::setModuleStates,
       getAutonomousEventMap(),
       true,
@@ -334,7 +334,7 @@ public class RobotContainer {
       if (!file.isDirectory() && file.getName().endsWith(".path")) {
         // remove ".path" from the name for PathPlanner
         var pathName = file.getName().replace(".path", "");
-        autoChooser.addOption(pathName, new AutoRoutine(PathPlanner.loadPathGroup(pathName, new PathConstraints(2, 3))));
+        autoChooser.addOption(pathName, new AutoRoutine(PathPlanner.loadPathGroup(pathName, new PathConstraints(1.25, 2))));
       }
     }
 
@@ -376,8 +376,9 @@ public class RobotContainer {
         AutonomousEventMap.put("Flat", RobotContainer.arm.goToPivotLength(Math.toRadians(0), Constants.MIN_LENGTH).asProxy().andThen(
           new InstantCommand(() -> wrist.setAngleSetpoint(Rotation2d.fromDegrees(80)))));
         AutonomousEventMap.put("Hold", new ArmHoldSetpoint().alongWith(new WristHoldSetpoint()));
-        // AutonomousEventMap.put("Outtake", new InstantCommand(() -> RobotContainer.grabber.set(0.6)));
-        // AutonomousEventMap.put("Intake", new InstantCommand(() -> RobotContainer.grabber.set(-0.45)));
+        AutonomousEventMap.put("Floor", RobotContainer.arm.goToSetpoint(Constants.FLOOR_POS, Rotation2d.fromDegrees(0)));
+        AutonomousEventMap.put("Outtake", new InstantCommand(() -> RobotContainer.grabber.set(0.35)));
+        AutonomousEventMap.put("Intake", new InstantCommand(() -> RobotContainer.grabber.set(-0.5)));
     }
 
     return AutonomousEventMap;

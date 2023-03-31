@@ -9,6 +9,7 @@ package frc.robot.commands.arm;
 
 import java.util.function.Supplier;
 
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
@@ -37,6 +38,12 @@ public class ArmControlLength extends CommandBase {
     if (length.get() < Constants.MIN_LENGTH) {
       length = () -> Constants.MIN_LENGTH ;
     }
+
+    
+    RobotContainer.arm.pivotSetpoint = new TrapezoidProfile.State(RobotContainer.arm.getAngle().getRadians(),
+        RobotContainer.arm.getAngleV());
+    RobotContainer.arm.lengthSetpoint = new TrapezoidProfile.State(RobotContainer.arm.getLength(),
+        RobotContainer.arm.getLengthV());
 
     RobotContainer.arm.armPivotSetpointRadians = RobotContainer.arm.getAngle().getRadians();
     SmartDashboard.putNumber("ArmControlLengthCmdSetpoint", length.get());

@@ -25,15 +25,19 @@ public class Constants {
 
   public static final Translation3d ARMOFFSET = new Translation3d(0.0, 0.0, Units.inchesToMeters(20));
   public static final double MIN_LENGTH = Units.inchesToMeters(24.0);
-  public static final double GRIPPERLENGTH = Units.inchesToMeters(16);
-  public static final double GRIPPERHOLDDISTANCE = Units.inchesToMeters(10);
+  public static final double GRIPPERLENGTH = Units.inchesToMeters(14);
+  public static final double GRIPPERHOLDDISTANCE = Units.inchesToMeters(7.25);
 
   public static final Translation3d MID_POS = new Translation3d(Units.inchesToMeters(40.7), Units.inchesToMeters(0),
       Units.inchesToMeters(43));
   public static final Translation3d HIGH_POS = new Translation3d(Units.inchesToMeters(56.73), Units.inchesToMeters(0),
-      Units.inchesToMeters(58));
+      Units.inchesToMeters(57));
+  public static final Translation3d CUBE_HIGH_POS = new Translation3d(Units.inchesToMeters(40), Units.inchesToMeters(0),
+      Units.inchesToMeters(44.5));
+  public static final Translation3d CUBE_MID_POS = new Translation3d(Units.inchesToMeters(30), Units.inchesToMeters(0),
+      Units.inchesToMeters(32.5));
   public static final Translation3d SHELF_POS = new Translation3d(Units.inchesToMeters(40), 0, Units.inchesToMeters(42));
-  public static final Translation3d FLOOR_POS = new Translation3d(Units.inchesToMeters(39), 0, Units.inchesToMeters(6));
+  public static final Translation3d FLOOR_POS = new Translation3d(Units.inchesToMeters(36.5), 0, Units.inchesToMeters(6));
   public static final Translation3d SINGLE_POS = new Translation3d(Units.inchesToMeters(32), 0, Units.inchesToMeters(32));
 
   public static final double SENS = 0.5;

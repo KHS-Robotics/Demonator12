@@ -5,14 +5,20 @@ public abstract class LEDPattern implements Runnable {
   private boolean running;
   protected int tick = 0;
   protected int ticksPerSecond;
-  private Thread t;
 
   public LEDPattern(int ticksPerSecond, String name) {
     this.name = name;
     running = true;
     this.ticksPerSecond = ticksPerSecond;
     if (!LEDStrip.isRunning() || !LEDStrip.active.name.equals(name)) {
-      t = new Thread(() -> run());
+      if (LEDStrip.active != null) {
+        LEDStrip.active.stop();
+        LEDStrip.active = null;
+      }
+      LEDStrip.active.stop();
+      LEDStrip.t = new Thread(() -> run());
+      LEDStrip.t.start();
+      System.out.println(2);
     }
   }
 
@@ -49,6 +55,7 @@ public abstract class LEDPattern implements Runnable {
       lastTime = now;
 
       if (delta >= 1) {
+        System.out.println(name + LEDStrip.t.getName());
         setPixels();
         LEDStrip.update();
         tick++;

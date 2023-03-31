@@ -22,7 +22,7 @@ import frc.robot.subsystems.lighting.patterns.RedWave;
 
 public class LEDStrip extends SubsystemBase {
   public static LEDPattern active;
-  Thread t;
+  public static Thread t;
   public static AddressableLED strip;
   public static AddressableLEDBuffer buffer;
 
@@ -30,11 +30,9 @@ public class LEDStrip extends SubsystemBase {
     strip = new AddressableLED(RobotMap.LED_PORT);
     strip.setLength(Constants.LED_LENGTH * 2);
     buffer = new AddressableLEDBuffer(Constants.LED_LENGTH * 2);
-    for (int i = 0; i < Constants.LED_LENGTH; i++) {
-      setRGBMirrored(i, 0, 0, 0);
-    }
     strip.setData(buffer);
     strip.start();
+    active = new Rainbow();
   }
 
   public static void setAllRGB(int r, int g, int b) {
@@ -93,6 +91,9 @@ public class LEDStrip extends SubsystemBase {
     }
     else if (RobotContainer.operatorBox.cubeMode()) {
       active = new CubeMode();
+    }
+    else {
+      active = new Rainbow();
     }
   }
 }

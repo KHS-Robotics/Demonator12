@@ -57,10 +57,10 @@ public class Wrist extends SubsystemBase {
     wristPID = new PIDController(Constants.WRIST_P, Constants.WRIST_I, Constants.WRIST_D);
 
     forwardLimitSwitch = pivotMotor.getForwardLimitSwitch(Type.kNormallyClosed);
-    forwardLimitSwitch.enableLimitSwitch(false);
+    forwardLimitSwitch.enableLimitSwitch(true);
 
     reverseLimitSwitch = pivotMotor.getReverseLimitSwitch(Type.kNormallyClosed);
-    reverseLimitSwitch.enableLimitSwitch(false);
+    reverseLimitSwitch.enableLimitSwitch(true);
 
     wristFeedForward = new ArmFeedforward(Constants.WRIST_KS, Constants.WRIST_KG, Constants.WRIST_KV,
         Constants.WRIST_KA);

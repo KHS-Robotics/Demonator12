@@ -369,7 +369,7 @@ public class SwerveDrive extends SubsystemBase {
       }
 
       if(minimum < 0.02 && poseEstimator.getEstimatedPosition().getTranslation().getDistance(getPose().getTranslation()) < 0.6) {
-        poseEstimator.addVisionMeasurement(Field.flipPose(robotPose.estimatedPose.toPose2d()), robotPose.timestampSeconds, VecBuilder.fill(distance * 3, distance * 3, 500));
+        //poseEstimator.addVisionMeasurement(Field.flipPose(robotPose.estimatedPose.toPose2d()), robotPose.timestampSeconds, VecBuilder.fill(distance * 3, distance * 3, 500));
       }
     }
   }

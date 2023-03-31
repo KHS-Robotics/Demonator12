@@ -5,11 +5,14 @@
 
 package frc.robot;
 
+import com.pathplanner.lib.server.PathPlannerServer;
+
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.subsystems.drive.SwerveDrive;
 
 /**
  * The VM is configured to automatically run this class, and to call the methods
@@ -32,6 +35,7 @@ public class Robot extends TimedRobot {
   @Override
   public void robotInit() {
     DriverStation.silenceJoystickConnectionWarning(true);
+    PathPlannerServer.startServer(5811);
 
     // Instantiate our RobotContainer. This will perform all our button bindings,
     // and put our autonomous chooser on the dashboard.
@@ -69,6 +73,7 @@ public class Robot extends TimedRobot {
   /** This method is called once each time the robot enters Disabled mode. */
   @Override
   public void disabledInit() {
+    SwerveDrive.kMaxAngularSpeed = 2 * Math.PI;
     if (RobotContainer.grabber != null) {
       RobotContainer.grabber.turnOff();
     }
@@ -91,6 +96,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousInit() {
+    SwerveDrive.kMaxAngularSpeed = Math.PI / 4;
     // get the auto from the chooser
     var auto = robotContainer.getAutoRoutine();
 
@@ -122,6 +128,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopInit() {
+    SwerveDrive.kMaxAngularSpeed = 2 * Math.PI;
     // This makes sure that the autonomous stops running when
     // teleop starts running. If you want the autonomous to
     // continue until interrupted by another command, remove
