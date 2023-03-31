@@ -7,18 +7,13 @@ public abstract class LEDPattern implements Runnable {
   protected int ticksPerSecond;
 
   public LEDPattern(int ticksPerSecond, String name) {
-    this.name = name;
-    running = true;
-    this.ticksPerSecond = ticksPerSecond;
     if (!LEDStrip.isRunning() || !LEDStrip.active.name.equals(name)) {
-      if (LEDStrip.active != null) {
-        LEDStrip.active.stop();
-        LEDStrip.active = null;
-      }
       LEDStrip.active.stop();
-      LEDStrip.t = new Thread(() -> run());
-      LEDStrip.t.start();
-      System.out.println(2);
+      this.name = name;
+      running = true;
+      this.ticksPerSecond = ticksPerSecond;
+      LEDStrip.t.interrupt();
+      LEDStrip.t = new Thread(this);
     }
   }
 
@@ -28,15 +23,12 @@ public abstract class LEDPattern implements Runnable {
     running = false;
   }
 
-
-
   public boolean isRunning() {
     return running;
   }
 
   @Override
   public void run() {
-    System.out.println("ahhhhh");
     long lastTime = System.nanoTime();
     double ns = 1000000000 / (double) ticksPerSecond;
     double delta = 0;
@@ -63,5 +55,4 @@ public abstract class LEDPattern implements Runnable {
       }
     }
   }
-
 }

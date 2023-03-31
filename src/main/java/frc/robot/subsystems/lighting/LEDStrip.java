@@ -74,7 +74,7 @@ public class LEDStrip extends SubsystemBase {
   // should be logic determining which pattern to run, and NOTHING ELSE (LEDs still run off thread so they don't stutter)
   @Override
   public void periodic() {
-    if (RobotContainer.swerveDrive != null && !RobotContainer.swerveDrive.isCalibrated) {
+    if (RobotContainer.swerveDrive != null && !RobotContainer.swerveDrive.isCalibrated && (RobotState.isAutonomous() || RobotState.isDisabled())) {
       active = new CalibratePattern();
       //if (active == null || !active.isRunning())
       //  active = new DisplayMorse("4342");
@@ -91,6 +91,9 @@ public class LEDStrip extends SubsystemBase {
     }
     else if (RobotContainer.operatorBox.cubeMode()) {
       active = new CubeMode();
+    }
+    else if (RobotState.isEStopped()) {
+      active = new DisplayMorse("sos");
     }
     else {
       active = new Rainbow();
