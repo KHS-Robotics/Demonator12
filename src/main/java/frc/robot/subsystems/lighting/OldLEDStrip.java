@@ -1,4 +1,4 @@
-package frc.robot.subsystems;
+package frc.robot.subsystems.lighting;
 
 import java.util.HashMap;
 
