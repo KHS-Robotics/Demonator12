@@ -18,7 +18,7 @@ import edu.wpi.first.math.util.Units;
 public class Constants {
   public static final Transform3d CAMERA_1_POS = new Transform3d(
       new Translation3d(Units.inchesToMeters(14), Units.inchesToMeters(-7), Units.inchesToMeters(9.75)),
-      new Rotation3d(Math.toRadians(2), Math.toRadians(-15), 0));
+      new Rotation3d(Math.toRadians(0), Math.toRadians(-15), 0));
   public static final Transform3d LIMELIGHT_POS = new Transform3d(
       new Translation3d(Units.inchesToMeters(0), Units.inchesToMeters(0), Units.inchesToMeters(0)),
       new Rotation3d(Math.toRadians(0), Math.toRadians(0), 0));
@@ -29,15 +29,15 @@ public class Constants {
   public static final double GRIPPERHOLDDISTANCE = Units.inchesToMeters(7.25);
 
   public static final Translation3d MID_POS = new Translation3d(Units.inchesToMeters(40.7), Units.inchesToMeters(0),
-      Units.inchesToMeters(43));
+      Units.inchesToMeters(41));
   public static final Translation3d HIGH_POS = new Translation3d(Units.inchesToMeters(56.73), Units.inchesToMeters(0),
-      Units.inchesToMeters(57));
-  public static final Translation3d CUBE_HIGH_POS = new Translation3d(Units.inchesToMeters(40), Units.inchesToMeters(0),
+      Units.inchesToMeters(52));
+  public static final Translation3d CUBE_HIGH_POS = new Translation3d(Units.inchesToMeters(41), Units.inchesToMeters(0),
       Units.inchesToMeters(44.5));
   public static final Translation3d CUBE_MID_POS = new Translation3d(Units.inchesToMeters(30), Units.inchesToMeters(0),
       Units.inchesToMeters(32.5));
   public static final Translation3d SHELF_POS = new Translation3d(Units.inchesToMeters(40), 0, Units.inchesToMeters(42));
-  public static final Translation3d FLOOR_POS = new Translation3d(Units.inchesToMeters(36.5), 0, Units.inchesToMeters(6));
+  public static final Translation3d FLOOR_POS = new Translation3d(Units.inchesToMeters(34.5), 0, Units.inchesToMeters(7));
   public static final Translation3d SINGLE_POS = new Translation3d(Units.inchesToMeters(32), 0, Units.inchesToMeters(32));
 
   public static final double SENS = 0.5;

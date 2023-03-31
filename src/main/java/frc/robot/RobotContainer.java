@@ -318,7 +318,7 @@ public class RobotContainer {
       swerveDrive::setPose,
       swerveDrive.kinematics,
       new PIDConstants(4, 0, 0.3), // translation
-      new PIDConstants(1, 0, 1), // rotation
+      new PIDConstants(2, 0, 1), // rotation
       swerveDrive::setModuleStates,
       getAutonomousEventMap(),
       true,
@@ -373,12 +373,12 @@ public class RobotContainer {
         AutonomousEventMap.put("ScoreAngle", RobotContainer.arm.goToPivotLength(0.75, Constants.MIN_LENGTH).asProxy().withTimeout(2));
         AutonomousEventMap.put("Release", new SetGrabber(true).andThen(new WaitCommand(0.3)));
         AutonomousEventMap.put("Grab", new SetGrabber(false));
-        AutonomousEventMap.put("Flat", RobotContainer.arm.goToPivotLength(Math.toRadians(0), Constants.MIN_LENGTH).asProxy().andThen(
-          new InstantCommand(() -> wrist.setAngleSetpoint(Rotation2d.fromDegrees(80)))));
+        AutonomousEventMap.put("Flat", RobotContainer.arm.goToPivotLength(0.63, Constants.MIN_LENGTH).asProxy().alongWith(new InstantCommand(() -> wrist.setAngleSetpoint(Rotation2d.fromDegrees(Math.toDegrees(0.63) + 80)))));
         AutonomousEventMap.put("Hold", new ArmHoldSetpoint().alongWith(new WristHoldSetpoint()));
         AutonomousEventMap.put("Floor", RobotContainer.arm.goToSetpoint(Constants.FLOOR_POS, Rotation2d.fromDegrees(0)));
         AutonomousEventMap.put("Outtake", new InstantCommand(() -> RobotContainer.grabber.set(0.35)));
-        AutonomousEventMap.put("Intake", new InstantCommand(() -> RobotContainer.grabber.set(-0.5)));
+        AutonomousEventMap.put("Intake", new InstantCommand(() -> RobotContainer.grabber.set(-0.7)));
+        AutonomousEventMap.put("PlaceHighCube", RobotContainer.arm.goToSetpoint(Constants.CUBE_HIGH_POS, new Rotation2d()));
     }
 
     return AutonomousEventMap;
