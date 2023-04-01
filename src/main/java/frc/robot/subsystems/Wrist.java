@@ -29,7 +29,7 @@ public class Wrist extends SubsystemBase {
   private final SparkMaxLimitSwitch forwardLimitSwitch;
   private final SparkMaxLimitSwitch reverseLimitSwitch;
 
-  private final PIDController wristPID;
+  public final PIDController wristPID;
 
   // wrist acts as an "arm" in code
   private final ArmFeedforward wristFeedForward;

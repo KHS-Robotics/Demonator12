@@ -18,6 +18,7 @@ public class WristGoToSetpoint extends CommandBase {
     RobotContainer.wrist.setAngleSetpoint(setpoint);
     RobotContainer.wrist.wristSetpoint = new TrapezoidProfile.State(
         RobotContainer.wrist.getRelativeAngle().getRadians(), RobotContainer.wrist.getVelocity());
+    RobotContainer.wrist.wristPID.reset();
   }
 
   @Override
