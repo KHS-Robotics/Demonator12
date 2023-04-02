@@ -268,14 +268,12 @@ public class Arm extends SubsystemBase {
     if (isFurther(target)) {
       //wrist, then pivot, then length
       command = new SequentialCommandGroup(
-          new WristGoToSetpoint(wristAngle).asProxy(),
-          new ArmControlPivot(rotToPoint).asProxy().andThen(
+          (new ArmControlPivot(rotToPoint).asProxy().alongWith(new WristGoToSetpoint(wristAngle).asProxy())).andThen(
           new ArmControlLength(lengthToPoint).asProxy()));
     } else {
       //wrist, then length, then pivot
       command = new SequentialCommandGroup(
-          new WristGoToSetpoint(wristAngle).asProxy(),
-          (new ArmControlLength(lengthToPoint).asProxy()).andThen(
+          (new ArmControlLength(lengthToPoint).asProxy().alongWith(new WristGoToSetpoint(wristAngle).asProxy())).andThen(
           new ArmControlPivot(rotToPoint).asProxy()));
     }
     return command;

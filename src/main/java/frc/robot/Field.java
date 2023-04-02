@@ -53,7 +53,7 @@ public class Field {
   public static final double HIGH_TAPE_HEIGHT = Units.inchesToMeters(43.81); //tape goes from 41.81 in to 45.81
   public static final double MID_TAPE_HEIGHT = Units.inchesToMeters(24); //tape from 22 to 26 in
 
-  public static final double DIST_FROM_NODE_X_METERS = Units.inchesToMeters(35.28);
+  public static final double DIST_FROM_NODE_X_METERS = Units.inchesToMeters(40.28);
   public static final double PLACEMENTX = fieldLayout.getTagPose(8).get().getX() + DIST_FROM_NODE_X_METERS;
 
   // flips coordinates to be correctly aligned with alliance

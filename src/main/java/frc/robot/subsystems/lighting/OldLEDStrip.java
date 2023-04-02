@@ -56,12 +56,12 @@ public class OldLEDStrip extends SubsystemBase {
 
   public void setRGBMirrored(int index, int r, int g, int b) {
     buffer.setRGB(index, r, g, b);
-    buffer.setRGB(Constants.LED_LENGTH * 2 - 1 - index, r, g, b);
+    buffer.setRGB(Constants.LED_LENGTH + index, r, g, b);
   }
 
   public void setHSVMirrored(int index, int h, int s, int v) {
     buffer.setHSV(index, h, s, v);
-    buffer.setHSV(Constants.LED_LENGTH * 2 - 1 - index, h, s, v);
+    buffer.setHSV(Constants.LED_LENGTH + index, h, s, v);
   }
 
   public void setAllRed() {

@@ -17,7 +17,7 @@ import edu.wpi.first.math.util.Units;
  */
 public class Constants {
   public static final Transform3d CAMERA_1_POS = new Transform3d(
-      new Translation3d(Units.inchesToMeters(14), Units.inchesToMeters(-7), Units.inchesToMeters(9.75)),
+      new Translation3d(Units.inchesToMeters(14), Units.inchesToMeters(-5.5), Units.inchesToMeters(9.75)),
       new Rotation3d(Math.toRadians(0), Math.toRadians(-15), 0));
   public static final Transform3d LIMELIGHT_POS = new Transform3d(
       new Translation3d(Units.inchesToMeters(0), Units.inchesToMeters(0), Units.inchesToMeters(0)),
@@ -30,8 +30,8 @@ public class Constants {
 
   public static final Translation3d MID_POS = new Translation3d(Units.inchesToMeters(40.7), Units.inchesToMeters(0),
       Units.inchesToMeters(41));
-  public static final Translation3d HIGH_POS = new Translation3d(Units.inchesToMeters(56.73), Units.inchesToMeters(0),
-      Units.inchesToMeters(52));
+  public static final Translation3d HIGH_POS = new Translation3d(Units.inchesToMeters(55.73), Units.inchesToMeters(0),
+      Units.inchesToMeters(53));
   public static final Translation3d CUBE_HIGH_POS = new Translation3d(Units.inchesToMeters(41), Units.inchesToMeters(0),
       Units.inchesToMeters(44.5));
   public static final Translation3d CUBE_MID_POS = new Translation3d(Units.inchesToMeters(30), Units.inchesToMeters(0),

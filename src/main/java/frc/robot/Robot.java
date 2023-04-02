@@ -74,7 +74,7 @@ public class Robot extends TimedRobot {
   /** This method is called once each time the robot enters Disabled mode. */
   @Override
   public void disabledInit() {
-    SwerveDrive.kMaxAngularSpeed = 2 * Math.PI;
+    SwerveDrive.kMaxAngularSpeedRadiansPerSecond = 2 * Math.PI;
     if (RobotContainer.grabber != null) {
       RobotContainer.grabber.turnOff();
     }
@@ -97,7 +97,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousInit() {
-    SwerveDrive.kMaxAngularSpeed = Math.PI / 4;
+    SwerveDrive.kMaxAngularSpeedRadiansPerSecond = Math.PI / 4;
     // get the auto from the chooser
     var auto = robotContainer.getAutoRoutine();
 
@@ -129,7 +129,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopInit() {
-    SwerveDrive.kMaxAngularSpeed = 2 * Math.PI;
+    SwerveDrive.kMaxAngularSpeedRadiansPerSecond = 2 * Math.PI;
     // This makes sure that the autonomous stops running when
     // teleop starts running. If you want the autonomous to
     // continue until interrupted by another command, remove

@@ -29,9 +29,11 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.ProxyCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotMap;
 import frc.robot.subsystems.vision.PhotonWrapper;
@@ -43,8 +45,8 @@ import frc.robot.RobotContainer;
  * Represents a swerve drive style drivetrain.
  */
 public class SwerveDrive extends SubsystemBase {
-  public static double kMaxSpeed = 3.5; // 3.5 meters per second
-  public static double kMaxAngularSpeed = 2 * Math.PI; // pi radians per second
+  public static double kMaxSpeedMetersPerSecond = 3.5;
+  public static double kMaxAngularSpeedRadiansPerSecond = 2 * Math.PI;
   public static double offset;
   public Pose2d startingPose;
   public double angleSetpoint;
@@ -54,9 +56,12 @@ public class SwerveDrive extends SubsystemBase {
   private final Translation2d rearLeftLocation = new Translation2d(-0.327025, 0.2693162);
   private final Translation2d rearRightLocation = new Translation2d(-0.327025, -0.2693162);
 
+  public double currentX, currentY;
+
   public PhotonWrapper photonCamera;
 
   public boolean isCalibrated = false;
+  private boolean loggedPoseError = false;
 
   public static final SwerveModule frontLeft = new SwerveModule(
       "FL",
@@ -247,7 +252,7 @@ public class SwerveDrive extends SubsystemBase {
         new PathConstraints(1, 1.5),
         //PathPoint.fromCurrentHolonomicState(getPose(), getChassisSpeeds()),
         initialPoint,
-        new PathPoint(goal, Rotation2d.fromDegrees(180), Rotation2d.fromDegrees(180), 0)); // position, heading(direction of
+        new PathPoint(goal, Rotation2d.fromDegrees(180), Rotation2d.fromDegrees(180), -1)); // position, heading(direction of
                                                                                       // travel), holonomic rotation
     //return followTrajectoryCommand(trajToGoal, false);
     return RobotContainer.swerveAutoBuilder.followPath(trajToGoal);
@@ -289,9 +294,24 @@ public class SwerveDrive extends SubsystemBase {
     PathPlannerTrajectory trajToGoal = PathPlanner.generatePath(
         new PathConstraints(1, 1.5),
         initialPoint,
-        new PathPoint(goal, Rotation2d.fromDegrees(180), Rotation2d.fromDegrees(180), 0)); // position, heading(direction of
+        new PathPoint(goal, Rotation2d.fromDegrees(180), Rotation2d.fromDegrees(180), -1)); // position, heading(direction of
                                                                                       // travel), holonomic rotation
     return RobotContainer.swerveAutoBuilder.followPath(trajToGoal);
+  }
+
+  public Command goToSingleSubstation() {
+    final double xMeters = 14.09;
+    final double yMeters = 7.33;
+
+    PathPlannerTrajectory trajectory1 = PathPlanner.generatePath(new PathConstraints(1, 1.5), 
+    PathPoint.fromCurrentHolonomicState(getPose(), getChassisSpeeds()),
+    new PathPoint(new Translation2d(xMeters, yMeters - 0.5), Rotation2d.fromDegrees(90), Rotation2d.fromDegrees(90)));
+
+    PathPlannerTrajectory trajectory2 = PathPlanner.generatePath(new PathConstraints(1, 1.5), 
+    new PathPoint(new Translation2d(xMeters, yMeters - 0.5), Rotation2d.fromDegrees(90), Rotation2d.fromDegrees(90)),
+    new PathPoint(new Translation2d(xMeters, yMeters), Rotation2d.fromDegrees(90), Rotation2d.fromDegrees(90)));
+
+    return (RobotContainer.swerveAutoBuilder.followPath(trajectory1).alongWith(new ProxyCommand(() -> RobotContainer.arm.goToSetpoint(Constants.SINGLE_POS, Rotation2d.fromDegrees(35))))).andThen(RobotContainer.swerveAutoBuilder.followPath(trajectory2));
   }
 
   public void setPose(Pose2d pose) {
@@ -326,7 +346,7 @@ public class SwerveDrive extends SubsystemBase {
   }
 
   public void holdAngleWhileDriving(double x, double y, Rotation2d setAngle, boolean fieldOriented) {
-    var rotateOutput = MathUtil.clamp(targetPid.calculate(poseEstimator.getEstimatedPosition().getRotation().getDegrees(), normalizeAngle(setAngle.getDegrees())), -1, 1) * kMaxAngularSpeed;
+    var rotateOutput = MathUtil.clamp(targetPid.calculate(poseEstimator.getEstimatedPosition().getRotation().getDegrees(), normalizeAngle(setAngle.getDegrees())), -1, 1) * kMaxAngularSpeedRadiansPerSecond;
     this.drive(x, y, rotateOutput, fieldOriented);
   }
 
@@ -352,7 +372,30 @@ public class SwerveDrive extends SubsystemBase {
    * 
    */
   public void updateOdometry() {
-    poseEstimator.updateWithTime(Timer.getFPGATimestamp(), getAngle(), getSwerveModulePositions());
+    var hasValidMeasurements = true;
+    var modulePositions = getSwerveModulePositions();
+    for (var i = 0; i < modulePositions.length; i++) {
+      var pos = modulePositions[i];
+      if (Double.isNaN(pos.distanceMeters) || Double.isNaN(pos.angle.getRadians())) {
+        DriverStation.reportError("Rejected module state! (index=" + i + ")", false);
+        hasValidMeasurements = false;
+        break;
+      }
+    }
+
+    if (hasValidMeasurements) {
+      poseEstimator.updateWithTime(Timer.getFPGATimestamp(), getAngle(), modulePositions);
+    }
+
+    var pose = poseEstimator.getEstimatedPosition();
+
+    if (!this.loggedPoseError && (Double.isNaN(pose.getX()) || Double.isNaN(pose.getY()))) {
+      this.loggedPoseError = true;
+      for(var pos : modulePositions) {
+        DriverStation.reportError("Bad module state! Check output for details.", false);
+        System.err.println("Bad module states: " + pos);
+      }
+    }
 
     Optional<EstimatedRobotPose> estimatedPose = photonCamera.getEstimatedGlobalPose();
     if (estimatedPose.isPresent()) {
@@ -368,8 +411,8 @@ public class SwerveDrive extends SubsystemBase {
         }
       }
 
-      if(minimum < 0.02 && poseEstimator.getEstimatedPosition().getTranslation().getDistance(getPose().getTranslation()) < 0.6) {
-        poseEstimator.addVisionMeasurement(Field.flipPose(robotPose.estimatedPose.toPose2d()), robotPose.timestampSeconds, VecBuilder.fill(distance * 3, distance * 3, 500));
+      if(minimum < 0.05 && poseEstimator.getEstimatedPosition().getTranslation().getDistance(getPose().getTranslation()) < 0.6 && distance < 3.5) {
+        poseEstimator.addVisionMeasurement(Field.flipPose(robotPose.estimatedPose.toPose2d()), robotPose.timestampSeconds, VecBuilder.fill(distance / 2, distance / 2, 500));
       }
     }
   }

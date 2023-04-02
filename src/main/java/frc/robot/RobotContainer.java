@@ -50,6 +50,7 @@ import frc.robot.subsystems.Grabber;
 import frc.robot.subsystems.Wrist;
 import frc.robot.subsystems.drive.SwerveDrive;
 import frc.robot.subsystems.lighting.LEDStrip;
+import frc.robot.subsystems.lighting.OldLEDStrip;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -113,7 +114,7 @@ public class RobotContainer {
   public static final Arm arm = new Arm();
   public static final Wrist wrist = new Wrist();
   public static final Grabber grabber = new Grabber();
-  //public static final LEDStrip leds = new LEDStrip();
+  public static final OldLEDStrip leds = new OldLEDStrip();
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -176,16 +177,19 @@ public class RobotContainer {
 
     Trigger slowDrive = driverController.leftTrigger(0.3);
     slowDrive.onTrue(new InstantCommand(() -> {
-      SwerveDrive.kMaxAngularSpeed = 0.75;
-      SwerveDrive.kMaxSpeed = Math.PI / 2.0;
+      SwerveDrive.kMaxAngularSpeedRadiansPerSecond = 0.75;
+      SwerveDrive.kMaxSpeedMetersPerSecond = Math.PI / 2.0;
     }));
     slowDrive.onFalse(new InstantCommand(() -> {
-      SwerveDrive.kMaxAngularSpeed = 2 * Math.PI;
-      SwerveDrive.kMaxSpeed = 3.5;
+      SwerveDrive.kMaxAngularSpeedRadiansPerSecond = 2 * Math.PI;
+      SwerveDrive.kMaxSpeedMetersPerSecond = 3.5;
     }));
 
     Trigger goToClosestNode = driverController.x();
     goToClosestNode.onTrue(new ProxyCommand(() -> swerveDrive.goToClosestNode()));
+
+    Trigger goToSingleSubstation = driverController.y();
+    goToSingleSubstation.onTrue(new ProxyCommand(() -> swerveDrive.goToSingleSubstation()));
 
     //Trigger wristDown = driverController.b();
     //wristDown.onTrue(new WristGoToAngle(() -> new Rotation2d(-Math.PI / 4)));
@@ -208,7 +212,7 @@ public class RobotContainer {
 
   /** Binds commands to the operator box. */
   private void configureOperatorBoxBindings() {
-    Trigger leftNode = new Trigger(operatorBox::leftNode);
+    Trigger leftNode = new Trigger(operatorBox::rightNode); // mirror button bc scoring facing drivers
     leftNode.onTrue(new ProxyCommand(
         () -> swerveDrive.goToNode(Field.aprilTagFromInput(operatorBox.getGrid()), operatorBox.getHeight() * 3)));
 
@@ -216,7 +220,7 @@ public class RobotContainer {
     midNode.onTrue(new ProxyCommand(
         () -> swerveDrive.goToNode(Field.aprilTagFromInput(operatorBox.getGrid()), operatorBox.getHeight() * 3 + 1)));
 
-    Trigger rightNode = new Trigger(operatorBox::rightNode);
+    Trigger rightNode = new Trigger(operatorBox::leftNode); // mirror button bc scoring facing drivers
     rightNode.onTrue(new ProxyCommand(
         () -> swerveDrive.goToNode(Field.aprilTagFromInput(operatorBox.getGrid()), operatorBox.getHeight() * 3 + 2)));
 
@@ -293,7 +297,7 @@ public class RobotContainer {
     Trigger waitForCone = new Trigger(operatorStick::waitForCone);
     waitForCone.onTrue(new InstantCommand(() -> grabber.waitForCone()));
 
-    Trigger coneIn = new Trigger(() -> (grabber.waiting && grabber.getSensor() && operatorBox.coneMode()));
+    Trigger coneIn = new Trigger(() -> (grabber.waiting && grabber.getSensor() && operatorBox.coneMode() && RobotState.isTeleop()));
     coneIn.onTrue(new SetGrabber(false)/*.alongWith(new InstantCommand(() -> grabber.stopWaitingForCone()))*/);
 
     Trigger singleSubstation = new Trigger(operatorStick::singleSubstation);
@@ -334,7 +338,7 @@ public class RobotContainer {
       if (!file.isDirectory() && file.getName().endsWith(".path")) {
         // remove ".path" from the name for PathPlanner
         var pathName = file.getName().replace(".path", "");
-        autoChooser.addOption(pathName, new AutoRoutine(PathPlanner.loadPathGroup(pathName, new PathConstraints(1.25, 2))));
+        autoChooser.addOption(pathName, new AutoRoutine(PathPlanner.loadPathGroup(pathName, new PathConstraints(1.4, 2))));
       }
     }
 

@@ -33,7 +33,7 @@ public class Wrist extends SubsystemBase {
 
   // wrist acts as an "arm" in code
   private final ArmFeedforward wristFeedForward;
-  private final Constraints wristConstraints = new TrapezoidProfile.Constraints(1.5, 10);
+  private final Constraints wristConstraints = new TrapezoidProfile.Constraints(1.5, 5);
   public TrapezoidProfile.State wristSetpoint = new TrapezoidProfile.State();
   private static final double kDt = 0.02;
   private static final double OFFSET = 1.98;
@@ -75,6 +75,7 @@ public class Wrist extends SubsystemBase {
     TrapezoidProfile profile = new TrapezoidProfile(wristConstraints,
         new TrapezoidProfile.State(toRelativeAngle(absoluteAngle).getRadians(), 0), wristSetpoint);
     wristSetpoint = profile.calculate(kDt);
+    SmartDashboard.putNumber("WristSetpointToRelativeGoal", toRelativeAngle(absoluteAngle).getRadians());
     // SmartDashboard.putNumber("WristAbsAngleSetpoint", toRelativeAngle(absoluteAngle).getRadians());
     // SmartDashboard.putNumber("wrist voltage ",
     //     wristFeedForward.calculate(getAbsoluteAngle().getRadians(), wristSetpoint.velocity));
@@ -84,6 +85,7 @@ public class Wrist extends SubsystemBase {
     // wristSetpoint.velocity));
     // SmartDashboard.putNumber("wristSetpointVel", wristSetpoint.velocity);
     // SmartDashboard.putNumber("WristError", wristPID.getVelocityError());
+    SmartDashboard.putNumber("wristSetpoint.velocity", wristSetpoint.velocity);
     SmartDashboard.putNumber("wristSetpoint.position", wristSetpoint.position);
     pivotMotor.setVoltage(wristFeedForward.calculate(getAbsoluteAngle().getRadians(), wristSetpoint.velocity)
         + wristPID.calculate(getRelativeAngle().getRadians(), wristSetpoint.position));

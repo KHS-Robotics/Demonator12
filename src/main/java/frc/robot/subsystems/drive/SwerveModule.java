@@ -9,6 +9,7 @@ package frc.robot.subsystems.drive;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import com.revrobotics.CANSparkMaxLowLevel.PeriodicFrame;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
 
@@ -19,6 +20,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
@@ -41,7 +43,7 @@ public class SwerveModule extends SubsystemBase {
   // private final SimpleMotorFeedforward pivotFeedForward;
 
   private final PIDController pivotPID;
-  public final DigitalInput setDetection;
+  public final DigitalInput setDetection; // talon tach
 
   /**
    * Constructs a Swerve Module.
@@ -63,9 +65,11 @@ public class SwerveModule extends SubsystemBase {
     this.name = name;
 
     driveMotor = new CANSparkMax(driveMotorChannel, MotorType.kBrushless);
+    driveMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus2, 10);
     pivotMotor = new CANSparkMax(pivotMotorChannel, MotorType.kBrushless);
+    pivotMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus2, 10);
     pivotMotor.setSmartCurrentLimit(30);
-    driveMotor.setSmartCurrentLimit(45);
+    driveMotor.setSmartCurrentLimit(55);
 
     pivotMotor.setIdleMode(IdleMode.kBrake);
     driveMotor.setIdleMode(IdleMode.kBrake);
@@ -75,9 +79,9 @@ public class SwerveModule extends SubsystemBase {
 
     driveEncoder = driveMotor.getEncoder();
     driveMotor.setInverted(false);
-    driveEncoder.setVelocityConversionFactor(Constants.DRIVE_VEL_ENCODER); // 4" diameter wheel (0.0508 meter radius),
-                                                                           // 8.33:1 -> 2*pi*0.0508 / 8.33
-    driveEncoder.setPositionConversionFactor(Constants.DRIVE_POS_ENCODER); // 4" diameter wheel (0.0508 meter radius),
+    driveEncoder.setVelocityConversionFactor(Constants.DRIVE_VEL_ENCODER); // 4" diameter wheel (0.0508 meter radius), , in meters/minute so divide by 60 to get meters/seconds
+                                                                           // 8.33:1 -> 2*pi*0.0508 / (8.33 * 60)
+    driveEncoder.setPositionConversionFactor(Constants.DRIVE_POS_ENCODER); // 4" diameter wheel (0.0508 meter radius)
                                                                            // 8.33:1 -> 2*pi*0.0508 / 8.33
 
     drivePID = driveMotor.getPIDController();
@@ -122,7 +126,11 @@ public class SwerveModule extends SubsystemBase {
   public void periodic() {
     //SmartDashboard.putNumber(name + "-Drive", getState().speedMetersPerSecond);
     //SmartDashboard.putNumber(name + "-Pivot", getAngle());
-    //SmartDashboard.putBoolean(name + "-Homed", !setDetection.get());
+    SmartDashboard.putBoolean("SwerveModule-" + name + "-Homed", isHomed());
+    
+    // var state = getState();
+    // SmartDashboard.putNumber("SwerveModule-" + name + "-Translation", state.speedMetersPerSecond);
+    // SmartDashboard.putNumber("SwerveModule-" + name + "-Rotation", state.angle.getDegrees());
   }
 
   /**
@@ -169,7 +177,6 @@ public class SwerveModule extends SubsystemBase {
    * @param state desired state with the speed and angle
    */
   public void setDesiredState(SwerveModuleState state) {
-
     setDesiredState(state, true);
   }
 
@@ -227,18 +234,28 @@ public class SwerveModule extends SubsystemBase {
 
   /**
    * For homing the modules
-   *
    * @return true if module is homed
    */
   public boolean resetEncoder() {
-    if (setDetection.get()) { // sensor inverted
-      pivotMotor.set(-0.065);
-      return false;
-    } else {
+    var isHomed = isHomed();
+    
+    if (isHomed) {
       pivotMotor.set(0);
       pivotEncoder.setPosition(0.0);
-      return true;
+    } else {
+      pivotMotor.set(-0.065);
     }
+
+    return isHomed;
+  }
+
+  /**
+   * Gets if the module is at the home position using the talon tach.
+   * @return true if module is homed, false otherwise
+   */
+  public boolean isHomed() {
+    // sensor "inverted"
+    return !this.setDetection.get();
   }
 
   /**
