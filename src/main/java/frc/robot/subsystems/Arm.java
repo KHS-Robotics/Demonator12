@@ -72,8 +72,8 @@ public class Arm extends SubsystemBase {
     extendFeedForward = new SimpleMotorFeedforward(Constants.EXTEND_KS, Constants.EXTEND_KV, Constants.EXTEND_KA);
     extendPID = new PIDController(Constants.EXTEND_P, Constants.EXTEND_I, Constants.EXTEND_D);
 
-    pivotConstraints = new TrapezoidProfile.Constraints(1.5, 3);
-    extendConstraints = new TrapezoidProfile.Constraints(2.25, 2.25);
+    pivotConstraints = new TrapezoidProfile.Constraints(2, 3);
+    extendConstraints = new TrapezoidProfile.Constraints(3, 3);
 
 
     this.kAL = 1.22566276313;

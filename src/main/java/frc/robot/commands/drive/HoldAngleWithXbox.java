@@ -16,7 +16,7 @@ public class HoldAngleWithXbox extends CommandBase {
   // Called just before this Command runs the first time
   @Override
   public void initialize() {
-    this.angleSetpoint = RobotContainer.swerveDrive.getAngle();
+    this.angleSetpoint = RobotContainer.swerveDrive.getPose().getRotation();
   }
 
   // Called repeatedly when this Command is scheduled to run
@@ -25,12 +25,18 @@ public class HoldAngleWithXbox extends CommandBase {
 
     // Get the x speed. We are inverting this because Xbox controllers return
     // negative values when we push forward.
-    var xSpeed = RobotContainer.swerveDrive.sensControl(-RobotContainer.driverController.getLeftY()) * SwerveDrive.kMaxSpeedMetersPerSecond;
+    var xSpeed = 0.0;
+    if (Math.abs(RobotContainer.driverController.getLeftY()) > 0.05) {
+      xSpeed = RobotContainer.swerveDrive.sensControl(-RobotContainer.driverController.getLeftY()) * SwerveDrive.kMaxSpeedMetersPerSecond;
+    }
 
     // Get the y speed or sideways/strafe speed. We are inverting this because
     // we want a positive value when we pull to the left. Xbox controllers
     // return positive values when you pull to the right by default.
-    var ySpeed = RobotContainer.swerveDrive.sensControl(-RobotContainer.driverController.getLeftX()) * SwerveDrive.kMaxSpeedMetersPerSecond;
+    var ySpeed = 0.0;
+    if (Math.abs(RobotContainer.driverController.getLeftX()) > 0.05) {
+      ySpeed = RobotContainer.swerveDrive.sensControl(-RobotContainer.driverController.getLeftX()) * SwerveDrive.kMaxSpeedMetersPerSecond;
+    }
     fieldRelative = (RobotContainer.driverController.getRightTriggerAxis() < 0.3);
     RobotContainer.swerveDrive.holdAngleWhileDriving(xSpeed, ySpeed, angleSetpoint, fieldRelative);
   }

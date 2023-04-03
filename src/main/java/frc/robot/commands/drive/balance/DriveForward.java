@@ -9,7 +9,7 @@ public class DriveForward extends CommandBase {
     double speed;
     boolean reverse;
 
-  DriveForward(double yaw, boolean reverse, double speed) {
+  public DriveForward(double yaw, boolean reverse, double speed) {
     this.addRequirements(RobotContainer.swerveDrive);
     this.yaw = yaw;
     this.reverse = reverse;

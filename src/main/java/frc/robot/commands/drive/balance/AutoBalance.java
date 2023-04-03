@@ -10,20 +10,14 @@ public class AutoBalance extends CommandBase {
   private Timer backUpTimer = new Timer();
   private boolean isTimerRunning, isBackUpTimerRunning;
 
-  private boolean reverse;
-  private double slopeTolerance = 6.7;
-  private final double balanceSpeedMetersPerSecond = 0.15, levelPitch = 5, elapsedTimeToConsiderLevelInSeconds = 1;
+  private double slopeTolerance = 8.5;
+  private final double balanceSpeedMetersPerSecond = 0.225, levelPitch = 5, elapsedTimeToConsiderLevelInSeconds = 1;
   private double yaw, slope, currentPitch, previousPitch;
   private static final double dt = 0.02;
 
-  public AutoBalance(double yaw, boolean reverse) {
+  public AutoBalance(double yaw) {
     this.addRequirements(RobotContainer.swerveDrive);
     this.yaw = yaw;
-    this.reverse = reverse;
-  }
-
-  public AutoBalance(double yaw) {
-    this(yaw, false);
   }
 
   @Override
@@ -34,6 +28,7 @@ public class AutoBalance extends CommandBase {
   @Override
   public void execute() {
     currentPitch = RobotContainer.getRobotPitch();
+    SmartDashboard.putNumber("Pitch", currentPitch);
     slope = (currentPitch - previousPitch) / dt;
     SmartDashboard.putNumber("AutoBalanceSlope", slope);
 
@@ -48,11 +43,11 @@ public class AutoBalance extends CommandBase {
 
     SmartDashboard.putBoolean("AutoBalanceIsAscending", isAscending);
     if (isAscending) {
-      var xSpeed = (reverse ? -1 : 1) * Math.signum(currentPitch) * balanceSpeedMetersPerSecond;
+      var xSpeed = Math.signum(currentPitch) * balanceSpeedMetersPerSecond;
       RobotContainer.swerveDrive.holdAngleWhileDriving(xSpeed, 0, yaw, false);
       backUpTimer.reset();
-    } else if(!backUpTimer.hasElapsed(0.15)) {
-      var xSpeed = (reverse ? -1 : 1) * Math.signum(currentPitch) * balanceSpeedMetersPerSecond;
+    } else if(!backUpTimer.hasElapsed(0.1)) {
+      var xSpeed = Math.signum(currentPitch) * balanceSpeedMetersPerSecond;
       RobotContainer.swerveDrive.holdAngleWhileDriving(- xSpeed / 2.0, 0, yaw, false);
     } else {
       RobotContainer.swerveDrive.lock();

@@ -31,13 +31,19 @@ public class DriveSwerveWithXbox extends CommandBase {
 
     // Get the x speed. We are inverting this because Xbox controllers return
     // negative values when we push forward.
-    var xSpeed = RobotContainer.swerveDrive.sensControl(-RobotContainer.driverController.getLeftY()) * SwerveDrive.kMaxSpeedMetersPerSecond;
+    var xSpeed = 0.0;
+    if (Math.abs(RobotContainer.driverController.getLeftY()) > 0.05) {
+      xSpeed = RobotContainer.swerveDrive.sensControl(-RobotContainer.driverController.getLeftY()) * SwerveDrive.kMaxSpeedMetersPerSecond;
+    }
     SmartDashboard.putNumber("xSpeed", xSpeed);
 
     // Get the y speed or sideways/strafe speed. We are inverting this because
     // we want a positive value when we pull to the left. Xbox controllers
     // return positive values when you pull to the right by default.
-    var ySpeed = RobotContainer.swerveDrive.sensControl(-RobotContainer.driverController.getLeftX())  * SwerveDrive.kMaxSpeedMetersPerSecond;
+    var ySpeed = 0.0;
+    if (Math.abs(RobotContainer.driverController.getLeftX()) > 0.05) {
+      ySpeed = RobotContainer.swerveDrive.sensControl(-RobotContainer.driverController.getLeftX())  * SwerveDrive.kMaxSpeedMetersPerSecond;
+    }
     SmartDashboard.putNumber("ySpeed", ySpeed);
 
     // Get the rate of angular rotation. We are inverting this because we want a

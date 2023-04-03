@@ -136,6 +136,7 @@ public class Wrist extends SubsystemBase {
     SmartDashboard.putNumber("WristRelativeAngle", getAngle());
     SmartDashboard.putNumber("WristAbsoluteAngle", getAbsoluteAngle().getRadians());
     SmartDashboard.putNumber("WristSetpoint", wristSetpoint.position);
+    SmartDashboard.putNumber("WristVelocity", getVelocity());
   }
 
   public boolean getTopTalonTach() {
