@@ -71,11 +71,7 @@ public class Grabber extends SubsystemBase {
   }
 
   public void set(double speed) {
-    if(getSensor()) {
-      intakeMotor.setVoltage(MathUtil.clamp(-12 * speed, -12, 1));
-    } else {
       intakeMotor.setVoltage(-12 * speed);
-    }
   }
 
   public void stopMotor() {

@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants;
 import frc.robot.RobotContainer;
 import frc.robot.RobotMap;
+import frc.robot.subsystems.drive.SwerveDrive;
 public class OldLEDStrip extends SubsystemBase {
   Thread t;
   AddressableLED strip;
@@ -115,6 +116,27 @@ public class OldLEDStrip extends SubsystemBase {
     }
   }
 
+  
+  public void calibratePattern() {
+    ticksPerSecond = 10;
+        boolean frontLeftCalibrated = !SwerveDrive.frontLeft.setDetection.get();
+        for (int i = 0; i < 3; i++) {
+            setRGBMirrored(i, frontLeftCalibrated ? 0 : 255, frontLeftCalibrated ? 255 : 0, 0);
+        }
+        boolean frontRightCalibrated = !SwerveDrive.frontRight.setDetection.get();
+        for (int i = 4; i < 7; i++) {
+            setRGBMirrored(i, frontRightCalibrated ? 0 : 255, frontRightCalibrated ? 255 : 0, 0);
+        }
+        boolean rearLeftCalibrated = !SwerveDrive.rearLeft.setDetection.get();
+        for (int i = 8; i < 11; i++) {
+            setRGBMirrored(i, rearLeftCalibrated ? 0 : 255, rearLeftCalibrated ? 255 : 0, 0);
+        }
+        boolean rearRightCalibrated = !SwerveDrive.rearRight.setDetection.get();
+        for (int i = 12; i < 15; i++) {
+            setRGBMirrored(i, rearRightCalibrated ? 0 : 255, rearRightCalibrated ? 255 : 0, 0);
+        }
+  }
+
   /*
   public void blueStack() {
     ticksPerSecond = 10;
@@ -141,7 +163,7 @@ public class OldLEDStrip extends SubsystemBase {
 
   public void update() {
     if (RobotContainer.swerveDrive != null && !RobotContainer.swerveDrive.isCalibrated) {
-      runRainbow();
+      calibratePattern();
     }
     else if (RobotState.isDisabled() || RobotState.isAutonomous()) {
       if(DriverStation.getAlliance().equals(Alliance.Red)) {

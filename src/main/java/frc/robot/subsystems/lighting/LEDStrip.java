@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.RobotContainer;
 import frc.robot.RobotMap;
+import frc.robot.subsystems.drive.SwerveDrive;
 import frc.robot.subsystems.lighting.patterns.AllBlue;
 import frc.robot.subsystems.lighting.patterns.AllRed;
 import frc.robot.subsystems.lighting.patterns.BlueWave;
@@ -65,6 +66,7 @@ public class LEDStrip extends SubsystemBase {
       setAllRGB(0, 0, 255);
     }
   }
+
 
   // LEDPattern calls this, don't worry about it when making a new pattern
   public static void update() {

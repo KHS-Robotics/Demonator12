@@ -162,8 +162,8 @@ public class RobotContainer {
         () -> (!swerveDrive.isCalibrated && RobotState.isTeleop() && RobotState.isEnabled()));
     autoCalibrateTeleop.onTrue(new CenterSwerveModules(true));
     
-    Trigger autoPullIn = new Trigger(() -> operatorBox.cubeMode() && grabber.getSensor());
-    autoPullIn.onTrue(new AutoPullIn());
+    //Trigger autoPullIn = new Trigger(() -> operatorBox.cubeMode() && grabber.getSensor());
+    //autoPullIn.onTrue(new AutoPullIn());
   }
 
   /** Binds commands to xbox controller buttons. */
@@ -399,6 +399,7 @@ public class RobotContainer {
         AutonomousEventMap.put("Hold", new ArmHoldSetpoint().alongWith(new WristHoldSetpoint()));
         AutonomousEventMap.put("Floor", RobotContainer.arm.goToSetpoint(Constants.FLOOR_POS, Rotation2d.fromDegrees(0)));
         AutonomousEventMap.put("Outtake", new InstantCommand(() -> RobotContainer.grabber.set(0.35)));
+        AutonomousEventMap.put("OuttakeFast", new InstantCommand(() -> RobotContainer.grabber.set(1)));
         AutonomousEventMap.put("Intake", new InstantCommand(() -> RobotContainer.grabber.set(-0.7)));
         AutonomousEventMap.put("PlaceHighCube", RobotContainer.arm.goToSetpoint(Constants.CUBE_HIGH_POS, new Rotation2d()));
     }
