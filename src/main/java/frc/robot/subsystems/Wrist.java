@@ -87,8 +87,10 @@ public class Wrist extends SubsystemBase {
     // SmartDashboard.putNumber("WristError", wristPID.getVelocityError());
     SmartDashboard.putNumber("wristSetpoint.velocity", wristSetpoint.velocity);
     SmartDashboard.putNumber("wristSetpoint.position", wristSetpoint.position);
-    pivotMotor.setVoltage(wristFeedForward.calculate(getAbsoluteAngle().getRadians(), wristSetpoint.velocity)
-        + wristPID.calculate(getRelativeAngle().getRadians(), wristSetpoint.position));
+
+    var output = wristFeedForward.calculate(getAbsoluteAngle().getRadians(), wristSetpoint.velocity) + wristPID.calculate(getRelativeAngle().getRadians(), wristSetpoint.position);
+    SmartDashboard.putNumber("wristVoltageCalc", output) ;
+    pivotMotor.setVoltage(output);
   }
 
   public double getVoltage() {
@@ -137,6 +139,7 @@ public class Wrist extends SubsystemBase {
     SmartDashboard.putNumber("WristAbsoluteAngle", getAbsoluteAngle().getRadians());
     SmartDashboard.putNumber("WristSetpoint", wristSetpoint.position);
     SmartDashboard.putNumber("WristVelocity", getVelocity());
+    SmartDashboard.putNumber("wristVoltage", pivotMotor.getAppliedOutput());
   }
 
   public boolean getTopTalonTach() {

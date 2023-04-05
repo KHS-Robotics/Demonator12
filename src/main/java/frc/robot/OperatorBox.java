@@ -37,7 +37,7 @@ public class OperatorBox extends Joystick {
     return this.getRawButton(2 /* ABORT BUTTON ID */);
   }
 
-  public boolean zeroArmLength() {
+  public boolean highConeKnockedOver() {
     return this.getRawButton(3 /* ZERO ARM LENGTH BUTTON ID */);
   }
 
@@ -47,7 +47,7 @@ public class OperatorBox extends Joystick {
   // }
   
 
-  public boolean zeroWristPivot() {
+  public boolean midConeKnockedOver() {
     return this.getRawButton(4 /* ZERO WRIST PIVOT BUTTON ID */);
   }
 

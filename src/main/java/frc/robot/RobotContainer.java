@@ -233,8 +233,11 @@ public class RobotContainer {
     // Trigger zeroArmPivot = new Trigger(operatorBox::zeroArmPivot);
     // zeroArmPivot.onTrue(new InstantCommand(() -> arm.zeroArmPivot()));
 
-    Trigger zeroArmLength = new Trigger(operatorBox::zeroArmLength);
-    zeroArmLength.onTrue(new InstantCommand(() -> arm.zeroArmLength()));
+    Trigger highConeKnockedOver = new Trigger(operatorBox::highConeKnockedOver);
+    highConeKnockedOver.onTrue(new ProxyCommand(() -> RobotContainer.arm.goToSetpoint(Constants.HIGH_POS_KNOCKED_OVER, Rotation2d.fromRadians(-0.90))));
+    
+    Trigger midConeKnockedOver = new Trigger(operatorBox::midConeKnockedOver);
+    midConeKnockedOver.onTrue(new ProxyCommand(() -> RobotContainer.arm.goToSetpoint(Constants.MID_POS_KNOCKED_OVER, Rotation2d.fromRadians(-0.90))));
   }
 
   /** Binds commands to the operator stick. */

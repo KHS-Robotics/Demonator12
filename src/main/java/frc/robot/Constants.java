@@ -36,6 +36,10 @@ public class Constants {
       Units.inchesToMeters(44.5));
   public static final Translation3d CUBE_MID_POS = new Translation3d(Units.inchesToMeters(30), Units.inchesToMeters(0),
       Units.inchesToMeters(32.5));
+  public static final Translation3d HIGH_POS_KNOCKED_OVER = new Translation3d(Units.inchesToMeters(48.73), Units.inchesToMeters(0),
+      Units.inchesToMeters(56));
+  public static final Translation3d MID_POS_KNOCKED_OVER = new Translation3d(Units.inchesToMeters(35), Units.inchesToMeters(0),
+  Units.inchesToMeters(43));
   public static final Translation3d SHELF_POS = new Translation3d(Units.inchesToMeters(40), 0, Units.inchesToMeters(42));
   public static final Translation3d FLOOR_POS = new Translation3d(Units.inchesToMeters(34.5), 0, Units.inchesToMeters(7));
   public static final Translation3d SINGLE_POS = new Translation3d(Units.inchesToMeters(32), 0, Units.inchesToMeters(32));
