@@ -1,19 +1,11 @@
 package frc.robot.subsystems.lighting;
 
-import java.util.HashMap;
-
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj.util.Color;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants;
 import frc.robot.RobotContainer;
 import frc.robot.RobotMap;
@@ -188,55 +180,4 @@ public class OldLEDStrip extends SubsystemBase {
   public void periodic() {
     // this runs off thread so it doesn't stutter
   }
-
-  public void readMessageMorse(String message) {
-    HashMap<Character, String> morseMap = new HashMap<>();
-    morseMap.put('a', ".-");
-    morseMap.put('b', "-...");
-    morseMap.put('c', "-.-.");
-    morseMap.put('d', "-..");
-    morseMap.put('e', ".");
-    morseMap.put('f', "..-.");
-    morseMap.put('g', "--.");
-    morseMap.put('h', "....");
-    morseMap.put('i', "..");
-    morseMap.put('j', ".---");
-    morseMap.put('k', "-.-");
-    morseMap.put('l', ".-..");
-    morseMap.put('m', "--");
-    morseMap.put('n', "-.");
-    morseMap.put('o', "---");
-    morseMap.put('p', ".--.");
-    morseMap.put('q', "--.-");
-    morseMap.put('r', ".-.");
-    morseMap.put('s', "...");
-    morseMap.put('t', "-");
-    morseMap.put('u', "..-");
-    morseMap.put('v', "...-");
-    morseMap.put('w', ".--");
-    morseMap.put('x', "-..-");
-    morseMap.put('y', "-.--");
-    morseMap.put('z', "--..");
-    SequentialCommandGroup morseSequentialCommandGroup = new SequentialCommandGroup();
-    message = message.toLowerCase();
-    for (int i = 0; i < message.length(); i++) {
-      char c = message.charAt(i);
-      String morseCode = morseMap.get(c);
-      if (morseCode != null) {
-        for (int j = 0; i < morseCode.length(); i++) {
-          if(morseCode.charAt(i) == '-') {
-            morseSequentialCommandGroup.addCommands(new InstantCommand(() -> setAllAllianceColor()).andThen(new WaitCommand(3 / ticksPerSecond)).andThen(new InstantCommand(()-> setAllOff())).andThen(new WaitCommand(1 / ticksPerSecond)));
-          } else if(morseCode.charAt(i) == '.') {
-            morseSequentialCommandGroup.addCommands(new InstantCommand(() -> setAllAllianceColor()).andThen(new WaitCommand(1 / ticksPerSecond)).andThen(new InstantCommand(()-> setAllOff())).andThen(new WaitCommand(1 / ticksPerSecond)));
-          }
-        }
-        morseSequentialCommandGroup.addCommands(new WaitCommand(2 / ticksPerSecond));
-      } else {
-        morseSequentialCommandGroup.addCommands(new WaitCommand(4 / ticksPerSecond));
-      }
-    }
-    CommandScheduler.getInstance().schedule(morseSequentialCommandGroup);
-  }
-
-
 }

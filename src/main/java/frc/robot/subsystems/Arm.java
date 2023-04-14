@@ -6,7 +6,6 @@ import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
-import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -39,7 +38,6 @@ public class Arm extends SubsystemBase {
   private final CANSparkMax extendMotor;
   private final RelativeEncoder extendEncoder;
 
-  private final ArmFeedforward armFeedForward;
   private final PIDController armPID;
   public double armPivotSetpointRadians = 0.5, armLengthSetpoint = Constants.MIN_LENGTH;
   public TrapezoidProfile.State pivotSetpoint = new TrapezoidProfile.State();
@@ -66,7 +64,6 @@ public class Arm extends SubsystemBase {
                                                                                     // ratio
     extendEncoder.setVelocityConversionFactor(Units.inchesToMeters(Math.PI) / (3.2 * 60));
 
-    armFeedForward = new ArmFeedforward(Constants.ARM_KS, Constants.ARM_KG, Constants.ARM_KV, Constants.ARM_KA);
     armPID = new PIDController(Constants.ARM_P, Constants.ARM_I, Constants.ARM_D);
 
     extendFeedForward = new SimpleMotorFeedforward(Constants.EXTEND_KS, Constants.EXTEND_KV, Constants.EXTEND_KA);
@@ -91,15 +88,9 @@ public class Arm extends SubsystemBase {
 
   @Override
   public void periodic() {
-    var translation = getTranslation();
-    SmartDashboard.putNumber("ArmPivotSetpoint", this.armPivotSetpointRadians);
     SmartDashboard.putNumber("ArmPivot", this.getAngle().getRadians());
     SmartDashboard.putNumber("ArmLength", getLength());
-    SmartDashboard.putBoolean("isLegalH", isLegalHeight(translation));
-    SmartDashboard.putBoolean("isLegalE", isLegalExtension(translation));
 
-    SmartDashboard.putNumber("ExtendArmSetpoint", lengthSetpoint.position);
-    SmartDashboard.putNumber("ExtendArmPosition", getLength());
   }
 
   // converts point from robot relative to arm relative
@@ -129,17 +120,13 @@ public class Arm extends SubsystemBase {
   }
 
   public void setLengthV(double vLength) {
-    var voltage = extendFeedForward.calculate(vLength) //+ extendPID.calculate(getLengthV(), vLength)
-        + Constants.EXTEND_KG * Math.sin(this.getAngle().getRadians());
-    extendMotor.setVoltage(voltage);
-    SmartDashboard.putNumber("ExtendVoltage", voltage);
+    extendMotor.setVoltage(calcLengthV(vLength));
   }
 
   public double calcLengthV(double vLength) {
     var voltage = extendFeedForward.calculate(vLength)
-        + Constants.EXTEND_KG * Math.sin(this.getAngle().getRadians()) + Constants.EXTEND_KSPRING;
+        + Constants.EXTEND_KG * Math.sin(this.getAngle().getRadians());
     // extendMotor.setVoltage(voltage);
-    SmartDashboard.putNumber("ExtendVoltage", voltage);
     return voltage;
   }
 
@@ -155,7 +142,6 @@ public class Arm extends SubsystemBase {
   public void setAngleV(double vAngle) {
     var voltage = calcVoltagePivot(vAngle);
     pivotMotor.setVoltage(voltage);
-    SmartDashboard.putNumber("PivotVoltage", voltage);
   }
 
   public double getAngleV() {
@@ -167,7 +153,6 @@ public class Arm extends SubsystemBase {
   public double calcVoltagePivot(double vAngle) {
     double accel = 0;
     var gravityTerm = (getLength() * Constants.ARM_KG * Math.cos(getAngle().getRadians() + vAngle * kDt));
-    SmartDashboard.putNumber("ArmGravityTerm", gravityTerm);
     return calcSpringVoltage(getAngle().getRadians()) + Constants.ARM_KS * Math.signum(vAngle)
         + Constants.ARM_KV * vAngle + gravityTerm + Math.pow(getLength(), 2) * kAL * accel;
   }
@@ -179,7 +164,6 @@ public class Arm extends SubsystemBase {
     double height = Units.metersToInches(Constants.ARMOFFSET.getZ()) - 5;
     double armAngle = getAngle().getRadians();
     double forceAngle = Math.atan2(height - (length * Math.sin(armAngle)), length * Math.cos(armAngle) - 6);
-    SmartDashboard.putNumber("forceAngle", forceAngle);
     double torque = force * Math.sin(forceAngle) * length * Math.cos(armAngle);
     return -torque * voltagePerTorque;
   }
@@ -191,12 +175,7 @@ public class Arm extends SubsystemBase {
     SmartDashboard.putNumber("PivotSetpointPosition", pivotSetpoint.position);
 
     var armPidOutput = armPID.calculate(getAngle().getRadians(), pivotSetpoint.position);
-    pivotMotor.setVoltage(calcAngleV(pivotSetpoint.velocity) + armPidOutput);
-  }
-
-  public double calcAngleV(double vAngle) {
-    var voltage = calcVoltagePivot(vAngle);
-    return voltage;
+    pivotMotor.setVoltage(calcVoltagePivot(pivotSetpoint.velocity) + armPidOutput);
   }
 
 
@@ -236,7 +215,6 @@ public class Arm extends SubsystemBase {
   public boolean isLegalExtension(Translation3d target) {
     var x = this.getFurthestPoint(target).getX(); 
     var limit = Units.inchesToMeters(59.5); // 45 IN + 16 IN (HALF OF CHASSIS);
-    SmartDashboard.putNumber("ArmX-Inches", Units.metersToInches(x));
     return x < limit;
   }
 
@@ -245,7 +223,6 @@ public class Arm extends SubsystemBase {
     // legal 78")
     var y = this.getFurthestPoint(target).getY();
     var limit = Units.inchesToMeters(72);
-    SmartDashboard.putNumber("ArmY-Inches", Units.metersToInches(y));
     return y < limit;
   }
 
@@ -278,35 +255,6 @@ public class Arm extends SubsystemBase {
     }
     return command;
   }
-
-  //goes to a setpoint while avoiding collision. It does this by first turning the wrist, then if going further it pivots then extend. If retracting it first retracts then pivots.
-  public Command goToSetpointAuto(Translation3d target, Rotation2d wristAngle) {
-    var wristTranslation = new Translation3d(Constants.GRIPPERHOLDDISTANCE,
-    new Rotation3d(0, -wristAngle.getRadians(), 0));
-    target = target.minus(wristTranslation);
-    double rotToPoint = rotToPoint(target).getRadians();
-    double lengthToPoint = lengthToPoint(target);
-      
-    armTranslaton = target;
-
-
-    var command = new SequentialCommandGroup();
-    if (isFurther(target)) {
-      //wrist, then pivot, then length
-      command = new SequentialCommandGroup(
-          new InstantCommand(() -> RobotContainer.wrist.setAngleSetpoint(wristAngle)),
-          (new ArmControlPivot(rotToPoint).andThen(
-          new ArmControlLength(lengthToPoint))));
-    } else {
-      //wrist, then length, then pivot
-      command = new SequentialCommandGroup(
-          new InstantCommand(() -> RobotContainer.wrist.setAngleSetpoint(wristAngle)),
-          (new ArmControlLength(lengthToPoint)).andThen(
-          new ArmControlPivot(rotToPoint)));
-    }
-    return command;
-  }
-
   /*goes to a setpoint while still trying to avoid collision (might be a bit risky). 
   If extending and the arm is pivoted higher than it needs to be, it should perform all 3 commands in parrallel
   If retracting and the arm is pivoted lower than it needs to be it should perform all 3 commands in parrallel 

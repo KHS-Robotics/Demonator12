@@ -70,9 +70,6 @@ public class SwerveDrive extends SubsystemBase {
       Constants.PIVOT_P,
       Constants.PIVOT_I,
       Constants.PIVOT_D,
-      Constants.PIVOT_KS,
-      Constants.PIVOT_KV,
-      Constants.PIVOT_KA,
       Constants.DRIVE_P,
       Constants.DRIVE_I,
       Constants.DRIVE_D,
@@ -87,9 +84,6 @@ public class SwerveDrive extends SubsystemBase {
       Constants.PIVOT_P,
       Constants.PIVOT_I,
       Constants.PIVOT_D,
-      Constants.PIVOT_KS,
-      Constants.PIVOT_KV,
-      Constants.PIVOT_KA,
       Constants.DRIVE_P,
       Constants.DRIVE_I,
       Constants.DRIVE_D,
@@ -104,9 +98,6 @@ public class SwerveDrive extends SubsystemBase {
       Constants.PIVOT_P,
       Constants.PIVOT_I,
       Constants.PIVOT_D,
-      Constants.PIVOT_KS,
-      Constants.PIVOT_KV,
-      Constants.PIVOT_KA,
       Constants.DRIVE_P,
       Constants.DRIVE_I,
       Constants.DRIVE_D,
@@ -121,9 +112,6 @@ public class SwerveDrive extends SubsystemBase {
       Constants.PIVOT_P,
       Constants.PIVOT_I,
       Constants.PIVOT_D,
-      Constants.PIVOT_KS,
-      Constants.PIVOT_KV,
-      Constants.PIVOT_KA,
       Constants.DRIVE_P,
       Constants.DRIVE_I,
       Constants.DRIVE_D,
@@ -220,15 +208,10 @@ public class SwerveDrive extends SubsystemBase {
   }
 
   public Command goToNode(int apriltag, int node) {
-    SmartDashboard.putNumber("GoToNodeTag", apriltag);
-    SmartDashboard.putNumber("GoToNodeNode", node);
     Rotation2d heading;
 
 
     Translation3d nodeTrans = Field.getNodeCoordinatesFieldRelative(apriltag, node);
-
-    SmartDashboard.putNumber("GoToNodeTransX", nodeTrans.getX());
-    SmartDashboard.putNumber("GoToNodeTransY", nodeTrans.getY());
     ChassisSpeeds currentSpeeds = getChassisSpeeds();
 
     double linearVel =
@@ -318,24 +301,6 @@ public class SwerveDrive extends SubsystemBase {
     poseEstimator.resetPosition(getAngle(), getSwerveModulePositions(), pose);
   }
 
-  /*public Command followTrajectoryCommand(PathPlannerTrajectory trajectory, boolean isAutoPath) {
-    return new SequentialCommandGroup(
-        new InstantCommand(() -> {
-          if (isAutoPath) {
-            this.poseEstimator.resetPosition(getAngle(), getSwerveModulePositions(),
-                PathPlannerTrajectory.transformStateForAlliance(trajectory.getInitialState(), DriverStation.getAlliance()).poseMeters);
-          }
-        }),
-        new PPSwerveControllerCommandReversed(
-            trajectory,
-            this::getPose,
-            new PIDController(0, 0, 0.1),
-            new PIDController(0, 0, 0.1),
-            new PIDController(0, 0, 0),
-            this::setModuleStates,
-            true,
-            this));
-  }*/
 
   public void setPID(double p, double i, double d) {
     targetPid.setPID(p, i, d);

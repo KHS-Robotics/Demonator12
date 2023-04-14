@@ -53,9 +53,6 @@ public class Constants {
   public static final double PIVOT_P = 0.01;
   public static final double PIVOT_I = 0.0;
   public static final double PIVOT_D = 0.0001;
-  public static final double PIVOT_KS = 2.2064E-06;
-  public static final double PIVOT_KV = 0.0;
-  public static final double PIVOT_KA = 0.0;
 
   public static final double DRIVE_P = 0.01;
   public static final double DRIVE_I = 0;
@@ -72,8 +69,6 @@ public class Constants {
   public static final double ARM_KV = 4.5387;
   public static final double ARM_KA = 0.27838;
 
-  public static final double ARM_START_ANGLE = Math.toRadians(35);
-
   public static final double EXTEND_P = 7.5;
   public static final double EXTEND_I = 2.2;
   public static final double EXTEND_D = 0.3;
@@ -81,7 +76,6 @@ public class Constants {
   public static final double EXTEND_KV = 5.3504;
   public static final double EXTEND_KA = 0.33319;
   public static final double EXTEND_KG = 0.88663;
-  public static final double EXTEND_KSPRING = 0;
 
   public static final double WRIST_P = 4;
   public static final double WRIST_I = 0.4;

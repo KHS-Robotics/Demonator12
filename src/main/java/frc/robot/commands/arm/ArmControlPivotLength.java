@@ -31,7 +31,6 @@ public class ArmControlPivotLength extends CommandBase {
     RobotContainer.arm.lengthSetpoint = new TrapezoidProfile.State(RobotContainer.arm.getLength(),
         RobotContainer.arm.getLengthV());
       
-    SmartDashboard.putNumber("ArmLengthSetpoint", length);
 
     RobotContainer.arm.resetPivotPID();
     RobotContainer.arm.resetExtendPID();
@@ -43,7 +42,6 @@ public class ArmControlPivotLength extends CommandBase {
     RobotContainer.arm.setAngle(angle);
     RobotContainer.arm.setLength(length);
 
-    SmartDashboard.putNumber("ArmLengthError", Math.abs(RobotContainer.arm.getLength() - length));
   }
 
   // Make this return true when this Command no longer needs to run execute()

@@ -59,7 +59,7 @@ public class SwerveModule extends SubsystemBase {
    * @param reversed          true if drive motor is reversed
    */
   public SwerveModule(String name, int driveMotorChannel, int pivotMotorChannel, double pivotP, double pivotI,
-      double pivotD, double pivotkS, double pivotkV, double pivotkA, double driveP, double driveI, double driveD,
+      double pivotD, double driveP, double driveI, double driveD,
       double drivekS, double drivekV, double drivekA, int digitalInputPort, boolean reversed) {
 
     this.name = name;
@@ -116,9 +116,9 @@ public class SwerveModule extends SubsystemBase {
    *                          pivots
    */
   public SwerveModule(String name, int driveMotorChannel, int pivotMotorChannel, double pivotP, double pivotI,
-      double pivotD, double pivotkS, double pivotkV, double pivotkA, double driveP, double driveI, double driveD,
+      double pivotD, double driveP, double driveI, double driveD,
       double drivekS, double drivekV, double drivekA, int digitalInputPort) {
-    this(name, driveMotorChannel, pivotMotorChannel, pivotP, pivotI, pivotD, pivotkS, pivotkV, pivotkA, driveP, driveI,
+    this(name, driveMotorChannel, pivotMotorChannel, pivotP, pivotI, pivotD, driveP, driveI,
         driveD, drivekS, drivekV, drivekA, digitalInputPort, false);
   }
 

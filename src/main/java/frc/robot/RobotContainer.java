@@ -44,7 +44,6 @@ import frc.robot.commands.drive.balance.ApproachChargeStation;
 import frc.robot.commands.drive.balance.BalanceSequence;
 import frc.robot.commands.drive.balance.DriveForward;
 import frc.robot.commands.drive.balance.DriveOverThenBalanceSequence;
-import frc.robot.commands.grabber.AutoPullIn;
 import frc.robot.commands.grabber.SetGrabber;
 import frc.robot.commands.wrist.WristDeltaSetpoint;
 import frc.robot.commands.wrist.WristHoldSetpoint;
@@ -52,7 +51,6 @@ import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Grabber;
 import frc.robot.subsystems.Wrist;
 import frc.robot.subsystems.drive.SwerveDrive;
-import frc.robot.subsystems.lighting.LEDStrip;
 import frc.robot.subsystems.lighting.OldLEDStrip;
 
 /**
@@ -387,9 +385,7 @@ public class RobotContainer {
     if (AutonomousEventMap.isEmpty()) {
         AutonomousEventMap.put("CenterSwerveModules", new CenterSwerveModules(false)); 
         AutonomousEventMap.put("PlaceHigh", RobotContainer.arm.goToSetpointScore(Constants.HIGH_POS).withTimeout(3.0)); 
-        AutonomousEventMap.put("PlaceHighFast", RobotContainer.arm.goToSetpointScoreFast(Constants.HIGH_POS)); 
-        AutonomousEventMap.put("PlaceMid", new PrintCommand("placeholder for place mid"));
-        AutonomousEventMap.put("PlaceHybrid", new PrintCommand("placeholder for place hybrid"));
+        AutonomousEventMap.put("PlaceHighFast", RobotContainer.arm.goToSetpointScoreFast(Constants.HIGH_POS));
         AutonomousEventMap.put("BalanceFacingAway", new BalanceSequence(0));
         AutonomousEventMap.put("BalanceFacingDriver", new BalanceSequence(180));
         AutonomousEventMap.put("BalanceFacingDriverReversed", new BalanceSequence(180, true));

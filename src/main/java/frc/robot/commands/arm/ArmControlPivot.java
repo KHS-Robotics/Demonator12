@@ -45,7 +45,6 @@ public class ArmControlPivot extends CommandBase {
   // Called repeatedly when this Command is scheduled to run
   @Override
   public void execute() {
-    SmartDashboard.putNumber("ArmControlPivotCmdSetpoint", angle.get());
     RobotContainer.arm.setAngle(angle.get());
     RobotContainer.arm.setLength(RobotContainer.arm.armLengthSetpoint);
   }
