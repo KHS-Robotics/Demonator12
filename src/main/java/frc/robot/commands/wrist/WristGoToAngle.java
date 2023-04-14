@@ -22,7 +22,6 @@ public class WristGoToAngle extends CommandBase {
   @Override
   public void initialize() {
     RobotContainer.wrist.goToAngle(angle.get());
-    System.out.println("\n\nrunning wristgotoangle\n\n");
     RobotContainer.wrist.wristPID.reset();
   }
 

@@ -21,7 +21,6 @@ public class WristHoldSetpoint extends CommandBase {
 
   @Override
   public void execute() {
-    // System.out.println("WRIST HOLD!");
     this.setpoint = RobotContainer.wrist.getAngleSetpoint();
     RobotContainer.wrist.goToAbsoluteAngle(setpoint);
   }
