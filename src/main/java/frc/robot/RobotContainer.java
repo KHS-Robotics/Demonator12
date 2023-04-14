@@ -51,6 +51,7 @@ import frc.robot.commands.wrist.WristHoldSetpoint;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Grabber;
 import frc.robot.subsystems.Wrist;
+import frc.robot.subsystems.Arm.Position;
 import frc.robot.subsystems.drive.SwerveDrive;
 import frc.robot.subsystems.lighting.LEDStrip;
 import frc.robot.subsystems.lighting.OldLEDStrip;
@@ -234,42 +235,40 @@ public class RobotContainer {
     // zeroArmPivot.onTrue(new InstantCommand(() -> arm.zeroArmPivot()));
 
     Trigger highConeKnockedOver = new Trigger(operatorBox::highConeKnockedOver);
-    highConeKnockedOver.onTrue(new ProxyCommand(() -> RobotContainer.arm.goToSetpoint(Constants.HIGH_POS_KNOCKED_OVER, Rotation2d.fromRadians(-0.90))));
+    highConeKnockedOver.onTrue(new ProxyCommand(() -> RobotContainer.arm.goToLocationUniversal(Position.HIGH_KNOCKED, Constants.HIGH_POS_KNOCKED_OVER, Rotation2d.fromRadians(-0.90))));
     
     Trigger midConeKnockedOver = new Trigger(operatorBox::midConeKnockedOver);
-    midConeKnockedOver.onTrue(new ProxyCommand(() -> RobotContainer.arm.goToSetpoint(Constants.MID_POS_KNOCKED_OVER, Rotation2d.fromRadians(-0.90))));
+    midConeKnockedOver.onTrue(new ProxyCommand(() -> RobotContainer.arm.goToLocationUniversal(Position.MID_KNOCKED, Constants.MID_POS_KNOCKED_OVER, Rotation2d.fromRadians(-0.90))));
   }
 
   /** Binds commands to the operator stick. */
   private void configureOperatorStickBindings() {
     Trigger highPos = new Trigger(() -> (operatorStick.highPos() && operatorBox.coneMode()));
-    highPos.onTrue(new ProxyCommand(() -> RobotContainer.arm.goToSetpointScore(Constants.HIGH_POS)));
+    highPos.onTrue(new ProxyCommand(() -> RobotContainer.arm.goToLocationUniversal(Position.HIGH, Constants.HIGH_POS, Rotation2d.fromDegrees(40))));
 
     Trigger midPos = new Trigger(() -> (operatorStick.midPos() && operatorBox.coneMode()));
-    midPos.onTrue(new ProxyCommand(() -> RobotContainer.arm.goToSetpointScore(Constants.MID_POS)));
+    midPos.onTrue(new ProxyCommand(() -> RobotContainer.arm.goToLocationUniversal(Position.MID, Constants.MID_POS, Rotation2d.fromDegrees(40))));
 
     Trigger highPosCube = new Trigger(() -> (operatorStick.highPos() && operatorBox.cubeMode()));
-    highPosCube.onTrue(new ProxyCommand(() -> RobotContainer.arm.goToSetpoint(Constants.CUBE_HIGH_POS, new Rotation2d())));
+    highPosCube.onTrue(new ProxyCommand(() -> RobotContainer.arm.goToLocationUniversal(Position.HIGH, Constants.CUBE_HIGH_POS, new Rotation2d())));
 
     Trigger midPosCube = new Trigger(() -> (operatorStick.midPos() && operatorBox.cubeMode()));
-    midPosCube.onTrue(new ProxyCommand(() -> RobotContainer.arm.goToSetpoint(Constants.CUBE_MID_POS, new Rotation2d())));
+    midPosCube.onTrue(new ProxyCommand(() -> RobotContainer.arm.goToLocationUniversal(Position.MID, Constants.CUBE_MID_POS, new Rotation2d())));
 
     Trigger lowPos = new Trigger(operatorStick::lowPos);
-    lowPos.onTrue(new ProxyCommand(() -> RobotContainer.arm.goToSetpoint(Constants.FLOOR_POS, Rotation2d.fromDegrees(0))));
+    lowPos.onTrue(new ProxyCommand(() -> RobotContainer.arm.goToLocationUniversal(Position.FLOOR, Constants.FLOOR_POS, Rotation2d.fromDegrees(0))));
 
     Trigger home = new Trigger(operatorStick::home);
-    home.onTrue(RobotContainer.arm.goToPivotLength(Math.toRadians(60), Constants.MIN_LENGTH).asProxy().andThen(
-      new InstantCommand(() -> wrist.setAngleSetpoint(Rotation2d.fromDegrees(150)))));
+    home.onTrue(new ProxyCommand(() -> RobotContainer.arm.goToLocationUniversal(Position.HOME, Math.toRadians(60), Constants.MIN_LENGTH, Rotation2d.fromDegrees(150))));
 
     Trigger armFlat = new Trigger(operatorStick::stow);
-    armFlat.onTrue(RobotContainer.arm.goToPivotLength(Math.toRadians(0), Constants.MIN_LENGTH).asProxy().andThen(
-        new InstantCommand(() -> wrist.setAngleSetpoint(Rotation2d.fromDegrees(80)))));
+    armFlat.onTrue(new ProxyCommand(() -> RobotContainer.arm.goToLocationUniversal(Position.FLAT, Math.toRadians(0), Constants.MIN_LENGTH, Rotation2d.fromDegrees(80))));
 
     Trigger stow = new Trigger(operatorStick::scoreAngle);
-    stow.onTrue(RobotContainer.arm.goToPivotLength(0.63, Constants.MIN_LENGTH).asProxy().alongWith(new InstantCommand(() -> wrist.setAngleSetpoint(Rotation2d.fromDegrees(Math.toDegrees(0.63) + 80)))));
+    stow.onTrue(new ProxyCommand(() -> RobotContainer.arm.goToLocationUniversal(Position.STOW, 0.63, Constants.MIN_LENGTH, Rotation2d.fromDegrees(116))));
 
     Trigger shelfPos = new Trigger(operatorStick::shelfPos);
-    shelfPos.onTrue(RobotContainer.arm.goToSetpoint(Constants.SHELF_POS, new Rotation2d()));
+    shelfPos.onTrue(new ProxyCommand(() -> RobotContainer.arm.goToLocationUniversal(Position.SHELF, Constants.SHELF_POS, new Rotation2d())));
 
     Trigger wristFlat = new Trigger(operatorStick::wristFlat);
     wristFlat.onTrue(new InstantCommand(() -> wrist.setAngleSetpoint(Rotation2d.fromDegrees(0))));
@@ -307,7 +306,7 @@ public class RobotContainer {
     coneIn.onTrue(new SetGrabber(false)/*.alongWith(new InstantCommand(() -> grabber.stopWaitingForCone()))*/);
 
     Trigger singleSubstation = new Trigger(operatorStick::singleSubstation);
-    singleSubstation.onTrue(new ProxyCommand(() -> RobotContainer.arm.goToSetpoint(Constants.SINGLE_POS, Rotation2d.fromDegrees(35))));
+    singleSubstation.onTrue(new ProxyCommand(() -> RobotContainer.arm.goToLocationUniversal(Position.SINGLE, Constants.SINGLE_POS, Rotation2d.fromDegrees(35))));
 
     Trigger autoWaitForCone = new Trigger(() -> (operatorStick.singleSubstation() || operatorStick.shelfPos() || operatorStick.lowPos()) && operatorBox.coneMode());
     autoWaitForCone.onTrue(new InstantCommand(() -> RobotContainer.grabber.waitForCone()));
@@ -316,7 +315,7 @@ public class RobotContainer {
     stopWaitingForCone.onTrue(new InstantCommand(() -> RobotContainer.grabber.stopWaitingForCone()));
 
     Trigger autoRetract = new Trigger(() -> operatorStick.openClaw() && arm.getTranslation().getNorm() > 0.75 && swerveDrive.getPose().getX() < 2.5);
-    autoRetract.onTrue(new WaitCommand(0.2).andThen((RobotContainer.arm.goToPivotLength(0.63, Constants.MIN_LENGTH).asProxy()).alongWith(new InstantCommand(() -> wrist.setAngleSetpoint(Rotation2d.fromDegrees(Math.toDegrees(0.63) + 80))))));
+    autoRetract.onTrue(new WaitCommand(0.2).andThen(new ProxyCommand(() -> RobotContainer.arm.goToLocationUniversal(Position.STOW, 0.63, Constants.MIN_LENGTH, Rotation2d.fromDegrees(116)))));
   }
 
   /**
