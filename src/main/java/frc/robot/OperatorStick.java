@@ -86,4 +86,8 @@ public class OperatorStick extends Joystick {
   public boolean waitForCone() {
     return this.getRawButton(3);
   }
+
+  public boolean wristSlapDown() {
+    return this.getRawButton(4);
+  }
 }

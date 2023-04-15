@@ -300,6 +300,9 @@ public class RobotContainer {
     intake.onTrue(new InstantCommand(() -> grabber.set(-0.5)));
     intake.onFalse(new InstantCommand(() -> grabber.set(0)));
 
+    Trigger wristSlapDown = new Trigger(operatorStick::wristSlapDown);
+    wristSlapDown.onTrue(new InstantCommand(() -> wrist.setAngleSetpoint(Rotation2d.fromDegrees(-30))));
+
     Trigger waitForCone = new Trigger(operatorStick::waitForCone);
     waitForCone.onTrue(new InstantCommand(() -> grabber.waitForCone()));
 
