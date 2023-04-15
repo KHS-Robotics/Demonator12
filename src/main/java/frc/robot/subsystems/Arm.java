@@ -59,7 +59,7 @@ public class Arm extends SubsystemBase {
   TrapezoidProfile.Constraints pivotConstraints;
   TrapezoidProfile.Constraints extendConstraints;
 
-  Position position;
+  public Position position;
 
   HashMap<Position, ControlMode> highMap, midMap, stowMap, flatMap, floorMap, shelfMap, singleMap, homeMap, highKnockedMap, midKnockedMap;
   HashMap<Position, HashMap<Position, ControlMode>> locationMap;
