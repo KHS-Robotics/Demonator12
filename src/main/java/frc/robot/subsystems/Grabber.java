@@ -102,7 +102,7 @@ public class Grabber extends SubsystemBase {
   }
 
   public boolean getSensor() {
-    return intakeSensor.isPressed();
+    return !intakeSensor.isPressed();
   }
   
   @Override
