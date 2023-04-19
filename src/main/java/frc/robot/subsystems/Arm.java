@@ -61,8 +61,8 @@ public class Arm extends SubsystemBase {
 
   public Position position;
 
-  HashMap<Position, ControlMode> highMap, midMap, stowMap, flatMap, floorMap, shelfMap, singleMap, homeMap, highKnockedMap, midKnockedMap;
-  HashMap<Position, HashMap<Position, ControlMode>> locationMap;
+  HashMap<Position, ControlMode> highMap = new HashMap<>(), midMap = new HashMap<>(), stowMap = new HashMap<>(), flatMap = new HashMap<>(), floorMap = new HashMap<>(), shelfMap = new HashMap<>(), singleMap = new HashMap<>(), homeMap = new HashMap<>(), highKnockedMap = new HashMap<>(), midKnockedMap = new HashMap<>();
+  HashMap<Position, HashMap<Position, ControlMode>> locationMap = new HashMap<>();
 
   public Arm() {
     pivotMotor = new CANSparkMax(RobotMap.ARM_PIVOT, MotorType.kBrushless);
