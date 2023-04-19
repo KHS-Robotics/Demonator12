@@ -1,10 +1,13 @@
 package frc.robot.subsystems;
 
+import java.util.HashMap;
+import java.util.ResourceBundle.Control;
+
 import com.ctre.phoenix.sensors.CANCoder;
 import com.revrobotics.CANSparkMax;
-import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import com.revrobotics.RelativeEncoder;
 
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.PIDController;
@@ -19,6 +22,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
+import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -27,7 +31,10 @@ import frc.robot.RobotMap;
 import frc.robot.commands.arm.ArmControlLength;
 import frc.robot.commands.arm.ArmControlPivot;
 import frc.robot.commands.arm.ArmControlPivotLength;
+import frc.robot.commands.wrist.WaitUntilUp;
+import frc.robot.commands.wrist.WristGoToAngle;
 import frc.robot.commands.wrist.WristGoToSetpoint;
+import frc.robot.commands.wrist.WristHoldAngle;
 import frc.robot.commands.wrist.WristHoldSetpoint;
 
 public class Arm extends SubsystemBase {
@@ -52,6 +59,11 @@ public class Arm extends SubsystemBase {
   TrapezoidProfile.Constraints pivotConstraints;
   TrapezoidProfile.Constraints extendConstraints;
 
+  public Position position;
+
+  HashMap<Position, ControlMode> highMap = new HashMap<>(), midMap = new HashMap<>(), stowMap = new HashMap<>(), flatMap = new HashMap<>(), floorMap = new HashMap<>(), shelfMap = new HashMap<>(), singleMap = new HashMap<>(), homeMap = new HashMap<>(), highKnockedMap = new HashMap<>(), midKnockedMap = new HashMap<>();
+  HashMap<Position, HashMap<Position, ControlMode>> locationMap = new HashMap<>();
+
   public Arm() {
     pivotMotor = new CANSparkMax(RobotMap.ARM_PIVOT, MotorType.kBrushless);
     pivotMotor.setInverted(true);
@@ -74,6 +86,9 @@ public class Arm extends SubsystemBase {
 
     pivotConstraints = new TrapezoidProfile.Constraints(2, 3);
     extendConstraints = new TrapezoidProfile.Constraints(3, 3);
+
+    position = Position.HOME;
+    fillHashMaps();
 
 
     this.kAL = 1.22566276313;
@@ -384,5 +399,156 @@ public class Arm extends SubsystemBase {
   public void zeroArmLength() {
     extendEncoder.setPosition(0);
   }
+  
+  public enum Position {
+    HIGH,
+    MID,
+    STOW,
+    FLAT,
+    FLOOR,
+    SHELF,
+    SINGLE,
+    HOME,
+    HIGH_KNOCKED,
+    MID_KNOCKED
+  }
 
+  enum ControlMode {
+    PARALLEL,
+    WRISTRELRETRACT,
+    WRISTRELEXTEND,
+    FLOORUP
+  }
+
+  public void fillHashMaps() {
+    setHashMapParallel(highMap);
+    setHashMapParallel(midMap);
+    setHashMapParallel(stowMap);
+    setHashMapParallel(flatMap);
+    setHashMapParallel(floorMap);
+    setHashMapParallel(shelfMap);
+    setHashMapParallel(singleMap);
+    setHashMapParallel(homeMap);
+    setHashMapParallel(highKnockedMap);
+    setHashMapParallel(midKnockedMap);
+
+    highMap.replace(Position.FLAT, ControlMode.WRISTRELRETRACT);
+    highMap.replace(Position.FLOOR, ControlMode.WRISTRELRETRACT);
+    highMap.replace(Position.SHELF, ControlMode.WRISTRELRETRACT);
+    highMap.replace(Position.SINGLE, ControlMode.WRISTRELRETRACT);
+    highMap.replace(Position.HIGH_KNOCKED, ControlMode.WRISTRELEXTEND);
+    highMap.replace(Position.MID_KNOCKED, ControlMode.WRISTRELEXTEND);
+
+    midMap = highMap;
+
+    stowMap.put(Position.SHELF, ControlMode.WRISTRELEXTEND);
+    
+    flatMap.put(Position.HIGH, ControlMode.WRISTRELEXTEND);
+    flatMap.put(Position.MID, ControlMode.WRISTRELEXTEND);
+    flatMap.put(Position.SHELF, ControlMode.WRISTRELEXTEND);
+    flatMap.put(Position.HIGH_KNOCKED, ControlMode.WRISTRELEXTEND);
+    flatMap.put(Position.MID_KNOCKED, ControlMode.WRISTRELEXTEND);
+
+    shelfMap.put(Position.HIGH, ControlMode.WRISTRELEXTEND);
+    shelfMap.put(Position.MID, ControlMode.WRISTRELRETRACT);
+    shelfMap.put(Position.STOW, ControlMode.WRISTRELRETRACT);
+    shelfMap.put(Position.FLAT, ControlMode.WRISTRELRETRACT);
+    shelfMap.put(Position.FLOOR, ControlMode.WRISTRELRETRACT);
+    shelfMap.put(Position.HIGH_KNOCKED, ControlMode.WRISTRELEXTEND);
+    shelfMap.put(Position.MID_KNOCKED, ControlMode.WRISTRELEXTEND);
+
+    singleMap.put(Position.HIGH, ControlMode.WRISTRELEXTEND);
+    singleMap.put(Position.MID, ControlMode.WRISTRELEXTEND);
+    singleMap.put(Position.HIGH_KNOCKED, ControlMode.WRISTRELEXTEND);
+    singleMap.put(Position.MID_KNOCKED, ControlMode.WRISTRELEXTEND);
+
+    //home is all parallel
+
+    highKnockedMap.put(Position.MID, ControlMode.WRISTRELRETRACT);
+    highKnockedMap.put(Position.FLAT, ControlMode.WRISTRELRETRACT);
+    highKnockedMap.put(Position.FLOOR, ControlMode.WRISTRELRETRACT);
+    highKnockedMap.put(Position.SHELF, ControlMode.WRISTRELRETRACT);
+
+    midKnockedMap.put(Position.MID, ControlMode.WRISTRELRETRACT);
+    midKnockedMap.put(Position.FLAT, ControlMode.WRISTRELRETRACT);
+    midKnockedMap.put(Position.FLOOR, ControlMode.WRISTRELRETRACT);
+    midKnockedMap.put(Position.SHELF, ControlMode.WRISTRELEXTEND);
+
+    floorMap.put(Position.HIGH, ControlMode.FLOORUP);
+    floorMap.put(Position.MID, ControlMode.FLOORUP);
+    floorMap.put(Position.SINGLE, ControlMode.FLOORUP);
+    floorMap.put(Position.HIGH_KNOCKED, ControlMode.FLOORUP);
+    floorMap.put(Position.MID_KNOCKED, ControlMode.FLOORUP);
+    floorMap.put(Position.STOW, ControlMode.WRISTRELEXTEND);
+    floorMap.put(Position.FLAT, ControlMode.WRISTRELEXTEND);
+    floorMap.put(Position.SHELF, ControlMode.WRISTRELEXTEND);
+
+    locationMap.put(Position.HIGH, highMap);
+    locationMap.put(Position.MID, midMap);
+    locationMap.put(Position.STOW, stowMap);
+    locationMap.put(Position.FLAT, flatMap);
+    locationMap.put(Position.FLOOR, floorMap);
+    locationMap.put(Position.SHELF, shelfMap);
+    locationMap.put(Position.SINGLE, singleMap);
+    locationMap.put(Position.HOME, homeMap);
+    locationMap.put(Position.HIGH_KNOCKED, highKnockedMap);
+    locationMap.put(Position.MID_KNOCKED, midKnockedMap);
+
+  }
+
+  public void setHashMapParallel(HashMap<Position, ControlMode> hashmap) {
+    hashmap.put(Position.HIGH, ControlMode.PARALLEL);
+    hashmap.put(Position.MID, ControlMode.PARALLEL);
+    hashmap.put(Position.STOW, ControlMode.PARALLEL);
+    hashmap.put(Position.FLAT, ControlMode.PARALLEL);
+    hashmap.put(Position.FLOOR, ControlMode.PARALLEL);
+    hashmap.put(Position.SHELF, ControlMode.PARALLEL);
+    hashmap.put(Position.SINGLE, ControlMode.PARALLEL);
+    hashmap.put(Position.HOME, ControlMode.PARALLEL);
+    hashmap.put(Position.HIGH_KNOCKED, ControlMode.PARALLEL);
+    hashmap.put(Position.MID_KNOCKED, ControlMode.PARALLEL);
+  }
+
+  
+  public Command goToLocationUniversal(Position desiredPosition, Translation3d target, Rotation2d wristAngle) {
+    var wristTranslation = new Translation3d(Constants.GRIPPERHOLDDISTANCE,
+    new Rotation3d(0, -wristAngle.getRadians(), 0));
+    target = target.minus(wristTranslation);
+    double rotToPoint = rotToPoint(target).getRadians();
+    double lengthToPoint = lengthToPoint(target);
+
+    return goToLocationUniversal(desiredPosition, rotToPoint, lengthToPoint, wristAngle);
+  }
+
+  public Command goToLocationUniversal(Position desiredPosition, double pivot, double length, Rotation2d wristAngle) {
+    var controlModeMap = locationMap.get(position);
+    ControlMode controlMode = controlModeMap.get(desiredPosition);
+    position = desiredPosition;
+
+    Command sequence;
+    switch (controlMode) {
+      case PARALLEL:
+      //runs pivot and length and wrist control (relative) at the same time
+        sequence =  (new ArmControlPivotLength(pivot, length).asProxy()).deadlineWith((new WristGoToAngle(wristAngle, Rotation2d.fromRadians(pivot)).asProxy()).andThen(new WristHoldAngle().asProxy()));
+        break;
+      case WRISTRELRETRACT:
+      //runs length and wrist control at the same time, once both are done, it will move on to pivot
+        sequence = ((new ArmControlLength(length).asProxy()).deadlineWith((new WristGoToAngle(wristAngle, Rotation2d.fromRadians(pivot)).asProxy()).andThen(new WristHoldAngle().asProxy()))).andThen((new ArmControlPivot(pivot).asProxy()).deadlineWith(new WristHoldAngle().asProxy()));
+        break;
+      case WRISTRELEXTEND:
+      //runs pivot and wrist control at the same time, then extends
+        sequence = ((new ArmControlPivot(pivot).asProxy()).deadlineWith((new WristGoToAngle(wristAngle, Rotation2d.fromRadians(pivot)).asProxy()).andThen(new WristHoldAngle().asProxy()))).andThen((new ArmControlLength(length).asProxy()).deadlineWith(new WristHoldAngle().asProxy()));
+        break;
+      case FLOORUP:
+      //runs pivot, once it is above -10 degrees or so it will start moving the wrist with relative control (as to not hit the floor) after this it should run length
+        sequence = ((new ArmControlPivot(pivot).asProxy()).deadlineWith((new WaitUntilUp().asProxy()).andThen((new WristGoToAngle(wristAngle, Rotation2d.fromRadians(pivot)).asProxy()).andThen(new WristHoldAngle().asProxy())))).andThen((new ArmControlLength(length).asProxy()).deadlineWith(new WristHoldAngle().asProxy()));
+        break;
+      default: 
+        sequence = new PrintCommand("DEFAULT CASE");
+    }
+    return sequence;
+
+  }
+
+  
 }

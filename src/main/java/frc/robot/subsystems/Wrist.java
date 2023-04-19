@@ -34,11 +34,13 @@ public class Wrist extends SubsystemBase {
   // wrist acts as an "arm" in code
   private final ArmFeedforward wristFeedForward;
   private final Constraints wristConstraints = new TrapezoidProfile.Constraints(1.5, 5);
+  private final Constraints wristRelativeConstraints = new TrapezoidProfile.Constraints(1.6, 5);
   public TrapezoidProfile.State wristSetpoint = new TrapezoidProfile.State();
   private static final double kDt = 0.02;
   private static final double OFFSET = 1.98;
 
   private Rotation2d angleSetpoint = new Rotation2d(); 
+  private Rotation2d relativeSetpoint = new Rotation2d();
 
   public Wrist() {
     pivotMotor = new CANSparkMax(RobotMap.WRIST_PIVOT, MotorType.kBrushless);
@@ -67,8 +69,14 @@ public class Wrist extends SubsystemBase {
   }
 
   public void goToAngle(Rotation2d angle) {
-    // wristPidCtrl.setReference(angle.getRadians(),
-    // CANSparkMax.ControlType.kPosition);
+    TrapezoidProfile profile = new TrapezoidProfile(wristRelativeConstraints,
+        new TrapezoidProfile.State(angle.getRadians(), 0), wristSetpoint);
+    wristSetpoint = profile.calculate(kDt);
+    SmartDashboard.putNumber("wristSetpoint.velocity", wristSetpoint.velocity);
+    SmartDashboard.putNumber("wristSetpoint.position", wristSetpoint.position);
+
+    var output = wristFeedForward.calculate(getAbsoluteAngle().getRadians(), wristSetpoint.velocity) + wristPID.calculate(getRelativeAngle().getRadians(), wristSetpoint.position);
+    pivotMotor.setVoltage(output);
   }
 
   public void goToAbsoluteAngle(Rotation2d absoluteAngle) {
@@ -127,6 +135,14 @@ public class Wrist extends SubsystemBase {
 
   public Rotation2d getAngleSetpoint() {
     return angleSetpoint;
+  }
+
+  public Rotation2d getRelativeSetpoint() {
+    return relativeSetpoint;
+  }
+
+  public void setRelativeSetpoint(Rotation2d relativeSetpoint) {
+    this.relativeSetpoint = relativeSetpoint;
   }
 
   public void setAngleSetpoint(Rotation2d angleSetpoint) {
