@@ -34,7 +34,7 @@ public class Wrist extends SubsystemBase {
   // wrist acts as an "arm" in code
   private final ArmFeedforward wristFeedForward;
   private final Constraints wristConstraints = new TrapezoidProfile.Constraints(1.5, 5);
-  private final Constraints wristRelativeConstraints = new TrapezoidProfile.Constraints(4, 5);
+  private final Constraints wristRelativeConstraints = new TrapezoidProfile.Constraints(1.6, 5);
   public TrapezoidProfile.State wristSetpoint = new TrapezoidProfile.State();
   private static final double kDt = 0.02;
   private static final double OFFSET = 1.98;
