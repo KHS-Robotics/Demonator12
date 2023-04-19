@@ -10,7 +10,6 @@ package frc.robot.commands.arm;
 import java.util.function.Supplier;
 
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
 import frc.robot.RobotContainer;
@@ -46,23 +45,19 @@ public class ArmControlLength extends CommandBase {
         RobotContainer.arm.getLengthV());
 
     RobotContainer.arm.armPivotSetpointRadians = RobotContainer.arm.getAngle().getRadians();
-    SmartDashboard.putNumber("ArmControlLengthCmdSetpoint", length.get());
   }
 
   // Called repeatedly when this Command is scheduled to run
   @Override
   public void execute() {
-    System.out.println("ARM CONTROL LENGTH!");
     RobotContainer.arm.setLength(length.get());
     RobotContainer.arm.setAngle(RobotContainer.arm.armPivotSetpointRadians);
-    SmartDashboard.putNumber("ArmLengthError", Math.abs(RobotContainer.arm.getLength() - length.get()));
   }
 
   // Make this return true when this Command no longer needs to run execute()
   @Override
   public boolean isFinished() {
       return (Math.abs(RobotContainer.arm.getLength() - length.get()) < 0.0625);
-        //|| !RobotContainer.arm.isLegalExtension(RobotContainer.arm.getTranslation());
   }
 
   // Called once after isFinished returns true

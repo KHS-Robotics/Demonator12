@@ -84,20 +84,10 @@ public class Wrist extends SubsystemBase {
         new TrapezoidProfile.State(toRelativeAngle(absoluteAngle).getRadians(), 0), wristSetpoint);
     wristSetpoint = profile.calculate(kDt);
     SmartDashboard.putNumber("WristSetpointToRelativeGoal", toRelativeAngle(absoluteAngle).getRadians());
-    // SmartDashboard.putNumber("WristAbsAngleSetpoint", toRelativeAngle(absoluteAngle).getRadians());
-    // SmartDashboard.putNumber("wrist voltage ",
-    //     wristFeedForward.calculate(getAbsoluteAngle().getRadians(), wristSetpoint.velocity));
-    // wristPidCtrl.setReference(toRelativeAngle(absoluteAngle).getRadians(),
-    // CANSparkMax.ControlType.kVoltage, 0,
-    // wristFeedForward.calculate(getAbsoluteAngle().getRadians(),
-    // wristSetpoint.velocity));
-    // SmartDashboard.putNumber("wristSetpointVel", wristSetpoint.velocity);
-    // SmartDashboard.putNumber("WristError", wristPID.getVelocityError());
     SmartDashboard.putNumber("wristSetpoint.velocity", wristSetpoint.velocity);
     SmartDashboard.putNumber("wristSetpoint.position", wristSetpoint.position);
 
     var output = wristFeedForward.calculate(getAbsoluteAngle().getRadians(), wristSetpoint.velocity) + wristPID.calculate(getRelativeAngle().getRadians(), wristSetpoint.position);
-    SmartDashboard.putNumber("wristVoltageCalc", output) ;
     pivotMotor.setVoltage(output);
   }
 
@@ -153,9 +143,7 @@ public class Wrist extends SubsystemBase {
   public void periodic() {
     SmartDashboard.putNumber("WristRelativeAngle", getAngle());
     SmartDashboard.putNumber("WristAbsoluteAngle", getAbsoluteAngle().getRadians());
-    SmartDashboard.putNumber("WristSetpoint", wristSetpoint.position);
     SmartDashboard.putNumber("WristVelocity", getVelocity());
-    SmartDashboard.putNumber("wristVoltage", pivotMotor.getAppliedOutput());
   }
 
   public boolean getTopTalonTach() {

@@ -10,7 +10,6 @@ package frc.robot.commands.arm;
 import java.util.function.Supplier;
 
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.RobotContainer;
 
@@ -45,7 +44,6 @@ public class ArmControlPivot extends CommandBase {
   // Called repeatedly when this Command is scheduled to run
   @Override
   public void execute() {
-    SmartDashboard.putNumber("ArmControlPivotCmdSetpoint", angle.get());
     RobotContainer.arm.setAngle(angle.get());
     RobotContainer.arm.setLength(RobotContainer.arm.armLengthSetpoint);
   }

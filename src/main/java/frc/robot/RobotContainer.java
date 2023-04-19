@@ -29,7 +29,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.ProxyCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -44,7 +43,6 @@ import frc.robot.commands.drive.balance.ApproachChargeStation;
 import frc.robot.commands.drive.balance.BalanceSequence;
 import frc.robot.commands.drive.balance.DriveForward;
 import frc.robot.commands.drive.balance.DriveOverThenBalanceSequence;
-import frc.robot.commands.grabber.AutoPullIn;
 import frc.robot.commands.grabber.SetGrabber;
 import frc.robot.commands.wrist.WristDeltaSetpoint;
 import frc.robot.commands.wrist.WristGoToAngle;
@@ -54,7 +52,6 @@ import frc.robot.subsystems.Grabber;
 import frc.robot.subsystems.Wrist;
 import frc.robot.subsystems.Arm.Position;
 import frc.robot.subsystems.drive.SwerveDrive;
-import frc.robot.subsystems.lighting.LEDStrip;
 import frc.robot.subsystems.lighting.OldLEDStrip;
 
 /**
@@ -390,9 +387,7 @@ public class RobotContainer {
     if (AutonomousEventMap.isEmpty()) {
         AutonomousEventMap.put("CenterSwerveModules", new CenterSwerveModules(false)); 
         AutonomousEventMap.put("PlaceHigh", RobotContainer.arm.goToSetpointScore(Constants.HIGH_POS).withTimeout(3.0)); 
-        AutonomousEventMap.put("PlaceHighFast", RobotContainer.arm.goToSetpointScoreFast(Constants.HIGH_POS)); 
-        AutonomousEventMap.put("PlaceMid", new PrintCommand("placeholder for place mid"));
-        AutonomousEventMap.put("PlaceHybrid", new PrintCommand("placeholder for place hybrid"));
+        AutonomousEventMap.put("PlaceHighFast", RobotContainer.arm.goToSetpointScoreFast(Constants.HIGH_POS));
         AutonomousEventMap.put("BalanceFacingAway", new BalanceSequence(0));
         AutonomousEventMap.put("BalanceFacingDriver", new BalanceSequence(180));
         AutonomousEventMap.put("BalanceFacingDriverReversed", new BalanceSequence(180, true));

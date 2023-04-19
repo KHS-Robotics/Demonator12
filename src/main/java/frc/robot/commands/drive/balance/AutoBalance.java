@@ -8,7 +8,7 @@ import frc.robot.RobotContainer;
 public class AutoBalance extends CommandBase {
   private Timer timer = new Timer();
   private Timer backUpTimer = new Timer();
-  private boolean isTimerRunning, isBackUpTimerRunning;
+  private boolean isTimerRunning;
 
   private double slopeTolerance = 8.5;
   private final double balanceSpeedMetersPerSecond = 0.225, levelPitch = 5, elapsedTimeToConsiderLevelInSeconds = 1;
@@ -35,13 +35,9 @@ public class AutoBalance extends CommandBase {
     var isStable = Math.abs(slope) < slopeTolerance;
     var isTilted = Math.abs(currentPitch) > levelPitch;
 
-    SmartDashboard.putBoolean("AutoBalanceIsStable", isStable);
-    SmartDashboard.putBoolean("isTilted", isTilted);
-
 
     var isAscending = isStable && isTilted;
 
-    SmartDashboard.putBoolean("AutoBalanceIsAscending", isAscending);
     if (isAscending) {
       var xSpeed = Math.signum(currentPitch) * balanceSpeedMetersPerSecond;
       RobotContainer.swerveDrive.holdAngleWhileDriving(xSpeed, 0, yaw, false);
@@ -80,6 +76,8 @@ public class AutoBalance extends CommandBase {
 
   @Override
   public void end(boolean interrupted) {
+    backUpTimer.stop();
+    backUpTimer.reset();
     stopTimer();
     RobotContainer.swerveDrive.lock();
   }
@@ -89,8 +87,4 @@ public class AutoBalance extends CommandBase {
     timer.reset();
   }
 
-  private void backUpTimer() {
-    backUpTimer.stop();
-    backUpTimer.reset();
-  }
 }

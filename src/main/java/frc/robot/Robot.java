@@ -9,10 +9,8 @@ import com.pathplanner.lib.server.PathPlannerServer;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.subsystems.Grabber;
 import frc.robot.subsystems.Arm.Position;
 import frc.robot.subsystems.drive.SwerveDrive;
 
@@ -60,7 +58,6 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotPeriodic() {
-    //SmartDashboard.putData("CommandScheduler", CommandScheduler.getInstance());
 
     // Runs the Scheduler. This is responsible for polling buttons, adding
     // newly-scheduled
@@ -114,9 +111,6 @@ public class Robot extends TimedRobot {
     // start the auto, if there is one
     if (this.autonmousRoutine != null) {
       this.autonmousRoutine.schedule();
-      SmartDashboard.putBoolean("AutoRequiresSwerve", this.autonmousRoutine.hasRequirement(RobotContainer.swerveDrive));
-      SmartDashboard.putBoolean("AutoRequiresArm", this.autonmousRoutine.hasRequirement(RobotContainer.arm));
-      SmartDashboard.putBoolean("AutoRequiresWrist", this.autonmousRoutine.hasRequirement(RobotContainer.wrist));
     }
   }
 

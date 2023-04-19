@@ -23,7 +23,6 @@ public class WristGoToSetpoint extends CommandBase {
 
   @Override
   public void execute() {
-    System.out.println("WRIST GO TO SETPOINT! Setpoint=" + setpoint.getRadians() + "  ::  Error=" + Math.abs(RobotContainer.wrist.getAbsoluteAngle().getRadians() - setpoint.getRadians()));
 
     RobotContainer.wrist.goToAbsoluteAngle(setpoint);
   }
