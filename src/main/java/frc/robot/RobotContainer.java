@@ -266,7 +266,7 @@ public class RobotContainer {
     stow.onTrue(new ProxyCommand(() -> RobotContainer.arm.goToLocationUniversal(Position.STOW, 0.63, Constants.MIN_LENGTH, Rotation2d.fromDegrees(116))));
 
     Trigger shelfPos = new Trigger(operatorStick::shelfPos);
-    shelfPos.onTrue(new ProxyCommand(() -> RobotContainer.arm.goToLocationUniversal(Position.SHELF, Constants.SHELF_POS, new Rotation2d())));
+    shelfPos.onTrue(new ProxyCommand(() -> RobotContainer.arm.goToLocationUniversal(Position.SHELF, 0.982, 0.694, Rotation2d.fromDegrees(-4.5))));
 
     Trigger wristFlat = new Trigger(operatorStick::wristFlat);
     wristFlat.onTrue(new InstantCommand(() -> wrist.setAngleSetpoint(Rotation2d.fromDegrees(0))));
@@ -290,7 +290,8 @@ public class RobotContainer {
     release.onTrue(new SetGrabber(false).alongWith(new InstantCommand(() -> grabber.stopWaitingForCone())));
 
     Trigger outtake = new Trigger(operatorStick::outtake);
-    outtake.onTrue(new InstantCommand(() -> grabber.set(0.3)));
+    outtake.onTrue(new InstantCommand(() -> grabbe
+    \[]r.set(0.3)));
     outtake.onFalse(new InstantCommand(() -> grabber.set(0)));
 
     Trigger intake = new Trigger(operatorStick::intake);
@@ -298,7 +299,8 @@ public class RobotContainer {
     intake.onFalse(new InstantCommand(() -> grabber.set(0)));
 
     Trigger wristSlapDown = new Trigger(operatorStick::wristSlapDown);
-    wristSlapDown.onTrue(new InstantCommand(() -> wrist.setAngleSetpoint(Rotation2d.fromDegrees(-30))));
+    wristSlapDown.onTrue(new InstantCommand(() -> wrist.setAngleSetpoint(Rotation2d.fromDegrees(-10))));
+    wristSlapDown.onFalse(new ProxyCommand(new InstantCommand(() -> wrist.setAngleSetpoint((RobotContainer.arm.position == Position.STOW) ? Rotation2d.fromDegrees(116) : Rotation2d.fromDegrees(40)))));
 
     Trigger waitForCone = new Trigger(operatorStick::waitForCone);
     waitForCone.onTrue(new InstantCommand(() -> grabber.waitForCone()));
@@ -354,7 +356,7 @@ public class RobotContainer {
       RobotContainer.arm.goToSetpointScore(Constants.HIGH_POS)).andThen( // place high
       new SetGrabber(true).andThen(new WaitCommand(0.3))).andThen( // release, then very briefly wait to drop game piece
       RobotContainer.arm.goToPivotLength(Math.toRadians(0), Constants.MIN_LENGTH).andThen(new InstantCommand(() -> wrist.setAngleSetpoint(Rotation2d.fromDegrees(80))))).andThen( // retract
-      new DriveOverThenBalanceSequence().deadlineWith(new ArmHoldSetpoint().alongWith(new WristHoldSetpoint()))), // go over + balance
+      new DriveOverThenBalanceSequence()), // go over + balance
       new Pose2d(1.82, 3.30, Rotation2d.fromDegrees(180))
     ));
 
@@ -367,7 +369,7 @@ public class RobotContainer {
       (new ApproachChargeStation(180, true)).finallyDo((inter) -> { if (inter) CommandScheduler.getInstance().cancelAll(); }).withTimeout(2.5)).andThen( // approach charge station
       (new DriveForward(180, true, 1).withTimeout(2.2))).andThen( // drive over charge station
       new RotateToAngle(3).alongWith(RobotContainer.arm.goToSetpoint(Constants.FLOOR_POS, Rotation2d.fromDegrees(0))).alongWith(new InstantCommand(() -> RobotContainer.grabber.set(-0.7)))).andThen( // rotate and lower gripper to pickup cube
-      (new DriveForward(0, false, 0.75).withTimeout(0.5))).andThen( // drive into cube with gripper down
+      (new DriveForward(0, false, 0.75).withTimeout(0.829))).andThen( // drive into cube with gripper down
       new BalanceSequence(0, true).alongWith(RobotContainer.arm.goToPivotLength(0, Constants.MIN_LENGTH).asProxy().alongWith(new InstantCommand(() -> wrist.setAngleSetpoint(Rotation2d.fromDegrees(45))))))))),
       new Pose2d(1.93, 2.17, Rotation2d.fromDegrees(180))
     ));
@@ -386,7 +388,7 @@ public class RobotContainer {
   private static HashMap<String, Command> getAutonomousEventMap() {
     if (AutonomousEventMap.isEmpty()) {
         AutonomousEventMap.put("CenterSwerveModules", new CenterSwerveModules(false)); 
-        AutonomousEventMap.put("PlaceHigh", RobotContainer.arm.goToSetpointScore(Constants.HIGH_POS).withTimeout(3.0)); 
+        AutonomousEventMap.put("PlaceHigh", new SetGrabber(false).andThen(RobotContainer.arm.goToSetpointScore(Constants.HIGH_POS).withTimeout(3.0))); 
         AutonomousEventMap.put("PlaceHighFast", RobotContainer.arm.goToSetpointScoreFast(Constants.HIGH_POS));
         AutonomousEventMap.put("BalanceFacingAway", new BalanceSequence(0));
         AutonomousEventMap.put("BalanceFacingDriver", new BalanceSequence(180));
@@ -403,6 +405,7 @@ public class RobotContainer {
         AutonomousEventMap.put("OuttakeFast", new InstantCommand(() -> RobotContainer.grabber.set(1)));
         AutonomousEventMap.put("Intake", new InstantCommand(() -> RobotContainer.grabber.set(-0.7)));
         AutonomousEventMap.put("PlaceHighCube", RobotContainer.arm.goToSetpoint(Constants.CUBE_HIGH_POS, new Rotation2d()));
+        AutonomousEventMap.put("StopSwerve", new InstantCommand(() -> RobotContainer.swerveDrive.stop()));
     }
 
     return AutonomousEventMap;

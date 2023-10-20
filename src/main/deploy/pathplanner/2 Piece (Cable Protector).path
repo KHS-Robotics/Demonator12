@@ -96,6 +96,7 @@
       "isStopPoint": true,
       "stopEvent": {
         "names": [
+          "StopSwerve",
           "Floor",
           "Intake"
         ],
