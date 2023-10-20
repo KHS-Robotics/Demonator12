@@ -290,8 +290,7 @@ public class RobotContainer {
     release.onTrue(new SetGrabber(false).alongWith(new InstantCommand(() -> grabber.stopWaitingForCone())));
 
     Trigger outtake = new Trigger(operatorStick::outtake);
-    outtake.onTrue(new InstantCommand(() -> grabbe
-    \[]r.set(0.3)));
+    outtake.onTrue(new InstantCommand(() -> grabber.set(0.3)));
     outtake.onFalse(new InstantCommand(() -> grabber.set(0)));
 
     Trigger intake = new Trigger(operatorStick::intake);
