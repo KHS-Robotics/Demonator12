@@ -45,7 +45,6 @@ import frc.robot.commands.drive.balance.DriveForward;
 import frc.robot.commands.drive.balance.DriveOverThenBalanceSequence;
 import frc.robot.commands.grabber.SetGrabber;
 import frc.robot.commands.wrist.WristDeltaSetpoint;
-import frc.robot.commands.wrist.WristGoToAngle;
 import frc.robot.commands.wrist.WristHoldSetpoint;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Grabber;
@@ -266,7 +265,7 @@ public class RobotContainer {
     stow.onTrue(new ProxyCommand(() -> RobotContainer.arm.goToLocationUniversal(Position.STOW, 0.63, Constants.MIN_LENGTH, Rotation2d.fromDegrees(116))));
 
     Trigger shelfPos = new Trigger(operatorStick::shelfPos);
-    shelfPos.onTrue(new ProxyCommand(() -> RobotContainer.arm.goToLocationUniversal(Position.SHELF, 0.982, 0.694, Rotation2d.fromDegrees(-4.5))));
+    shelfPos.onTrue(new ProxyCommand(() -> RobotContainer.arm.goToLocationUniversal(Position.SHELF, 0.982, 0.694, Rotation2d.fromDegrees(-11))));
 
     Trigger wristFlat = new Trigger(operatorStick::wristFlat);
     wristFlat.onTrue(new InstantCommand(() -> wrist.setAngleSetpoint(Rotation2d.fromDegrees(0))));

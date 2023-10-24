@@ -3,13 +3,12 @@ package frc.robot.subsystems.lighting;
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
-import frc.robot.RobotContainer;
 import frc.robot.RobotMap;
 import frc.robot.subsystems.drive.SwerveDrive;
+
 public class OldLEDStrip extends SubsystemBase {
   Thread t;
   AddressableLED strip;
@@ -103,8 +102,9 @@ public class OldLEDStrip extends SubsystemBase {
   public void runBlue() {
     ticksPerSecond = 20;
     for (int i = 0; i < Constants.LED_LENGTH; i++) {
-      double alternate = (255 / 1) * ((-Math.cos((2 * Math.PI * 2 * i) / Constants.LED_LENGTH)) + 1);
-      setRGBMirrored((i + counter) % Constants.LED_LENGTH, 0, (int) alternate, 255);
+      setRGBMirrored((i + counter) % Constants.LED_LENGTH, 0, 0, (int) ((-Math.cos((2 * Math.PI * 2 * i) / Constants.LED_LENGTH)) + 1) * 50);
+      //double alternate = (255 / 1) * ((-Math.cos((2 * Math.PI * 2 * i) / Constants.LED_LENGTH)) + 1);
+      //setRGBMirrored((i + counter) % Constants.LED_LENGTH, 0, (int) alternate, 255);
     }
   }
 
@@ -141,8 +141,10 @@ public class OldLEDStrip extends SubsystemBase {
   public void runRed() {
     ticksPerSecond = 20;
     for (int i = 0; i < Constants.LED_LENGTH; i++) {
-      double alternate = (25 / 2) * ((-Math.cos((2 * Math.PI * 2 * i) / Constants.LED_LENGTH)) + 1);
-      setRGBMirrored((i + counter) % Constants.LED_LENGTH, 255, 0, (int) alternate);
+      setRGBMirrored((i + counter) % Constants.LED_LENGTH, (int) ((-Math.cos((2 * Math.PI * 2 * i) / Constants.LED_LENGTH)) + 1) * 50, 0, 0);
+
+      //double alternate = (25 / 2) * ((-Math.cos((2 * Math.PI * 2 * i) / Constants.LED_LENGTH)) + 1);
+      //setRGBMirrored((i + counter) % Constants.LED_LENGTH, 255, 0, (int) alternate);
     }
   }
 
@@ -153,7 +155,15 @@ public class OldLEDStrip extends SubsystemBase {
     }
   }
 
+  public void runSilly() {
+    ticksPerSecond = 5;
+    for (int i = 0; i < Constants.LED_LENGTH; i++) {
+      setHSVMirrored(i, (int) (Math.random() * 180), 255, 255);
+    }
+  }
+
   public void update() {
+    /*
     if (RobotContainer.swerveDrive != null && !RobotContainer.swerveDrive.isCalibrated) {
       calibratePattern();
     }
@@ -170,6 +180,8 @@ public class OldLEDStrip extends SubsystemBase {
     else if (RobotContainer.operatorBox.cubeMode()) {
       setPurple();
     }
+    */
+    runSilly();
     strip.setData(buffer);
     counter++;
   }

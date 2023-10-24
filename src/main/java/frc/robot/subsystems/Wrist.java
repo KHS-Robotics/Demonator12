@@ -37,7 +37,7 @@ public class Wrist extends SubsystemBase {
   private final Constraints wristRelativeConstraints = new TrapezoidProfile.Constraints(1.6, 5);
   public TrapezoidProfile.State wristSetpoint = new TrapezoidProfile.State();
   private static final double kDt = 0.02;
-  private static final double OFFSET = 1.98;
+  private static final double OFFSET = 2.2;
 
   private Rotation2d angleSetpoint = new Rotation2d(); 
   private Rotation2d relativeSetpoint = new Rotation2d();

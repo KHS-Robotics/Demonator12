@@ -1,7 +1,6 @@
 package frc.robot.subsystems;
 
 import java.util.HashMap;
-import java.util.ResourceBundle.Control;
 
 import com.ctre.phoenix.sensors.CANCoder;
 import com.revrobotics.CANSparkMax;
