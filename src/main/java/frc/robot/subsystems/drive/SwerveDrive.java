@@ -51,10 +51,10 @@ public class SwerveDrive extends SubsystemBase {
   public Pose2d startingPose;
   public double angleSetpoint;
   private PIDController targetPid;
-  private final Translation2d frontLeftLocation = new Translation2d(0.327025, 0.2693162);
-  private final Translation2d frontRightLocation = new Translation2d(0.327025, -0.2693162);
-  private final Translation2d rearLeftLocation = new Translation2d(-0.327025, 0.2693162);
-  private final Translation2d rearRightLocation = new Translation2d(-0.327025, -0.2693162);
+  private final Translation2d frontLeftLocation = new Translation2d(0.2984, 0.2984);
+  private final Translation2d frontRightLocation = new Translation2d(0.2984, -0.2984);
+  private final Translation2d rearLeftLocation = new Translation2d(-0.2984, 0.2984);
+  private final Translation2d rearRightLocation = new Translation2d(-0.2984, -0.2984);
 
   public double currentX, currentY;
 
@@ -76,7 +76,7 @@ public class SwerveDrive extends SubsystemBase {
       Constants.DRIVE_KS,
       Constants.DRIVE_KV,
       Constants.DRIVE_KA,
-      RobotMap.FRONT_LEFT_DIGITAL_INPUT);
+      RobotMap.FRONT_LEFT_PIVOT_ENCODER);
   public static final SwerveModule frontRight = new SwerveModule(
       "FR",
       RobotMap.FRONT_RIGHT_DRIVE,
@@ -90,7 +90,7 @@ public class SwerveDrive extends SubsystemBase {
       Constants.DRIVE_KS,
       Constants.DRIVE_KV,
       Constants.DRIVE_KA,
-      RobotMap.FRONT_RIGHT_DIGITAL_INPUT);
+      RobotMap.FRONT_RIGHT_PIVOT_ENCODER);
   public static final SwerveModule rearLeft = new SwerveModule(
       "RL",
       RobotMap.REAR_LEFT_DRIVE,
@@ -104,7 +104,7 @@ public class SwerveDrive extends SubsystemBase {
       Constants.DRIVE_KS,
       Constants.DRIVE_KV,
       Constants.DRIVE_KA,
-      RobotMap.REAR_LEFT_DIGITAL_INPUT);
+      RobotMap.REAR_LEFT_PIVOT_ENCODER);
   public static final SwerveModule rearRight = new SwerveModule(
       "RR",
       RobotMap.REAR_RIGHT_DRIVE,
@@ -118,7 +118,7 @@ public class SwerveDrive extends SubsystemBase {
       Constants.DRIVE_KS,
       Constants.DRIVE_KV,
       Constants.DRIVE_KA,
-      RobotMap.REAR_RIGHT_DIGITAL_INPUT);
+      RobotMap.REAR_RIGHT_PIVOT_ENCODER);
 
   public final SwerveDriveKinematics kinematics = new SwerveDriveKinematics(frontLeftLocation,
       frontRightLocation, rearLeftLocation, rearRightLocation);
@@ -450,14 +450,6 @@ public class SwerveDrive extends SubsystemBase {
 
   public boolean facingInfield() {
     return (180 - Math.abs(getYaw())) < 10 || Math.abs(getYaw()) < 10;
-  }
-
-  public boolean resetEncoders() {
-    boolean fl = frontLeft.resetEncoder();
-    boolean fr = frontRight.resetEncoder();
-    boolean rl = rearLeft.resetEncoder();
-    boolean rr = rearRight.resetEncoder();
-    return fl && fr && rl && rr;
   }
 
   private static double normalizeAngle(double angle) {

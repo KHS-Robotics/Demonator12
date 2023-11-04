@@ -84,9 +84,7 @@ public class Robot extends TimedRobot {
     RobotContainer.arm.armLengthSetpoint = RobotContainer.arm.getLength();
     RobotContainer.wrist.setAngleSetpoint(RobotContainer.wrist.getAbsoluteAngle());
 
-    if (RobotContainer.swerveDrive != null && !RobotContainer.swerveDrive.isCalibrated && RobotContainer.swerveDrive.resetEncoders()) {
-      RobotContainer.swerveDrive.isCalibrated = true;
-    }
+    RobotContainer.swerveDrive.isCalibrated = true;
   }
 
   /**

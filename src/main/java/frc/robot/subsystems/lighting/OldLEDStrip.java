@@ -3,9 +3,11 @@ package frc.robot.subsystems.lighting;
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.RobotContainer;
 import frc.robot.RobotMap;
 import frc.robot.subsystems.drive.SwerveDrive;
 
@@ -111,19 +113,19 @@ public class OldLEDStrip extends SubsystemBase {
   
   public void calibratePattern() {
     ticksPerSecond = 10;
-        boolean frontLeftCalibrated = !SwerveDrive.frontLeft.setDetection.get();
+        boolean frontLeftCalibrated = !SwerveDrive.frontLeft.isHomed();
         for (int i = 0; i < 3; i++) {
             setRGBMirrored(i, frontLeftCalibrated ? 0 : 255, frontLeftCalibrated ? 255 : 0, 0);
         }
-        boolean frontRightCalibrated = !SwerveDrive.frontRight.setDetection.get();
+        boolean frontRightCalibrated = !SwerveDrive.frontRight.isHomed();
         for (int i = 4; i < 7; i++) {
             setRGBMirrored(i, frontRightCalibrated ? 0 : 255, frontRightCalibrated ? 255 : 0, 0);
         }
-        boolean rearLeftCalibrated = !SwerveDrive.rearLeft.setDetection.get();
+        boolean rearLeftCalibrated = !SwerveDrive.rearLeft.isHomed();
         for (int i = 8; i < 11; i++) {
             setRGBMirrored(i, rearLeftCalibrated ? 0 : 255, rearLeftCalibrated ? 255 : 0, 0);
         }
-        boolean rearRightCalibrated = !SwerveDrive.rearRight.setDetection.get();
+        boolean rearRightCalibrated = !SwerveDrive.rearRight.isHomed();
         for (int i = 12; i < 15; i++) {
             setRGBMirrored(i, rearRightCalibrated ? 0 : 255, rearRightCalibrated ? 255 : 0, 0);
         }
@@ -163,7 +165,6 @@ public class OldLEDStrip extends SubsystemBase {
   }
 
   public void update() {
-    /*
     if (RobotContainer.swerveDrive != null && !RobotContainer.swerveDrive.isCalibrated) {
       calibratePattern();
     }
@@ -180,8 +181,7 @@ public class OldLEDStrip extends SubsystemBase {
     else if (RobotContainer.operatorBox.cubeMode()) {
       setPurple();
     }
-    */
-    runSilly();
+    
     strip.setData(buffer);
     counter++;
   }

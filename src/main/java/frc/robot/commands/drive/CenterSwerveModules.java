@@ -25,14 +25,14 @@ public class CenterSwerveModules extends CommandBase {
   @Override
   public void initialize() {
     RobotContainer.swerveDrive.stop();
-    RobotContainer.swerveDrive.isCalibrated = !force && RobotContainer.swerveDrive.isCalibrated;
+    RobotContainer.swerveDrive.isCalibrated = true;
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
     if (!RobotContainer.swerveDrive.isCalibrated) {
-      RobotContainer.swerveDrive.isCalibrated = RobotContainer.swerveDrive.resetEncoders();
+      RobotContainer.swerveDrive.isCalibrated = true;
     }
   }
 

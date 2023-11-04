@@ -6,6 +6,8 @@
 /*----------------------------------------------------------------------------*/
 package frc.robot.subsystems.drive;
 
+import com.ctre.phoenix.sensors.AbsoluteSensorRange;
+import com.ctre.phoenix.sensors.CANCoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
@@ -36,14 +38,13 @@ public class SwerveModule extends SubsystemBase {
   private final CANSparkMax driveMotor;
   private final RelativeEncoder driveEncoder;
 
+  private final CANCoder pivotEncoder;
   private final CANSparkMax pivotMotor;
-  private final RelativeEncoder pivotEncoder;
   private final SparkMaxPIDController drivePID;
   private final SimpleMotorFeedforward driveFeedForward;
   // private final SimpleMotorFeedforward pivotFeedForward;
 
   private final PIDController pivotPID;
-  public final DigitalInput setDetection; // talon tach
 
   /**
    * Constructs a Swerve Module.
@@ -54,13 +55,15 @@ public class SwerveModule extends SubsystemBase {
    * @param pivotP            P value of Pivot PID
    * @param pivotI            I value of Pivot PID
    * @param pivotD            D value of Pivot PID
-   * @param digitalInputPort  port number for the digital input, used to calibrate
-   *                          pivots
+   * @param driveP            P value of Drive PID
+   * @param driveI            I value of Drive PID
+   * @param driveD            D value of Drive PID
+   * @param pivotEncoderId    port number for the pivot CANCoder
    * @param reversed          true if drive motor is reversed
    */
   public SwerveModule(String name, int driveMotorChannel, int pivotMotorChannel, double pivotP, double pivotI,
       double pivotD, double driveP, double driveI, double driveD,
-      double drivekS, double drivekV, double drivekA, int digitalInputPort, boolean reversed) {
+      double drivekS, double drivekV, double drivekA, int pivotEncoderId, boolean reversed) {
 
     this.name = name;
 
@@ -74,8 +77,8 @@ public class SwerveModule extends SubsystemBase {
     pivotMotor.setIdleMode(IdleMode.kBrake);
     driveMotor.setIdleMode(IdleMode.kBrake);
 
-    pivotEncoder = pivotMotor.getEncoder();
-    pivotEncoder.setPositionConversionFactor(360.0 / 18.0); // 360 degree per rotation, 18:1 -> 360 * 1/18
+    pivotEncoder = new CANCoder(pivotEncoderId);
+    pivotEncoder.configAbsoluteSensorRange(AbsoluteSensorRange.Signed_PlusMinus180);
 
     driveEncoder = driveMotor.getEncoder();
     driveMotor.setInverted(false);
@@ -93,14 +96,8 @@ public class SwerveModule extends SubsystemBase {
 
     pivotPID = new PIDController(pivotP, pivotI, pivotD);
 
-    // pivotFeedForward = new SimpleMotorFeedforward(pivotkS, pivotkV, pivotkA);
-
     pivotPID.enableContinuousInput(-180, 180);
     pivotPID.setTolerance(1);
-
-    setDetection = new DigitalInput(digitalInputPort);
-
-    // driveMotor.setSmartCurrentLimit(currentLimit);
   }
 
   /**
@@ -117,9 +114,9 @@ public class SwerveModule extends SubsystemBase {
    */
   public SwerveModule(String name, int driveMotorChannel, int pivotMotorChannel, double pivotP, double pivotI,
       double pivotD, double driveP, double driveI, double driveD,
-      double drivekS, double drivekV, double drivekA, int digitalInputPort) {
+      double drivekS, double drivekV, double drivekA, int pivotEncoderId) {
     this(name, driveMotorChannel, pivotMotorChannel, pivotP, pivotI, pivotD, driveP, driveI,
-        driveD, drivekS, drivekV, drivekA, digitalInputPort, false);
+        driveD, drivekS, drivekV, drivekA, pivotEncoderId, false);
   }
 
   @Override
@@ -207,7 +204,23 @@ public class SwerveModule extends SubsystemBase {
    * @return the angle of the pivot module ranging from [-180,180]
    */
   public double getAngle() {
-    var angle = pivotEncoder.getPosition();
+    double angle = pivotEncoder.getAbsolutePosition();
+
+    switch (this.name) {
+      case "FL": {
+        angle -= 45d;
+      }
+      case "FR": {
+        angle += 45d;
+      }
+      case "RL": {
+        angle -= 135d;
+      }
+      case "RR": {
+        angle += 135d;
+      }
+    }
+
     if (angle > 0) {
       angle %= 360;
       if (angle > 180) {
@@ -219,6 +232,7 @@ public class SwerveModule extends SubsystemBase {
         angle += 360;
       }
     }
+
     return angle;
   }
 
@@ -231,31 +245,13 @@ public class SwerveModule extends SubsystemBase {
     pivotPID.reset();
   }
 
-
-  /**
-   * For homing the modules
-   * @return true if module is homed
-   */
-  public boolean resetEncoder() {
-    var isHomed = isHomed();
-    
-    if (isHomed) {
-      pivotMotor.set(0);
-      pivotEncoder.setPosition(0.0);
-    } else {
-      pivotMotor.set(-0.065);
-    }
-
-    return isHomed;
-  }
-
   /**
    * Gets if the module is at the home position using the talon tach.
    * @return true if module is homed, false otherwise
    */
   public boolean isHomed() {
     // sensor "inverted"
-    return !this.setDetection.get();
+    return Math.abs(this.getAngle()) <= 0.5;
   }
 
   /**
