@@ -186,6 +186,8 @@ public class RobotContainer {
       SwerveDrive.kMaxSpeedMetersPerSecond = 3.5;
     }));
 
+
+    /*
     Trigger goToClosestNode = driverController.x();
     goToClosestNode.onTrue(new ProxyCommand(() -> swerveDrive.goToClosestNode()));
 
@@ -209,10 +211,13 @@ public class RobotContainer {
 
     //Trigger testSequence = driverController.pov(90);
     //testSequence.onTrue(new DriveOverThenBalanceSequence());
+    */
   }
 
   /** Binds commands to the operator box. */
   private void configureOperatorBoxBindings() {
+
+    /*
     Trigger leftNode = new Trigger(operatorBox::rightNode); // mirror button bc scoring facing drivers
     leftNode.onTrue(new ProxyCommand(
         () -> swerveDrive.goToNode(Field.aprilTagFromInput(operatorBox.getGrid()), operatorBox.getHeight() * 3)));
@@ -236,10 +241,13 @@ public class RobotContainer {
     
     Trigger midConeKnockedOver = new Trigger(operatorBox::midConeKnockedOver);
     midConeKnockedOver.onTrue(new ProxyCommand(() -> RobotContainer.arm.goToLocationUniversal(Position.MID_KNOCKED, Constants.MID_POS_KNOCKED_OVER, Rotation2d.fromRadians(-0.90))));
+    */
   }
 
   /** Binds commands to the operator stick. */
   private void configureOperatorStickBindings() {
+
+    /*
     Trigger highPos = new Trigger(() -> (operatorStick.highPos() && operatorBox.coneMode()));
     highPos.onTrue(new ProxyCommand(() -> RobotContainer.arm.goToLocationUniversal(Position.HIGH, Constants.HIGH_POS, Rotation2d.fromDegrees(40))));
 
@@ -282,10 +290,10 @@ public class RobotContainer {
     Trigger moveArm = new Trigger(() -> Math.abs(operatorStick.getX()) > 0.05 || Math.abs(operatorStick.getY()) > 0.05);
     moveArm.onTrue(new ArmControlJoystick());
 
-    Trigger grip = new Trigger(() -> (/*operatorBox.coneMode() &&*/ operatorStick.openClaw()));
+    Trigger grip = new Trigger(() -> (operatorStick.openClaw()));
     grip.onTrue(new SetGrabber(true).alongWith(new InstantCommand(() -> grabber.stopWaitingForCone())));
 
-    Trigger release = new Trigger(() -> (/*operatorBox.cubeMode() ||*/ operatorStick.closeClaw()));
+    Trigger release = new Trigger(() -> (operatorStick.closeClaw()));
     release.onTrue(new SetGrabber(false).alongWith(new InstantCommand(() -> grabber.stopWaitingForCone())));
 
     Trigger outtake = new Trigger(operatorStick::outtake);
@@ -304,7 +312,7 @@ public class RobotContainer {
     waitForCone.onTrue(new InstantCommand(() -> grabber.waitForCone()));
 
     Trigger coneIn = new Trigger(() -> (grabber.waiting && grabber.getSensor() && operatorBox.coneMode() && RobotState.isTeleop()));
-    coneIn.onTrue(new SetGrabber(false)/*.alongWith(new InstantCommand(() -> grabber.stopWaitingForCone()))*/);
+    coneIn.onTrue(new SetGrabber(false));
 
     Trigger singleSubstation = new Trigger(operatorStick::singleSubstation);
     singleSubstation.onTrue(new ProxyCommand(() -> RobotContainer.arm.goToLocationUniversal(Position.SINGLE, Constants.SINGLE_POS, Rotation2d.fromDegrees(35))));
@@ -317,6 +325,8 @@ public class RobotContainer {
 
     Trigger autoRetract = new Trigger(() -> operatorStick.openClaw() && arm.getTranslation().getNorm() > 0.75 && swerveDrive.getPose().getX() < 2.5);
     autoRetract.onTrue(new WaitCommand(0.2).andThen(new ProxyCommand(() -> RobotContainer.arm.goToLocationUniversal(Position.STOW, 0.63, Constants.MIN_LENGTH, Rotation2d.fromDegrees(116)))));
+    */
+  
   }
 
   /**
