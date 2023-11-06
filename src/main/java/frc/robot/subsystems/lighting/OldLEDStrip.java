@@ -3,9 +3,11 @@ package frc.robot.subsystems.lighting;
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.RobotContainer;
 import frc.robot.RobotMap;
 import frc.robot.subsystems.drive.SwerveDrive;
 
@@ -163,7 +165,7 @@ public class OldLEDStrip extends SubsystemBase {
   }
 
   public void update() {
-    /*
+    
     if (RobotContainer.swerveDrive != null && !RobotContainer.swerveDrive.isCalibrated) {
       calibratePattern();
     }
@@ -180,8 +182,7 @@ public class OldLEDStrip extends SubsystemBase {
     else if (RobotContainer.operatorBox.cubeMode()) {
       setPurple();
     }
-    */
-    runSilly();
+    
     strip.setData(buffer);
     counter++;
   }
