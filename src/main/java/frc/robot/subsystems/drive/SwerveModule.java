@@ -45,6 +45,8 @@ public class SwerveModule extends SubsystemBase {
 
   private final PIDController pivotPID;
 
+  private double offsetAngle;
+
   /**
    * Constructs a Swerve Module.
    *
@@ -62,7 +64,7 @@ public class SwerveModule extends SubsystemBase {
    */
   public SwerveModule(String name, int driveMotorChannel, int pivotMotorChannel, double pivotP, double pivotI,
       double pivotD, double driveP, double driveI, double driveD,
-      double drivekS, double drivekV, double drivekA, int pivotEncoderId, boolean reversed) {
+      double drivekS, double drivekV, double drivekA, int pivotEncoderId, boolean reversed, double offsetAngle) {
 
     this.name = name;
 
@@ -97,6 +99,7 @@ public class SwerveModule extends SubsystemBase {
 
     pivotPID.enableContinuousInput(-180, 180);
     pivotPID.setTolerance(1);
+    this.offsetAngle = offsetAngle;
   }
 
   /**
@@ -113,9 +116,9 @@ public class SwerveModule extends SubsystemBase {
    */
   public SwerveModule(String name, int driveMotorChannel, int pivotMotorChannel, double pivotP, double pivotI,
       double pivotD, double driveP, double driveI, double driveD,
-      double drivekS, double drivekV, double drivekA, int pivotEncoderId) {
+      double drivekS, double drivekV, double drivekA, int pivotEncoderId, double offsetAngle) {
     this(name, driveMotorChannel, pivotMotorChannel, pivotP, pivotI, pivotD, driveP, driveI,
-        driveD, drivekS, drivekV, drivekA, pivotEncoderId, false);
+        driveD, drivekS, drivekV, drivekA, pivotEncoderId, false, offsetAngle);
   }
 
   @Override
@@ -203,22 +206,7 @@ public class SwerveModule extends SubsystemBase {
    * @return the angle of the pivot module ranging from [-180,180]
    */
   public double getAngle() {
-    double angle = pivotEncoder.getAbsolutePosition();
-
-    switch (this.name) {
-      case "FL": {
-        angle -= 45d;
-      }
-      case "FR": {
-        angle += 45d;
-      }
-      case "RL": {
-        angle -= 135d;
-      }
-      case "RR": {
-        angle += 135d;
-      }
-    }
+    double angle = pivotEncoder.getAbsolutePosition() + offsetAngle;
 
     if (angle > 0) {
       angle %= 360;

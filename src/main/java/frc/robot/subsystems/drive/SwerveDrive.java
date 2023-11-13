@@ -36,7 +36,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ProxyCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotMap;
-import frc.robot.subsystems.vision.PhotonWrapper;
 import frc.robot.Constants;
 import frc.robot.Field;
 import frc.robot.RobotContainer;
@@ -58,7 +57,6 @@ public class SwerveDrive extends SubsystemBase {
 
   public double currentX, currentY;
 
-  public PhotonWrapper photonCamera;
 
   public boolean isCalibrated = false;
   private boolean loggedPoseError = false;
@@ -76,7 +74,8 @@ public class SwerveDrive extends SubsystemBase {
       Constants.DRIVE_KS,
       Constants.DRIVE_KV,
       Constants.DRIVE_KA,
-      RobotMap.FRONT_LEFT_PIVOT_ENCODER);
+      RobotMap.FRONT_LEFT_PIVOT_ENCODER,
+      225);
   public static final SwerveModule frontRight = new SwerveModule(
       "FR",
       RobotMap.FRONT_RIGHT_DRIVE,
@@ -90,7 +89,8 @@ public class SwerveDrive extends SubsystemBase {
       Constants.DRIVE_KS,
       Constants.DRIVE_KV,
       Constants.DRIVE_KA,
-      RobotMap.FRONT_RIGHT_PIVOT_ENCODER);
+      RobotMap.FRONT_RIGHT_PIVOT_ENCODER,
+      135);
   public static final SwerveModule rearLeft = new SwerveModule(
       "RL",
       RobotMap.REAR_LEFT_DRIVE,
@@ -104,7 +104,8 @@ public class SwerveDrive extends SubsystemBase {
       Constants.DRIVE_KS,
       Constants.DRIVE_KV,
       Constants.DRIVE_KA,
-      RobotMap.REAR_LEFT_PIVOT_ENCODER);
+      RobotMap.REAR_LEFT_PIVOT_ENCODER,
+      315);
   public static final SwerveModule rearRight = new SwerveModule(
       "RR",
       RobotMap.REAR_RIGHT_DRIVE,
@@ -118,7 +119,8 @@ public class SwerveDrive extends SubsystemBase {
       Constants.DRIVE_KS,
       Constants.DRIVE_KV,
       Constants.DRIVE_KA,
-      RobotMap.REAR_RIGHT_PIVOT_ENCODER);
+      RobotMap.REAR_RIGHT_PIVOT_ENCODER,
+      45);
 
   public final SwerveDriveKinematics kinematics = new SwerveDriveKinematics(frontLeftLocation,
       frontRightLocation, rearLeftLocation, rearRightLocation);
@@ -138,7 +140,6 @@ public class SwerveDrive extends SubsystemBase {
    * Constructs Swerve Drive
    */
   public SwerveDrive() {
-    photonCamera = new PhotonWrapper("cameraOne");
 
     targetPid = new PIDController(Constants.TARGET_P, Constants.TARGET_I, Constants.TARGET_D);
     targetPid.enableContinuousInput(-180.0, 180.0);
@@ -207,95 +208,6 @@ public class SwerveDrive extends SubsystemBase {
         ChassisSpeeds.fromFieldRelativeSpeeds(chassisSpeeds, poseEstimator.getEstimatedPosition().getRotation())));
   }
 
-  public Command goToNode(int apriltag, int node) {
-    Rotation2d heading;
-
-
-    Translation3d nodeTrans = Field.getNodeCoordinatesFieldRelative(apriltag, node);
-    ChassisSpeeds currentSpeeds = getChassisSpeeds();
-
-    double linearVel =
-        Math.sqrt(
-            (currentSpeeds.vxMetersPerSecond * currentSpeeds.vxMetersPerSecond)
-                + (currentSpeeds.vyMetersPerSecond * currentSpeeds.vyMetersPerSecond));
-
-
-    Translation2d goal = new Translation2d(
-        Field.fieldLayout.getTagPose(apriltag).get().getTranslation().getX() + Field.DIST_FROM_NODE_X_METERS,
-    nodeTrans.getY());
-    if(getPose().getY() > goal.getY()) {
-      heading = Rotation2d.fromDegrees(-90);
-     } else {
-      heading = Rotation2d.fromDegrees(90);
-     }
-
-    PathPoint initialPoint = new PathPoint(
-      getPose().getTranslation(), heading, getPose().getRotation(), linearVel);
-    PathPlannerTrajectory trajToGoal = PathPlanner.generatePath(
-        new PathConstraints(1, 1.5),
-        //PathPoint.fromCurrentHolonomicState(getPose(), getChassisSpeeds()),
-        initialPoint,
-        new PathPoint(goal, Rotation2d.fromDegrees(180), Rotation2d.fromDegrees(180), -1)); // position, heading(direction of
-                                                                                      // travel), holonomic rotation
-    //return followTrajectoryCommand(trajToGoal, false);
-    return RobotContainer.swerveAutoBuilder.followPath(trajToGoal);
-  }
-
-  public Command goToClosestNode() {
-    Pose2d pose = getPose();
-    double[] nodePositions = Field.getNodeYArray();
-    ChassisSpeeds currentSpeeds = getChassisSpeeds();
-    double linearVel =
-        Math.sqrt(
-            (currentSpeeds.vxMetersPerSecond * currentSpeeds.vxMetersPerSecond)
-                + (currentSpeeds.vyMetersPerSecond * currentSpeeds.vyMetersPerSecond));
-    Rotation2d heading;
-    
-
-    //finds the closest node by y coordinate
-    double minimumDist = 100;
-    double desiredY = 1;
-    for(double y : nodePositions) {
-      if(Math.abs(pose.getY() - y) < minimumDist) {
-        minimumDist = Math.abs(pose.getY() - y);
-        desiredY = y;
-      }
-    }
-
-    
-    Translation2d goal = new Translation2d(Field.PLACEMENTX, desiredY);
-
-    //finds correct heading for robot to start path (left or right)
-    if(getPose().getY() > goal.getY()) {
-      heading = Rotation2d.fromDegrees(-90);
-     } else {
-      heading = Rotation2d.fromDegrees(90);
-     }
-
-    PathPoint initialPoint = new PathPoint(
-      getPose().getTranslation(), heading, getPose().getRotation(), linearVel);
-    PathPlannerTrajectory trajToGoal = PathPlanner.generatePath(
-        new PathConstraints(1, 1.5),
-        initialPoint,
-        new PathPoint(goal, Rotation2d.fromDegrees(180), Rotation2d.fromDegrees(180), -1)); // position, heading(direction of
-                                                                                      // travel), holonomic rotation
-    return RobotContainer.swerveAutoBuilder.followPath(trajToGoal);
-  }
-
-  public Command goToSingleSubstation() {
-    final double xMeters = 14.09;
-    final double yMeters = 7.33;
-
-    PathPlannerTrajectory trajectory1 = PathPlanner.generatePath(new PathConstraints(1, 1.5), 
-    PathPoint.fromCurrentHolonomicState(getPose(), getChassisSpeeds()),
-    new PathPoint(new Translation2d(xMeters, yMeters - 0.5), Rotation2d.fromDegrees(90), Rotation2d.fromDegrees(90)));
-
-    PathPlannerTrajectory trajectory2 = PathPlanner.generatePath(new PathConstraints(1, 1.5), 
-    new PathPoint(new Translation2d(xMeters, yMeters - 0.5), Rotation2d.fromDegrees(90), Rotation2d.fromDegrees(90)),
-    new PathPoint(new Translation2d(xMeters, yMeters), Rotation2d.fromDegrees(90), Rotation2d.fromDegrees(90)));
-
-    return (RobotContainer.swerveAutoBuilder.followPath(trajectory1).alongWith(new ProxyCommand(() -> RobotContainer.arm.goToSetpoint(Constants.SINGLE_POS, Rotation2d.fromDegrees(35))))).andThen(RobotContainer.swerveAutoBuilder.followPath(trajectory2));
-  }
 
   public void setPose(Pose2d pose) {
     poseEstimator.resetPosition(getAngle(), getSwerveModulePositions(), pose);
@@ -362,24 +274,7 @@ public class SwerveDrive extends SubsystemBase {
       }
     }
 
-    Optional<EstimatedRobotPose> estimatedPose = photonCamera.getEstimatedGlobalPose();
-    if (estimatedPose.isPresent()) {
-      EstimatedRobotPose robotPose = estimatedPose.get();
-      double minimum = 1;
-      double distance = 100;
-      for(var target : robotPose.targetsUsed) {
-        
-        double ambiguity = target.getPoseAmbiguity();
-        if(ambiguity < minimum) {
-          minimum = ambiguity;
-          distance = target.getBestCameraToTarget().getTranslation().getNorm();
-        }
-      }
-
-      if(minimum < 0.05 && poseEstimator.getEstimatedPosition().getTranslation().getDistance(getPose().getTranslation()) < 0.6 && distance < 2) {
-        poseEstimator.addVisionMeasurement(Field.flipPose(robotPose.estimatedPose.toPose2d()), robotPose.timestampSeconds, VecBuilder.fill(distance / 2, distance / 2, 500));
-      }
-    }
+    
   }
   
 

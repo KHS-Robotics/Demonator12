@@ -25,26 +25,26 @@ public class RobotMap {
   public static final int GRABBER_COMPRESSOR = 32;
   public static final int GRABBER_SOLENOID_FORWARD = 0;
   public static final int GRABBER_SOLENOID_REVERSE = 1;
-  public static final int GRABBER_SOLENOID = 12;
+  public static final int GRABBER_SOLENOID = 55;
 
   public static final int WRIST_PIVOT = 7;
 
-  public static final int FRONT_LEFT_PIVOT = 1;
-  public static final int FRONT_RIGHT_PIVOT = 13;
-  public static final int REAR_LEFT_PIVOT = 3;
-  public static final int REAR_RIGHT_PIVOT = 11;
+  public static final int FRONT_LEFT_PIVOT = 10;
+  public static final int FRONT_RIGHT_PIVOT = 20;
+  public static final int REAR_LEFT_PIVOT = 30;
+  public static final int REAR_RIGHT_PIVOT = 40;
 
-  public static final int FRONT_LEFT_DRIVE = 2;
-  public static final int FRONT_RIGHT_DRIVE = 12;
-  public static final int REAR_LEFT_DRIVE = 4;
-  public static final int REAR_RIGHT_DRIVE = 10;
+  public static final int FRONT_LEFT_DRIVE = 11;
+  public static final int FRONT_RIGHT_DRIVE = 21;
+  public static final int REAR_LEFT_DRIVE = 31;
+  public static final int REAR_RIGHT_DRIVE = 41;
 
   public static final int ARM_PIVOT = 5;
   public static final int ARM_EXTEND = 6;
-  public static final int ARM_PIVOT_CANCODER = 21;
+  public static final int ARM_PIVOT_CANCODER = 55;
 
-  public static final int FRONT_LEFT_PIVOT_ENCODER = 3;
-  public static final int FRONT_RIGHT_PIVOT_ENCODER = 2;
-  public static final int REAR_LEFT_PIVOT_ENCODER = 4;
-  public static final int REAR_RIGHT_PIVOT_ENCODER = 5;
+  public static final int FRONT_LEFT_PIVOT_ENCODER = 12;
+  public static final int FRONT_RIGHT_PIVOT_ENCODER = 22;
+  public static final int REAR_LEFT_PIVOT_ENCODER = 32;
+  public static final int REAR_RIGHT_PIVOT_ENCODER = 42;
 }

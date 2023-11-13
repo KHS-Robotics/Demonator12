@@ -33,8 +33,6 @@ import edu.wpi.first.wpilibj2.command.ProxyCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.commands.arm.ArmControlJoystick;
-import frc.robot.commands.arm.ArmHoldSetpoint;
 import frc.robot.commands.drive.CenterSwerveModules;
 import frc.robot.commands.drive.DriveSwerveWithXbox;
 import frc.robot.commands.drive.HoldAngleWithXbox;
@@ -43,13 +41,7 @@ import frc.robot.commands.drive.balance.ApproachChargeStation;
 import frc.robot.commands.drive.balance.BalanceSequence;
 import frc.robot.commands.drive.balance.DriveForward;
 import frc.robot.commands.drive.balance.DriveOverThenBalanceSequence;
-import frc.robot.commands.grabber.SetGrabber;
-import frc.robot.commands.wrist.WristDeltaSetpoint;
-import frc.robot.commands.wrist.WristHoldSetpoint;
-import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Grabber;
-import frc.robot.subsystems.Wrist;
-import frc.robot.subsystems.Arm.Position;
 import frc.robot.subsystems.drive.SwerveDrive;
 import frc.robot.subsystems.lighting.OldLEDStrip;
 
@@ -112,9 +104,9 @@ public class RobotContainer {
 
   // Subsystems
   public static final SwerveDrive swerveDrive = new SwerveDrive();
-  public static final Arm arm = new Arm();
-  public static final Wrist wrist = new Wrist();
-  public static final Grabber grabber = new Grabber();
+  //public static final Arm arm = new Arm();
+  //public static final Wrist wrist = new Wrist();
+  //public static final Grabber grabber = new Grabber();
   public static final OldLEDStrip leds = new OldLEDStrip();
 
   /**
@@ -122,15 +114,14 @@ public class RobotContainer {
    */
   private RobotContainer() {
     this.configureSubsystemDefaultCommands();
-    this.configureAutonmousChooser();
     this.configureBindings();
   }
 
   /** Configures the subsystem's default commands. */
   private void configureSubsystemDefaultCommands() {
     swerveDrive.setDefaultCommand(new DriveSwerveWithXbox());
-    arm.setDefaultCommand(new ArmHoldSetpoint());
-    wrist.setDefaultCommand(new WristHoldSetpoint());
+    //arm.setDefaultCommand(new ArmHoldSetpoint());
+    //wrist.setDefaultCommand(new WristHoldSetpoint());
   }
 
   /**
@@ -332,90 +323,4 @@ public class RobotContainer {
   /**
    * Configures the autonomous chooser over Network Tables (e.g. Smart Dashboard).
    */
-  private void configureAutonmousChooser() {
-    swerveAutoBuilder = new SwerveAutoBuilder(
-      swerveDrive::getPose,
-      swerveDrive::setPose,
-      swerveDrive.kinematics,
-      new PIDConstants(4, 0, 0.3), // translation
-      new PIDConstants(1.8, 0, 0.8), // rotation
-      swerveDrive::setModuleStates,
-      getAutonomousEventMap(),
-      true,
-      swerveDrive
-    );
-
-    // Do nothing routine
-    autoChooser.setDefaultOption("Nothing", new AutoRoutine(new ArrayList<PathPlannerTrajectory>()));
-
-    // dynamically create the options using the PathPlanner paths under "src/main/deploy/pathplanner"
-    File ppDirectory = Filesystem.getDeployDirectory().toPath().resolve("pathplanner").toFile();
-    for (File file : ppDirectory.listFiles()) {
-      if (!file.isDirectory() && file.getName().endsWith(".path")) {
-        // remove ".path" from the name for PathPlanner
-        var pathName = file.getName().replace(".path", "");
-        autoChooser.addOption(pathName, new AutoRoutine(PathPlanner.loadPathGroup(pathName, new PathConstraints(1.4, 2))));
-      }
-    }
-
-    // "Manually written" autos
-    autoChooser.addOption("Place + Mobility + Engage (center)", new AutoRoutine(
-      new CenterSwerveModules(false).andThen( // ensure calbirated
-      RobotContainer.arm.goToSetpointScore(Constants.HIGH_POS)).andThen( // place high
-      new SetGrabber(true).andThen(new WaitCommand(0.3))).andThen( // release, then very briefly wait to drop game piece
-      RobotContainer.arm.goToPivotLength(Math.toRadians(0), Constants.MIN_LENGTH).andThen(new InstantCommand(() -> wrist.setAngleSetpoint(Rotation2d.fromDegrees(80))))).andThen( // retract
-      new DriveOverThenBalanceSequence()), // go over + balance
-      new Pose2d(1.82, 3.30, Rotation2d.fromDegrees(180))
-    ));
-
-    autoChooser.addOption("Place + Mobility + Pickup + Engage", new AutoRoutine(
-      new InstantCommand(() -> SwerveDrive.kMaxAngularSpeedRadiansPerSecond = 2 * Math.PI).andThen(
-      new CenterSwerveModules(false)).andThen( // ensure calbirated
-      (RobotContainer.arm.goToSetpointScore(Constants.HIGH_POS)).withTimeout(2.5)).andThen( // place high
-      new SetGrabber(true).andThen(new WaitCommand(0.3))).andThen( // release, then very briefly wait to drop game piece
-      RobotContainer.arm.goToPivotLength(Math.toRadians(0), Constants.MIN_LENGTH).alongWith(new WaitCommand(0.3).andThen((new InstantCommand(() -> wrist.setAngleSetpoint(Rotation2d.fromDegrees(80)))).andThen( // retract, wait 0.3s
-      (new ApproachChargeStation(180, true)).finallyDo((inter) -> { if (inter) CommandScheduler.getInstance().cancelAll(); }).withTimeout(2.5)).andThen( // approach charge station
-      (new DriveForward(180, true, 1).withTimeout(2.2))).andThen( // drive over charge station
-      new RotateToAngle(3).alongWith(RobotContainer.arm.goToSetpoint(Constants.FLOOR_POS, Rotation2d.fromDegrees(0))).alongWith(new InstantCommand(() -> RobotContainer.grabber.set(-0.7)))).andThen( // rotate and lower gripper to pickup cube
-      (new DriveForward(0, false, 0.75).withTimeout(0.829))).andThen( // drive into cube with gripper down
-      new BalanceSequence(0, true).alongWith(RobotContainer.arm.goToPivotLength(0, Constants.MIN_LENGTH).asProxy().alongWith(new InstantCommand(() -> wrist.setAngleSetpoint(Rotation2d.fromDegrees(45))))))))),
-      new Pose2d(1.93, 2.17, Rotation2d.fromDegrees(180))
-    ));
-
-    autoChooser.addOption("balanceNoArm", new AutoRoutine(new BalanceSequence(0), new Pose2d(1.82, 3.30, Rotation2d.fromDegrees(0))));
-
-    SmartDashboard.putData(autoChooser);
-    SmartDashboard.putData("field", field);
-
-    PPSwerveControllerCommand.setLoggingCallbacks(null, RobotContainer.field::setRobotPose,
-        swerveDrive::logTargetChassisSpeeds, null);
-  }
-
-  private static final HashMap<String, Command> AutonomousEventMap = new HashMap<>();
-  /** Gets the event map for PathPlanner's FollowPathWithEvents. */
-  private static HashMap<String, Command> getAutonomousEventMap() {
-    if (AutonomousEventMap.isEmpty()) {
-        AutonomousEventMap.put("CenterSwerveModules", new CenterSwerveModules(false)); 
-        AutonomousEventMap.put("PlaceHigh", new SetGrabber(false).andThen(RobotContainer.arm.goToSetpointScore(Constants.HIGH_POS).withTimeout(3.0))); 
-        AutonomousEventMap.put("PlaceHighFast", RobotContainer.arm.goToSetpointScoreFast(Constants.HIGH_POS));
-        AutonomousEventMap.put("BalanceFacingAway", new BalanceSequence(0));
-        AutonomousEventMap.put("BalanceFacingDriver", new BalanceSequence(180));
-        AutonomousEventMap.put("BalanceFacingDriverReversed", new BalanceSequence(180, true));
-        AutonomousEventMap.put("DriveOverThenBalance", new DriveOverThenBalanceSequence());
-        AutonomousEventMap.put("ScoreAngle", RobotContainer.arm.goToPivotLength(0.75, Constants.MIN_LENGTH).asProxy().withTimeout(2));
-        AutonomousEventMap.put("Release", new SetGrabber(true).andThen(new WaitCommand(0.3)));
-        AutonomousEventMap.put("Grab", new SetGrabber(false));
-        AutonomousEventMap.put("Stow", RobotContainer.arm.goToPivotLength(0.63, Constants.MIN_LENGTH).asProxy().alongWith(new InstantCommand(() -> wrist.setAngleSetpoint(Rotation2d.fromDegrees(Math.toDegrees(0.63) + 80)))));
-        AutonomousEventMap.put("Flat", RobotContainer.arm.goToPivotLength(0, Constants.MIN_LENGTH).asProxy().alongWith(new InstantCommand(() -> wrist.setAngleSetpoint(Rotation2d.fromDegrees(45)))));
-        AutonomousEventMap.put("Hold", new ArmHoldSetpoint().alongWith(new WristHoldSetpoint()));
-        AutonomousEventMap.put("Floor", RobotContainer.arm.goToSetpoint(Constants.FLOOR_POS, Rotation2d.fromDegrees(0)));
-        AutonomousEventMap.put("Outtake", new InstantCommand(() -> RobotContainer.grabber.set(0.35)));
-        AutonomousEventMap.put("OuttakeFast", new InstantCommand(() -> RobotContainer.grabber.set(1)));
-        AutonomousEventMap.put("Intake", new InstantCommand(() -> RobotContainer.grabber.set(-0.7)));
-        AutonomousEventMap.put("PlaceHighCube", RobotContainer.arm.goToSetpoint(Constants.CUBE_HIGH_POS, new Rotation2d()));
-        AutonomousEventMap.put("StopSwerve", new InstantCommand(() -> RobotContainer.swerveDrive.stop()));
-    }
-
-    return AutonomousEventMap;
-  }
 }

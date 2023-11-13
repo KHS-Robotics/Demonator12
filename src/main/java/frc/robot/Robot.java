@@ -11,7 +11,6 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.subsystems.Arm.Position;
 import frc.robot.subsystems.drive.SwerveDrive;
 
 /**
@@ -73,16 +72,12 @@ public class Robot extends TimedRobot {
   @Override
   public void disabledInit() {
     SwerveDrive.kMaxAngularSpeedRadiansPerSecond = 2 * Math.PI;
-    if (RobotContainer.grabber != null) {
-      RobotContainer.grabber.turnOff();
-    }
+
   }
 
   @Override
   public void disabledPeriodic() {
-    RobotContainer.arm.armPivotSetpointRadians = RobotContainer.arm.getAngle().getRadians();
-    RobotContainer.arm.armLengthSetpoint = RobotContainer.arm.getLength();
-    RobotContainer.wrist.setAngleSetpoint(RobotContainer.wrist.getAbsoluteAngle());
+
 
     RobotContainer.swerveDrive.isCalibrated = true;
   }
@@ -122,7 +117,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopInit() {
-    RobotContainer.arm.position = Position.HIGH;
+
     SwerveDrive.kMaxAngularSpeedRadiansPerSecond = 2 * Math.PI;
     // This makes sure that the autonomous stops running when
     // teleop starts running. If you want the autonomous to
@@ -131,7 +126,7 @@ public class Robot extends TimedRobot {
     if (autonmousRoutine != null) {
       autonmousRoutine.cancel();
     }
-    RobotContainer.grabber.set(0);
+
   }
 
   /** This method is called periodically during operator control. */
