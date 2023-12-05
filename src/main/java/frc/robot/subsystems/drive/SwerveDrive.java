@@ -7,24 +7,12 @@
 
 package frc.robot.subsystems.drive;
 
-
-import java.util.Optional;
-
-import org.photonvision.EstimatedRobotPose;
-
-import com.pathplanner.lib.PathConstraints;
-import com.pathplanner.lib.PathPlanner;
-import com.pathplanner.lib.PathPlannerTrajectory;
-import com.pathplanner.lib.PathPoint;
-
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
@@ -32,8 +20,6 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.ProxyCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotMap;
 import frc.robot.Constants;
@@ -56,7 +42,6 @@ public class SwerveDrive extends SubsystemBase {
   private final Translation2d rearRightLocation = new Translation2d(-0.2984, -0.2984);
 
   public double currentX, currentY;
-
 
   public boolean isCalibrated = false;
   private boolean loggedPoseError = false;
@@ -208,11 +193,9 @@ public class SwerveDrive extends SubsystemBase {
         ChassisSpeeds.fromFieldRelativeSpeeds(chassisSpeeds, poseEstimator.getEstimatedPosition().getRotation())));
   }
 
-
   public void setPose(Pose2d pose) {
     poseEstimator.resetPosition(getAngle(), getSwerveModulePositions(), pose);
   }
-
 
   public void setPID(double p, double i, double d) {
     targetPid.setPID(p, i, d);
@@ -223,7 +206,9 @@ public class SwerveDrive extends SubsystemBase {
   }
 
   public void holdAngleWhileDriving(double x, double y, Rotation2d setAngle, boolean fieldOriented) {
-    var rotateOutput = MathUtil.clamp(targetPid.calculate(poseEstimator.getEstimatedPosition().getRotation().getDegrees(), normalizeAngle(setAngle.getDegrees())), -1, 1) * kMaxAngularSpeedRadiansPerSecond;
+    var rotateOutput = MathUtil.clamp(targetPid.calculate(
+        poseEstimator.getEstimatedPosition().getRotation().getDegrees(), normalizeAngle(setAngle.getDegrees())), -1, 1)
+        * kMaxAngularSpeedRadiansPerSecond;
     this.drive(x, y, rotateOutput, fieldOriented);
   }
 
@@ -268,20 +253,19 @@ public class SwerveDrive extends SubsystemBase {
 
     if (!this.loggedPoseError && (Double.isNaN(pose.getX()) || Double.isNaN(pose.getY()))) {
       this.loggedPoseError = true;
-      for(var pos : modulePositions) {
+      for (var pos : modulePositions) {
         DriverStation.reportError("Bad module state! Check output for details.", false);
         System.err.println("Bad module states: " + pos);
       }
     }
 
-    
   }
-  
 
   public void resetOdometry() {
     RobotContainer.navx.reset();
     offset = Math.toDegrees(Math.PI);
-    poseEstimator.resetPosition(getAngle(), getSwerveModulePositions(), new Pose2d(this.getPose().getX(), this.getPose().getY(), new Rotation2d(Math.PI)));
+    poseEstimator.resetPosition(getAngle(), getSwerveModulePositions(),
+        new Pose2d(this.getPose().getX(), this.getPose().getY(), new Rotation2d(Math.PI)));
   }
 
   public ChassisSpeeds getChassisSpeeds() {
@@ -326,7 +310,6 @@ public class SwerveDrive extends SubsystemBase {
     rearRight.setDesiredState(0, -45);
     rearLeft.setDesiredState(0, 45);
   }
-
 
   public void resetNavx() {
     resetNavx(getPose());

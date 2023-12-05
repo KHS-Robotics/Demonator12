@@ -5,43 +5,21 @@
 
 package frc.robot;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
-
 import com.kauailabs.navx.frc.AHRS;
-import com.pathplanner.lib.PathConstraints;
-import com.pathplanner.lib.PathPlanner;
-import com.pathplanner.lib.PathPlannerTrajectory;
-import com.pathplanner.lib.auto.PIDConstants;
-import com.pathplanner.lib.auto.SwerveAutoBuilder;
-import com.pathplanner.lib.commands.PPSwerveControllerCommand;
 
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.Filesystem;
+import com.pathplanner.lib.auto.SwerveAutoBuilder;
+
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.SerialPort.Port;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.ProxyCommand;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+
 import frc.robot.commands.drive.CenterSwerveModules;
 import frc.robot.commands.drive.DriveSwerveWithXbox;
-import frc.robot.commands.drive.HoldAngleWithXbox;
-import frc.robot.commands.drive.RotateToAngle;
-import frc.robot.commands.drive.balance.ApproachChargeStation;
-import frc.robot.commands.drive.balance.BalanceSequence;
-import frc.robot.commands.drive.balance.DriveForward;
-import frc.robot.commands.drive.balance.DriveOverThenBalanceSequence;
-import frc.robot.subsystems.Grabber;
 import frc.robot.subsystems.drive.SwerveDrive;
 import frc.robot.subsystems.lighting.OldLEDStrip;
 
@@ -104,9 +82,7 @@ public class RobotContainer {
 
   // Subsystems
   public static final SwerveDrive swerveDrive = new SwerveDrive();
-  //public static final Arm arm = new Arm();
-  //public static final Wrist wrist = new Wrist();
-  //public static final Grabber grabber = new Grabber();
+
   public static final OldLEDStrip leds = new OldLEDStrip();
 
   /**
@@ -120,24 +96,10 @@ public class RobotContainer {
   /** Configures the subsystem's default commands. */
   private void configureSubsystemDefaultCommands() {
     swerveDrive.setDefaultCommand(new DriveSwerveWithXbox());
-    //arm.setDefaultCommand(new ArmHoldSetpoint());
-    //wrist.setDefaultCommand(new WristHoldSetpoint());
+    // arm.setDefaultCommand(new ArmHoldSetpoint());
+    // wrist.setDefaultCommand(new WristHoldSetpoint());
   }
 
-  /**
-   * Use this method to define your trigger->command mappings. Triggers can be
-   * created via the
-   * {@link Trigger#Trigger(java.util.function.BooleanSupplier)} constructor with
-   * an arbitrary
-   * predicate, or via the named factories in {@link
-   * edu.wpi.first.wpilibj2.command.button.CommandGenericHID}'s subclasses for
-   * {@link
-   * CommandXboxController
-   * Xbox}/{@link edu.wpi.first.wpilibj2.command.button.CommandPS4Controller
-   * PS4} controllers or
-   * {@link edu.wpi.first.wpilibj2.command.button.CommandJoystick Flight
-   * joysticks}.
-   */
   private void configureBindings() {
     this.configureAutomatedBindings();
     this.configureXboxControllerBindings();
@@ -150,9 +112,10 @@ public class RobotContainer {
     Trigger autoCalibrateTeleop = new Trigger(
         () -> (!swerveDrive.isCalibrated && RobotState.isTeleop() && RobotState.isEnabled()));
     autoCalibrateTeleop.onTrue(new CenterSwerveModules(true));
-    
-    //Trigger autoPullIn = new Trigger(() -> operatorBox.cubeMode() && grabber.getSensor());
-    //autoPullIn.onTrue(new AutoPullIn());
+
+    // Trigger autoPullIn = new Trigger(() -> operatorBox.cubeMode() &&
+    // grabber.getSensor());
+    // autoPullIn.onTrue(new AutoPullIn());
   }
 
   /** Binds commands to xbox controller buttons. */
@@ -160,10 +123,9 @@ public class RobotContainer {
     Trigger forceCalibrate = driverController.back();
     forceCalibrate.onTrue(new CenterSwerveModules(true));
 
-    //Trigger resetNavx = driverController.start();
-    //resetNavx.onTrue(new InstantCommand(() -> swerveDrive.resetNavx()));
+    // Trigger resetNavx = driverController.start();
+    // resetNavx.onTrue(new InstantCommand(() -> swerveDrive.resetNavx()));
 
-    
     Trigger resetOdometry = driverController.start();
     resetOdometry.onTrue(new InstantCommand(() -> swerveDrive.resetOdometry()));
 
@@ -176,148 +138,16 @@ public class RobotContainer {
       SwerveDrive.kMaxAngularSpeedRadiansPerSecond = 2 * Math.PI;
       SwerveDrive.kMaxSpeedMetersPerSecond = 3.5;
     }));
-
-
-    /*
-    Trigger goToClosestNode = driverController.x();
-    goToClosestNode.onTrue(new ProxyCommand(() -> swerveDrive.goToClosestNode()));
-
-    Trigger goToSingleSubstation = driverController.y();
-    goToSingleSubstation.onTrue(new ProxyCommand(() -> swerveDrive.goToSingleSubstation()));
-
-    //Trigger wristDown = driverController.b();
-    //wristDown.onTrue(new WristGoToAngle(() -> new Rotation2d(-Math.PI / 4)));
-
-    Trigger setBalanceAngleZero = driverController.pov(0);
-    setBalanceAngleZero.onTrue(new ProxyCommand(() -> new BalanceSequence(swerveDrive.getPose().getRotation().getDegrees())));
-
-    Trigger setBalanceAngle180 = driverController.pov(180);
-    setBalanceAngle180.onTrue(new ProxyCommand(() -> new BalanceSequence(swerveDrive.getPose().getRotation().getDegrees())));
-
-    Trigger holdAngleWhileDriving = driverController.rightBumper();
-    holdAngleWhileDriving.whileTrue(new HoldAngleWithXbox());
-
-    Trigger cancelAll = driverController.leftBumper();
-    cancelAll.onTrue(new InstantCommand(() -> CommandScheduler.getInstance().cancelAll()));
-
-    //Trigger testSequence = driverController.pov(90);
-    //testSequence.onTrue(new DriveOverThenBalanceSequence());
-    */
   }
 
   /** Binds commands to the operator box. */
   private void configureOperatorBoxBindings() {
 
-    /*
-    Trigger leftNode = new Trigger(operatorBox::rightNode); // mirror button bc scoring facing drivers
-    leftNode.onTrue(new ProxyCommand(
-        () -> swerveDrive.goToNode(Field.aprilTagFromInput(operatorBox.getGrid()), operatorBox.getHeight() * 3)));
-
-    Trigger midNode = new Trigger(operatorBox::cubeNode);
-    midNode.onTrue(new ProxyCommand(
-        () -> swerveDrive.goToNode(Field.aprilTagFromInput(operatorBox.getGrid()), operatorBox.getHeight() * 3 + 1)));
-
-    Trigger rightNode = new Trigger(operatorBox::leftNode); // mirror button bc scoring facing drivers
-    rightNode.onTrue(new ProxyCommand(
-        () -> swerveDrive.goToNode(Field.aprilTagFromInput(operatorBox.getGrid()), operatorBox.getHeight() * 3 + 2)));
-
-    Trigger abort = new Trigger(operatorBox::abort);
-    abort.onTrue(new InstantCommand(() -> CommandScheduler.getInstance().cancelAll()));
-
-    // Trigger zeroArmPivot = new Trigger(operatorBox::zeroArmPivot);
-    // zeroArmPivot.onTrue(new InstantCommand(() -> arm.zeroArmPivot()));
-
-    Trigger highConeKnockedOver = new Trigger(operatorBox::highConeKnockedOver);
-    highConeKnockedOver.onTrue(new ProxyCommand(() -> RobotContainer.arm.goToLocationUniversal(Position.HIGH_KNOCKED, Constants.HIGH_POS_KNOCKED_OVER, Rotation2d.fromRadians(-0.90))));
-    
-    Trigger midConeKnockedOver = new Trigger(operatorBox::midConeKnockedOver);
-    midConeKnockedOver.onTrue(new ProxyCommand(() -> RobotContainer.arm.goToLocationUniversal(Position.MID_KNOCKED, Constants.MID_POS_KNOCKED_OVER, Rotation2d.fromRadians(-0.90))));
-    */
   }
 
   /** Binds commands to the operator stick. */
   private void configureOperatorStickBindings() {
 
-    /*
-    Trigger highPos = new Trigger(() -> (operatorStick.highPos() && operatorBox.coneMode()));
-    highPos.onTrue(new ProxyCommand(() -> RobotContainer.arm.goToLocationUniversal(Position.HIGH, Constants.HIGH_POS, Rotation2d.fromDegrees(40))));
-
-    Trigger midPos = new Trigger(() -> (operatorStick.midPos() && operatorBox.coneMode()));
-    midPos.onTrue(new ProxyCommand(() -> RobotContainer.arm.goToLocationUniversal(Position.MID, Constants.MID_POS, Rotation2d.fromDegrees(40))));
-
-    Trigger highPosCube = new Trigger(() -> (operatorStick.highPos() && operatorBox.cubeMode()));
-    highPosCube.onTrue(new ProxyCommand(() -> RobotContainer.arm.goToLocationUniversal(Position.HIGH, Constants.CUBE_HIGH_POS, new Rotation2d())));
-
-    Trigger midPosCube = new Trigger(() -> (operatorStick.midPos() && operatorBox.cubeMode()));
-    midPosCube.onTrue(new ProxyCommand(() -> RobotContainer.arm.goToLocationUniversal(Position.MID, Constants.CUBE_MID_POS, new Rotation2d())));
-
-    Trigger lowPos = new Trigger(operatorStick::lowPos);
-    lowPos.onTrue(new ProxyCommand(() -> RobotContainer.arm.goToLocationUniversal(Position.FLOOR, Constants.FLOOR_POS, Rotation2d.fromDegrees(0))));
-
-    Trigger home = new Trigger(operatorStick::home);
-    home.onTrue(new ProxyCommand(() -> RobotContainer.arm.goToLocationUniversal(Position.HOME, Math.toRadians(60), Constants.MIN_LENGTH, Rotation2d.fromDegrees(150))));
-
-    Trigger armFlat = new Trigger(operatorStick::stow);
-    armFlat.onTrue(new ProxyCommand(() -> RobotContainer.arm.goToLocationUniversal(Position.FLAT, Math.toRadians(0), Constants.MIN_LENGTH, Rotation2d.fromDegrees(80))));
-
-    Trigger stow = new Trigger(operatorStick::scoreAngle);
-    stow.onTrue(new ProxyCommand(() -> RobotContainer.arm.goToLocationUniversal(Position.STOW, 0.63, Constants.MIN_LENGTH, Rotation2d.fromDegrees(116))));
-
-    Trigger shelfPos = new Trigger(operatorStick::shelfPos);
-    shelfPos.onTrue(new ProxyCommand(() -> RobotContainer.arm.goToLocationUniversal(Position.SHELF, 0.982, 0.694, Rotation2d.fromDegrees(-11))));
-
-    Trigger wristFlat = new Trigger(operatorStick::wristFlat);
-    wristFlat.onTrue(new InstantCommand(() -> wrist.setAngleSetpoint(Rotation2d.fromDegrees(0))));
-
-    Trigger wristStepUp = new Trigger(operatorStick::wristStepUp);
-    wristStepUp.onTrue(new WristDeltaSetpoint(Rotation2d.fromDegrees(7)));
-
-    Trigger wristStepDown = new Trigger(operatorStick::wristStepDown);
-    wristStepDown.onTrue(new WristDeltaSetpoint(Rotation2d.fromDegrees(-7)));
-
-    Trigger wristScoreAngle = new Trigger(operatorStick::wristScoreAngle);
-    wristScoreAngle.onTrue(new InstantCommand(() -> wrist.setAngleSetpoint(Rotation2d.fromDegrees(45))));
-
-    Trigger moveArm = new Trigger(() -> Math.abs(operatorStick.getX()) > 0.05 || Math.abs(operatorStick.getY()) > 0.05);
-    moveArm.onTrue(new ArmControlJoystick());
-
-    Trigger grip = new Trigger(() -> (operatorStick.openClaw()));
-    grip.onTrue(new SetGrabber(true).alongWith(new InstantCommand(() -> grabber.stopWaitingForCone())));
-
-    Trigger release = new Trigger(() -> (operatorStick.closeClaw()));
-    release.onTrue(new SetGrabber(false).alongWith(new InstantCommand(() -> grabber.stopWaitingForCone())));
-
-    Trigger outtake = new Trigger(operatorStick::outtake);
-    outtake.onTrue(new InstantCommand(() -> grabber.set(0.3)));
-    outtake.onFalse(new InstantCommand(() -> grabber.set(0)));
-
-    Trigger intake = new Trigger(operatorStick::intake);
-    intake.onTrue(new InstantCommand(() -> grabber.set(-0.5)));
-    intake.onFalse(new InstantCommand(() -> grabber.set(0)));
-
-    Trigger wristSlapDown = new Trigger(operatorStick::wristSlapDown);
-    wristSlapDown.onTrue(new InstantCommand(() -> wrist.setAngleSetpoint(Rotation2d.fromDegrees(-10))));
-    wristSlapDown.onFalse(new ProxyCommand(new InstantCommand(() -> wrist.setAngleSetpoint((RobotContainer.arm.position == Position.STOW) ? Rotation2d.fromDegrees(116) : Rotation2d.fromDegrees(40)))));
-
-    Trigger waitForCone = new Trigger(operatorStick::waitForCone);
-    waitForCone.onTrue(new InstantCommand(() -> grabber.waitForCone()));
-
-    Trigger coneIn = new Trigger(() -> (grabber.waiting && grabber.getSensor() && operatorBox.coneMode() && RobotState.isTeleop()));
-    coneIn.onTrue(new SetGrabber(false));
-
-    Trigger singleSubstation = new Trigger(operatorStick::singleSubstation);
-    singleSubstation.onTrue(new ProxyCommand(() -> RobotContainer.arm.goToLocationUniversal(Position.SINGLE, Constants.SINGLE_POS, Rotation2d.fromDegrees(35))));
-
-    Trigger autoWaitForCone = new Trigger(() -> (operatorStick.singleSubstation() || operatorStick.shelfPos() || operatorStick.lowPos()) && operatorBox.coneMode());
-    autoWaitForCone.onTrue(new InstantCommand(() -> RobotContainer.grabber.waitForCone()));
-
-    Trigger stopWaitingForCone = new Trigger(operatorBox::cubeMode);
-    stopWaitingForCone.onTrue(new InstantCommand(() -> RobotContainer.grabber.stopWaitingForCone()));
-
-    Trigger autoRetract = new Trigger(() -> operatorStick.openClaw() && arm.getTranslation().getNorm() > 0.75 && swerveDrive.getPose().getX() < 2.5);
-    autoRetract.onTrue(new WaitCommand(0.2).andThen(new ProxyCommand(() -> RobotContainer.arm.goToLocationUniversal(Position.STOW, 0.63, Constants.MIN_LENGTH, Rotation2d.fromDegrees(116)))));
-    */
-  
   }
 
   /**
